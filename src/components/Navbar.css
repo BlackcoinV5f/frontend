@@ -1,0 +1,73 @@
+/* 📌 Barre de navigation */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* ✅ Équilibre parfait */
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #2c2f33, #23272a);
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 520px; /* ✅ Légèrement réduit */
+  margin: 0 auto;
+}
+
+/* ✅ Ajustements pour réduire la taille des icônes et du texte */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Réduction de l’espace entre icône et texte */
+  font-size: 12px; /* Taille du texte réduite */
+  font-weight: normal;
+  padding: 6px 10px; /* Moins de padding */
+}
+
+/* ✅ Taille des icônes réduite */
+.small-icon {
+  font-size: 16px; /* Réduction de la taille des icônes */
+}
+
+.small-text {
+  font-size: 12px; /* Réduction de la taille des textes */
+}
+
+
+/* 📌 Éléments de navigation */
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* ✅ Répartition uniforme */
+  font-size: 11px; /* ✅ Texte encore réduit */
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+  padding: 4px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* 📌 Icônes */
+.nav-icon {
+  font-size: 12px; /* ✅ Encore plus petit */
+  margin-right: 2px; /* ✅ Moins d’espace entre l’icône et le texte */
+}
+
+/* 📌 Responsive Design */
+@media screen and (max-width: 768px) {
+  .navbar {
+    padding: 4px;
+    max-width: 100%;
+  }
+
+  .nav-item {
+    font-size: 10px; /* ✅ Encore plus petit sur mobile */
+    padding: 3px;
+  }
+
+  .nav-icon {
+    font-size: 11px;
+  }
+}

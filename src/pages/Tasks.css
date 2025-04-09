@@ -1,0 +1,57 @@
+.tasks-container {
+    text-align: center;
+    padding: 20px;
+    color: white;
+  }
+
+  .tasks-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .task-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .task-item {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .task-item button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .task-item button:disabled {
+    background: gray;
+    cursor: not-allowed;
+  }
+  

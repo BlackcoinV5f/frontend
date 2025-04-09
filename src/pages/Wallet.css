@@ -1,0 +1,23 @@
+.wallet-container {
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    margin: auto;
+    color: white;
+  }
+  
+  .wallet-balance {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #4CAF50; /* Couleur verte */
+  }
+  
+  span {
+    font-size: 24px;
+    color: yellow;
+  }
+  

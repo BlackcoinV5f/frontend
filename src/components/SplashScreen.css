@@ -1,0 +1,44 @@
+/* SplashScreen.css */
+.splash-container {
+  position: fixed; /* S'assure que l'écran de chargement prend tout l'écran */
+  top: 0;
+  left: 0;
+  width: 100vw; /* Prend toute la largeur de l'écran */
+  height: 100vh; /* Prend toute la hauteur de l'écran */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #4570a8; /* Assure un fond blanc propre */
+  z-index: 9999; /* Priorité maximale */
+}
+
+/* Ajuster l'image du logo */
+.splash-logo {
+  width: 80%; /* Ajuste automatiquement la taille */
+  max-width: 300px; /* Taille max pour éviter qu'elle soit trop grande */
+  height: auto;
+}
+
+/* Barre de chargement */
+.loading-bar {
+  width: 80%;
+  max-width: 250px;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.loading-progress {
+  width: 100%;
+  height: 100%;
+  background: #4caf50; /* Couleur verte */
+  animation: loading 5s linear forwards;
+}
+
+@keyframes loading {
+  from { width: 0; }
+  to { width: 100%; }
+}
