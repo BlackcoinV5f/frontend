@@ -18,6 +18,7 @@ import backgroundImage from "./assets/background.png";
 import SidebarToggle from "./components/SidebarToggle";
 import SidebarPage from "./pages/SidebarPage";
 import logo from "./assets/actif-logo.png"; // Import direct dans App.jsx
+
 import Status from "./pages/Status";
 import "./App.css";
 
@@ -137,6 +138,7 @@ const App = () => {
               <Route path="/auth/telegram" element={<AuthTelegram setUser={setUser} />} />
               <Route path="/validate-task/:taskId" element={<ValidateTask points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
               <Route path="/sidebar" element={<SidebarToggle />} />
+              
               <Route path="/sidebar/status" element={<Status />} />
             </Routes>
           </div>
