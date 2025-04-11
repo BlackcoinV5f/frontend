@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import MiningCircle from "./components/MiningCircle";
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
 import Friends from "./pages/Friends";
@@ -12,13 +11,12 @@ import LevelPage from "./pages/LevelPage";
 import BalancePage from "./pages/BalancePage";
 import RankingPage from "./pages/RankingPage";
 import ValidateTask from "./pages/ValidateTask";
-import AuthTelegram from "./pages/AuthTelegram";
 import SplashScreen from "./components/SplashScreen";
 import backgroundImage from "./assets/background.png";
 import SidebarToggle from "./components/SidebarToggle";
 import SidebarPage from "./pages/SidebarPage";
-import logo from "./assets/actif-logo.png"; // Import direct dans App.jsx
-
+import logo from "./assets/actif-logo.png";
+import MyActions from "./pages/MyActions";
 import Status from "./pages/Status";
 import "./App.css";
 
@@ -32,26 +30,37 @@ const App = () => {
   const [level, setLevel] = useState(1);
   const [user, setUser] = useState(null);
 
-  function App() {
-    const {
-      wallet,
-      setWallet,
-      pointsHistory,
-      setPointsHistory,
-      level,
-      setLevel,
-      user,
-      setUser,
-      attemptsLeft,
-      points,
-      streakDays,
-      handlePlayGame,
-    } = useGameLogic();
-  
-    // Ton composant continue ici...
-  }
+  // ✅ Authentification Telegram directe dans App.jsx
+  useEffect(() => {
+    const telegram = window.Telegram?.WebApp;
+    const initData = telegram?.initData;
 
-  // ✅ Récupérer les données utilisateur depuis le backend
+    if (initData && !localStorage.getItem("telegramUser")) {
+      const authenticate = async () => {
+        try {
+          const response = await fetch(`${API_URL}/auth/telegram`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ initData }),
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            localStorage.setItem("telegramUser", JSON.stringify(data.user));
+            setUser(data.user);
+          } else {
+            console.error("Erreur auth:", data.message);
+          }
+        } catch (err) {
+          console.error("Erreur serveur:", err);
+        }
+      };
+
+      authenticate();
+    }
+  }, []);
+
+  // ✅ Récupérer les données utilisateur
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -102,13 +111,7 @@ const App = () => {
     }
   }, []);
 
-  <SplashScreen onFinish={() => {
-    console.log("Splash terminé, on cache l'écran !");
-    setShowSplash(false);
-  }} />
-  
-
-  // ✅ Sauvegarde des données utilisateur en localStorage
+  // ✅ Sauvegarde des données utilisateur
   useEffect(() => {
     localStorage.setItem("points", JSON.stringify(points));
     localStorage.setItem("wallet", JSON.stringify(wallet));
@@ -124,7 +127,7 @@ const App = () => {
         <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
           <Navbar user={user} />
           <div className="content">
-          <SidebarToggle logo={logo} />
+            <SidebarToggle logo={logo} />
             <Routes>
               <Route path="/" element={<Home points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
               <Route path="/tasks" element={<Tasks points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
@@ -135,10 +138,8 @@ const App = () => {
               <Route path="/balance" element={<BalancePage points={points} pointsHistory={pointsHistory} />} />
               <Route path="/ranking" element={<RankingPage />} />
               <Route path="/sidebar" element={<SidebarPage />} />
-              <Route path="/auth/telegram" element={<AuthTelegram setUser={setUser} />} />
               <Route path="/validate-task/:taskId" element={<ValidateTask points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
-              <Route path="/sidebar" element={<SidebarToggle />} />
-              
+              <Route path="/sidebar/my-actions" element={<MyActions />} />
               <Route path="/sidebar/status" element={<Status />} />
             </Routes>
           </div>

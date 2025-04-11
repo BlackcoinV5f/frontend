@@ -7,6 +7,7 @@ const validationCodes = {
   2: "FB456",
   3: "TK789",
   4: "TW321",
+  5: "TW123",
 };
 
 const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
@@ -20,6 +21,7 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
     2: { platform: "Facebook", points: 300 },
     3: { platform: "TikTok", points: 700 },
     4: { platform: "Twitter", points: 400 },
+    5: { platform: "YouTube", points: 100 },
   }[taskId];
 
   if (!task) return <p>❌ Tâche introuvable.</p>;
@@ -28,10 +30,8 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
     if (code === validationCodes[taskId]) {
       let newPoints = points + Math.floor(task.points * 0.8);
       let newWallet = wallet + Math.floor(task.points * 0.2);
-
       setPoints(newPoints);
       setWallet(newWallet);
-
       localStorage.setItem("points", JSON.stringify(newPoints));
       localStorage.setItem("wallet", JSON.stringify(newWallet));
 
@@ -50,12 +50,17 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
     <div className="validate-container">
       <h2>🎯 Validation de la tâche {task.platform}</h2>
       <p>Entrez le code de validation fourni après l’accomplissement de la tâche.</p>
-      <input type="text" value={code} onChange={(e) => setCode(e.target.value)} placeholder="Code de validation" />
+      <input
+        type="text"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        placeholder="Code de validation"
+      />
       {error && <p className="error">{error}</p>}
       <button onClick={handleValidation}>✅ Vérifier</button>
       <p className="info-message">
-        The points collected in the tasks section are distributed over two balances:  
-        <strong>80%</strong> in your main balance and <strong>20%</strong> in your wallet.  
+        The points collected in the tasks section are distributed over two balances:{" "}
+        <strong>80%</strong> in your main balance and <strong>20%</strong> in your wallet.{" "}
         The 20% will be converted into UST or Ton and you can withdraw them at any time you wish.
       </p>
     </div>

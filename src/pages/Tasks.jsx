@@ -11,25 +11,29 @@ const tasksList = [
   { id: 2, platform: "Facebook", points: 300, link: "https://facebook.com", icon: facebookIcon },
   { id: 3, platform: "TikTok", points: 700, link: "https://tiktok.com", icon: tiktokIcon },
   { id: 4, platform: "Twitter", points: 400, link: "https://twitter.com", icon: twitterIcon },
+  { id: 1, platform: "YouTube", points: 100, link: "https://youtube.com", icon: youtubeIcon },
 ];
 
 const Tasks = () => {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
+  const [completedCount, setCompletedCount] = useState(0);
 
   useEffect(() => {
     const completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
-    setTasks(tasksList.filter(task => !completedTasks.includes(task.id))); // Filtrer les tâches non effectuées
+    setCompletedCount(completedTasks.length);
+    setTasks(tasksList.filter(task => !completedTasks.includes(task.id)));
   }, []);
 
   const handleTaskClick = (task) => {
-    window.open(task.link, "_blank"); // Ouvre le lien de la tâche
-    setTimeout(() => navigate(`/validate-task/${task.id}`), 1000); // Redirection après 1 seconde
+    window.open(task.link, "_blank");
+    setTimeout(() => navigate(`/validate-task/${task.id}`), 1000);
   };
 
   return (
     <div className="tasks-container">
       <h2>📋 Tâches à accomplir</h2>
+      <p className="tasks-counter">✅ Tâches accomplies : {completedCount} / {tasksList.length}</p>
       <div className="tasks-list">
         {tasks.length > 0 ? (
           tasks.map(task => (
