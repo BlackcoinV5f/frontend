@@ -29,7 +29,7 @@ body, html {
 .sidebar-toggle {
   position: absolute;
   left: 10px; /* Fixe au bord gauche */
-  top: 50%; /* Centre verticalement */
+  top: 65%; /* Centre verticalement */
   transform: translateY(-50%);
   width: 60px;
   height: 60px;
@@ -209,5 +209,6 @@ html, body, #root {
   flex-direction: column;
   justify-content: space-between;
 }
+
 
 

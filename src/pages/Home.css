@@ -1,37 +1,24 @@
-                                                                                                                                                                                                                                                  /* Home.css */
+.home {
+  position: relative; /* important pour que .dino-launcher soit positionné à l’intérieur */
+}
 
-.home-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-size: cover;
-    background-position: center;
-    padding: 20px;
-    color: white;
-  }
-  
-  .home-title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
-  
-  .home-content {
-    max-width: 800px;
-    text-align: center;
-    font-size: 1.2rem;
-    line-height: 1.5;
-  }
-  
-  @media (max-width: 768px) {
-    .home-title {
-      font-size: 1.5rem;
-    }
-  
-    .home-content {
-      font-size: 1rem;
-    }
-  }
-  
+.dino-launcher {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 60px;
+  height: 60px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.dino-launcher img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.dino-launcher:hover img {
+  transform: scale(1.1);
+}

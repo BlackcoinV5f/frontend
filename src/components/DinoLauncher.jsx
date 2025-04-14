@@ -1,40 +1,34 @@
-// src/components/DinoLauncher.jsx
-
 import React, { useState } from "react";
 import "./DinoLauncher.css";
-import dinoSprite from "../assets/dino-sprite.png";
+import dinoLogo from "../assets/dinoGame/dino.gif";
 import DinoGame from "./DinoGame";
 
 const DinoLauncher = () => {
-  const [open, setOpen] = useState(false);
+  const [showGame, setShowGame] = useState(false);
 
-  const handleToggle = () => {
-    setOpen(!open);
+  const handleClick = () => {
+    setShowGame(true);
+  };
+
+  const handleClose = () => {
+    setShowGame(false);
   };
 
   return (
-    <div>
-      {/* Logo du Dino */}
-      <div
-        className="dino-container"
-        onClick={handleToggle}
-        style={{ backgroundImage: `url(${dinoSprite})` }}
-      >
-        <div className="dino-runner" />
+    <>
+      <div className="dino-launcher" onClick={handleClick}>
+        <img src={dinoLogo} alt="Play Dino Game" />
       </div>
 
-      {/* Modal du jeu */}
-      {open && (
+      {showGame && (
         <div className="dino-modal">
           <div className="dino-modal-content">
-            <button className="close-btn" onClick={handleToggle}>
-              ✕
-            </button>
+            <button className="close-btn" onClick={handleClose}>×</button>
             <DinoGame />
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
