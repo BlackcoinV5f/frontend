@@ -9,7 +9,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #0e85fc; /* Assure un fond blanc propre */
+  background-color: #4570a8; /* Assure un fond blanc propre */
   z-index: 9999; /* Priorité maximale */
 }
 
