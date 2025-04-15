@@ -3,7 +3,7 @@ import './Home.css';
 import MiningCircle from "../components/MiningCircle";
 import CryptoList from '../components/CryptoList';
 import { Link } from "react-router-dom";
-import dinoIcon from "../assets/dinoGame/dino-icon.png";
+import dinoIcon from "../assets/DinoGame/dino-icon.png";
 import "../styles/DinoLauncher.css";
 
 const Home = ({ points, setPoints, level, setLevel }) => {
