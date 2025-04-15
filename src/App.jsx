@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SplashScreen from "./components/SplashScreen";
@@ -33,13 +33,16 @@ const App = () => {
   const [level, setLevel] = useState(1);
   const [pointsHistory, setPointsHistory] = useState([]);
 
-  // Authentification Telegram
+  // Auth Telegram + données utilisateur
   useEffect(() => {
-    const telegram = window.Telegram?.WebApp;
-    const initData = telegram?.initData;
+    const initAuth = async () => {
+      const telegram = window.Telegram?.WebApp;
+      const initData = telegram?.initData;
 
-    if (initData && !localStorage.getItem("telegramUser")) {
-      const authenticate = async () => {
+      if (!initData) return;
+
+      let storedUser = JSON.parse(localStorage.getItem("telegramUser"));
+      if (!storedUser) {
         try {
           const response = await fetch(`${API_URL}/auth/telegram`, {
             method: "POST",
@@ -50,29 +53,23 @@ const App = () => {
           const data = await response.json();
           if (data?.id) {
             localStorage.setItem("telegramUser", JSON.stringify(data));
+            storedUser = data;
             setUser(data);
           } else {
             console.error("Erreur d'authentification :", data);
+            return;
           }
         } catch (err) {
           console.error("Erreur serveur :", err);
+          return;
         }
-      };
+      } else {
+        setUser(storedUser);
+      }
 
-      authenticate();
-    }
-  }, []);
-
-  // Récupération des données utilisateur
-  useEffect(() => {
-    const fetchUserData = async () => {
+      // Récupération des données utilisateur
       try {
-        const storedUser = JSON.parse(localStorage.getItem("telegramUser"));
-        if (!storedUser) return;
-
         const response = await fetch(`${API_URL}/user-data/${storedUser.id}`);
-        if (!response.ok) throw new Error("Erreur API");
-
         const data = await response.json();
         setUser(data);
         setPoints(data.points || 0);
@@ -84,7 +81,7 @@ const App = () => {
       }
     };
 
-    fetchUserData();
+    initAuth();
   }, []);
 
   // Système de parrainage
@@ -107,7 +104,7 @@ const App = () => {
     }
   }, []);
 
-  // Sauvegarde des états dans le localStorage
+  // Sauvegarde dans le localStorage
   useEffect(() => {
     localStorage.setItem("points", JSON.stringify(points));
     localStorage.setItem("wallet", JSON.stringify(wallet));
@@ -115,6 +112,7 @@ const App = () => {
     localStorage.setItem("pointsHistory", JSON.stringify(pointsHistory));
   }, [points, wallet, level, pointsHistory]);
 
+  // Splash screen
   if (showSplash) {
     return <SplashScreen onFinish={() => setShowSplash(false)} />;
   }
@@ -124,7 +122,6 @@ const App = () => {
       <Navbar user={user} />
       <div className="content">
         <SidebarToggle logo={logo} />
-
         <Routes>
           <Route path="/" element={<Home points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
           <Route path="/tasks" element={<Tasks points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
@@ -147,3 +144,4 @@ const App = () => {
 };
 
 export default App;
+
