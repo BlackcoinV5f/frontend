@@ -33,21 +33,28 @@ const App = () => {
   const [level, setLevel] = useState(1);
   const [pointsHistory, setPointsHistory] = useState([]);
 
-  // Auth Telegram + données utilisateur
+  // Splash screen affiché pendant 3 secondes
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Authentification via Telegram + chargement des données utilisateur
   useEffect(() => {
     const initAuth = async () => {
       const telegram = window.Telegram?.WebApp;
-      const initData = telegram?.initData;
+      const initDataUnsafe = telegram?.initDataUnsafe;
 
-      if (!initData) return;
+      if (!initDataUnsafe?.id) return;
 
       let storedUser = JSON.parse(localStorage.getItem("telegramUser"));
+
       if (!storedUser) {
         try {
           const response = await fetch(`${API_URL}/auth/telegram`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ initData }),
+            body: JSON.stringify(initDataUnsafe),
           });
 
           const data = await response.json();
@@ -67,7 +74,7 @@ const App = () => {
         setUser(storedUser);
       }
 
-      // Récupération des données utilisateur
+      // Récupération des données utilisateur à jour
       try {
         const response = await fetch(`${API_URL}/user-data/${storedUser.id}`);
         const data = await response.json();
@@ -77,7 +84,7 @@ const App = () => {
         setLevel(data.level || 1);
         setPointsHistory(data.pointsHistory || []);
       } catch (error) {
-        console.error("Erreur récupération données :", error);
+        console.error("Erreur lors de la récupération des données :", error);
       }
     };
 
@@ -104,7 +111,7 @@ const App = () => {
     }
   }, []);
 
-  // Sauvegarde dans le localStorage
+  // Sauvegarde des données utilisateur dans le localStorage
   useEffect(() => {
     localStorage.setItem("points", JSON.stringify(points));
     localStorage.setItem("wallet", JSON.stringify(wallet));
@@ -112,7 +119,6 @@ const App = () => {
     localStorage.setItem("pointsHistory", JSON.stringify(pointsHistory));
   }, [points, wallet, level, pointsHistory]);
 
-  // Splash screen
   if (showSplash) {
     return <SplashScreen onFinish={() => setShowSplash(false)} />;
   }
@@ -144,4 +150,3 @@ const App = () => {
 };
 
 export default App;
-
