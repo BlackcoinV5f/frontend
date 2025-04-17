@@ -134,6 +134,23 @@ const App = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.ready(); // Affiche le bouton ou ajuste la hauteur si besoin
+      const telegramUser = tg.initDataUnsafe?.user;
+      if (telegramUser) {
+        localStorage.setItem("telegramUser", JSON.stringify(telegramUser));
+      }
+    } else {
+      console.error("Telegram WebApp not found");
+      setTimeout(() => {
+        window.location.reload(); // Ou rediriger
+      }, 2000);
+    }
+  }, []);
+  
+
   // Système de parrainage
   useEffect(() => {
     if (!user?.id) return;
