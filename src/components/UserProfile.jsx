@@ -9,7 +9,7 @@ const UserProfile = ({ onClose }) => {
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        if (parsedUser?.id && parsedUser?.first_name) {
+        if (parsedUser?.id) {
           setUser(parsedUser);
         }
       } catch (e) {
@@ -19,23 +19,57 @@ const UserProfile = ({ onClose }) => {
   }, []);
 
   const renderProfile = () => {
+    const entries = Object.entries(user).filter(
+      ([key, value]) =>
+        value !== null &&
+        value !== "" &&
+        key !== "password" &&
+        key !== "token" && // au cas où tu as un token d'auth stocké
+        typeof value !== "object"
+    );
+
     return (
       <>
-        <img
-          src={user.photo_url || "/default-profile.png"}
-          alt="Profil"
-          className="profile-picture"
-        />
-        <p>
-          <strong>Nom :</strong> {user.first_name} {user.last_name || ""}
-        </p>
-        {user.username && (
-          <p>
-            <strong>Nom d'utilisateur :</strong> @{user.username}
-          </p>
+        {user.photo_url && (
+          <img
+            src={user.photo_url}
+            alt="Profil"
+            className="profile-picture"
+          />
         )}
+
+        <ul className="profile-info">
+          {entries.map(([key, value]) => (
+            <li key={key}>
+              <strong>{formatLabel(key)} :</strong> {value}
+            </li>
+          ))}
+        </ul>
       </>
     );
+  };
+
+  const formatLabel = (key) => {
+    switch (key) {
+      case "first_name":
+      case "firstName":
+        return "Prénom";
+      case "last_name":
+      case "lastName":
+        return "Nom";
+      case "email":
+        return "Email";
+      case "phoneNumber":
+      case "phone":
+        return "Téléphone";
+      case "country":
+        return "Pays";
+      case "username":
+      case "telegramUsername":
+        return "Nom d'utilisateur Telegram";
+      default:
+        return key.charAt(0).toUpperCase() + key.slice(1);
+    }
   };
 
   return (

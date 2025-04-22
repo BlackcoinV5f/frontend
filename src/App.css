@@ -210,5 +210,37 @@ html, body, #root {
   justify-content: space-between;
 }
 
+.auth-options {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  color: white;
+  gap: 1rem;
+}
+
+.auth-options .buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.auth-options button {
+  padding: 0.75rem 1.5rem;
+  background-color: #ffd700;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.auth-options button:hover {
+  background-color: #e6c200;
+}
+
+
 
 

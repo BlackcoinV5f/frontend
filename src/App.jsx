@@ -1,14 +1,20 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import "./App.css";
+import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
+
+
+// Assets
+import backgroundImage from "./assets/background.png";
+import logo from "./assets/actif-logo.png";
+
+// Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SplashScreen from "./components/SplashScreen";
 import SidebarToggle from "./components/SidebarToggle";
-import "./App.css";
 
-import backgroundImage from "./assets/background.png";
-import logo from "./assets/actif-logo.png";
-
+// Pages
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
 import Friends from "./pages/Friends";
@@ -22,13 +28,21 @@ import SidebarPage from "./pages/SidebarPage";
 import MyActions from "./pages/MyActions";
 import Status from "./pages/Status";
 import DinoGame from "./pages/DinoGame";
-import RegisterForm from './pages/RegisterForm';
+import RegisterForm from "./pages/RegisterForm";
+import Login from "./pages/Login";
+import AuthChoice from "./pages/AuthChoice";
+import VerifyEmail from "./pages/VerifyEmail";
+import AdminDashboardPage from './pages/AdminDashboardPage'
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || "https://your-backend-url.onrender.com";
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+const TON_ID_ADMIN = import.meta.env.VITE_TON_ID_ADMIN;
+
 
 const App = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const [splashFinished, setSplashFinished] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [user, setUser] = useState(null);
   const [points, setPoints] = useState(0);
@@ -38,69 +52,51 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Récupération des données utilisateur
   const fetchUserData = async (userId) => {
-    try {
-      const response = await fetch(`${API_URL}/user-data`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userId}`,
-        },
-        body: JSON.stringify({ userId }),
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch user data");
-      return await response.json();
-    } catch (err) {
-      console.error("User data fetch error:", err);
-      throw err;
-    }
+    const res = await fetch(`${API_URL}/user-data/${userId}`);
+    if (!res.ok) throw new Error("Échec de la récupération des données utilisateur");
+    return await res.json();
   };
 
-  // Initialisation et authentification avec Telegram
   useEffect(() => {
-    const initTelegramAuth = async () => {
+    if (showSplash) return;
+
+    const init = async () => {
+      const telegram = window.Telegram?.WebApp;
+      const localData = localStorage.getItem("telegramUser");
+
+      if (!telegram || !telegram.initDataUnsafe?.user) {
+        if (!localData) {
+          setLoading(false);
+          return;
+        } else {
+          setUser(JSON.parse(localData));
+          setLoading(false);
+          return;
+        }
+      }
+
+      const initData = telegram.initData;
+      const userId = telegram.initDataUnsafe.user?.id;
+
+      if (!userId) {
+        setError("Utilisateur Telegram non identifié.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const telegram = window.Telegram?.WebApp;
-
-        if (!telegram) {
-          setError("Telegram WebApp not found.");
-          setLoading(false);
-          return;
-        }
-
-        telegram.expand();
-        const initData = telegram.initData;
-        const initDataUnsafe = telegram.initDataUnsafe;
-        const userId = initDataUnsafe?.user?.id;
-
-        if (!userId) {
-          setError("Utilisateur Telegram non identifié.");
-          setLoading(false);
-          return;
-        }
-
-        // Authentification
-        const authResponse = await fetch(`${API_URL}/auth/telegram`, {
+        const authRes = await fetch(`${API_URL}/auth/telegram`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ initData }),
         });
 
-        if (!authResponse.ok) throw new Error("Échec de l'authentification");
+        if (!authRes.ok) throw new Error("Échec de l'authentification");
 
-        const authData = await authResponse.json();
+        const authData = await authRes.json();
         localStorage.setItem("telegramUser", JSON.stringify(authData));
 
-        // Vérifie si c'est une première connexion
-        const storedUser = localStorage.getItem("telegramUser");
-        if (!storedUser) {
-          navigate("/register");
-          return;
-        }
-
-        // Chargement des données utilisateur
         const userData = await fetchUserData(authData.id);
 
         setUser(userData);
@@ -109,74 +105,54 @@ const App = () => {
         setLevel(userData.level || 1);
         setPointsHistory(userData.pointsHistory || []);
       } catch (err) {
-        console.error("Auth/init error:", err);
-        setError("Erreur d'initialisation ou d'authentification");
+        console.error(err);
+        setError("Erreur de chargement des données");
       } finally {
         setLoading(false);
       }
     };
 
-    initTelegramAuth();
-  }, [navigate]);
-
-  // Redirection automatique vers /register si jamais l'utilisateur est inconnu
-  useEffect(() => {
-    const initDataUnsafe = window.Telegram?.WebApp?.initDataUnsafe;
-    if (initDataUnsafe?.user) {
-      const storedUser = localStorage.getItem("telegramUser");
-      if (!storedUser) {
-        localStorage.setItem("telegramUser", JSON.stringify(initDataUnsafe.user));
-        navigate("/register");
-      }
-    } else {
-      localStorage.removeItem("telegramUser");
-      navigate("/register");
-    }
-  }, [navigate]);
+    init();
+  }, [showSplash]);
 
   useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      const tg = window.Telegram.WebApp;
-      tg.ready(); // Affiche le bouton ou ajuste la hauteur si besoin
-      const telegramUser = tg.initDataUnsafe?.user;
-      if (telegramUser) {
-        localStorage.setItem("telegramUser", JSON.stringify(telegramUser));
-      }
-    } else {
-      console.error("Telegram WebApp not found");
-      setTimeout(() => {
-        window.location.reload(); // Ou rediriger
-      }, 2000);
-    }
-  }, []);
-  
+    if (!splashFinished) return;
 
-  // Système de parrainage
+    const isRegistered = localStorage.getItem("isRegistered") === "true";
+    const telegramUser = localStorage.getItem("telegramUser");
+
+    const onAuthPages = ["/auth-choice", "/register", "/login"].includes(location.pathname);
+
+    if (!telegramUser || !isRegistered) {
+      if (!onAuthPages) navigate("/auth-choice");
+    } else {
+      if (onAuthPages) navigate("/");
+    }
+  }, [splashFinished, location.pathname, navigate]);
+
   useEffect(() => {
     if (!user?.id) return;
 
-    const params = new URLSearchParams(window.location.search);
-    const ref = params.get("ref");
+    const ref = new URLSearchParams(window.location.search).get("ref");
 
-    if (ref && ref !== user.id.toString() && !localStorage.getItem(`referredBy_${user.id}`)) {
+    if (ref && ref !== String(user.id) && !localStorage.getItem(`referredBy_${user.id}`)) {
       localStorage.setItem(`referredBy_${user.id}`, ref);
 
       const handleReferral = async () => {
         try {
-          const response = await fetch(`${API_URL}/handle-referral`, {
+          const res = await fetch(`${API_URL}/handle-referral`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ referrerId: ref, refereeId: user.id }),
           });
 
-          const result = await response.json();
-
+          const result = await res.json();
           if (result.success) {
             setPoints((prev) => prev + (result.pointsBonus || 0));
             setWallet((prev) => prev + (result.walletBonus || 0));
           }
         } catch (err) {
-          console.error("Referral processing error:", err);
+          console.error("Erreur parrainage:", err);
         }
       };
 
@@ -184,71 +160,77 @@ const App = () => {
     }
   }, [user]);
 
-  // Sauvegarde automatique des données
   useEffect(() => {
     if (!user?.id) return;
 
-    const saveData = async () => {
-      try {
-        await fetch(`${API_URL}/update-user`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            points,
-            wallet,
-            level,
-            pointsHistory,
-          }),
-        });
-      } catch (err) {
-        console.error("Failed to save user data:", err);
-      }
-    };
+    const saveTimeout = setTimeout(() => {
+      fetch(`${API_URL}/update-user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          points,
+          wallet,
+          level,
+          pointsHistory,
+        }),
+      }).catch((err) => console.error("Sauvegarde échouée:", err));
+    }, 1000);
 
-    const debounce = setTimeout(() => saveData(), 1000);
-    return () => clearTimeout(debounce);
+    return () => clearTimeout(saveTimeout);
   }, [points, wallet, level, pointsHistory, user]);
 
-  if (loading) return <div className="loading-container">Chargement...</div>;
+  if (showSplash || !splashFinished) {
+    return (
+      <SplashScreen
+        onFinish={() => {
+          setShowSplash(false);
+          setSplashFinished(true);
+        }}
+      />
+    );
+  }
 
-  if (error) {
+  if (loading) return <div className="loading-container">Chargement...</div>;
+  if (error)
     return (
       <div className="error-container">
         <h2>Erreur</h2>
         <p>{error}</p>
-        <button onClick={() => window.location.reload()}>Réessayer</button>
       </div>
     );
-  }
-
-  if (showSplash) return <SplashScreen onFinish={() => setShowSplash(false)} />;
 
   return (
     <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <Navbar user={user} points={points} wallet={wallet} />
-
       <div className="content">
         <SidebarToggle logo={logo} user={user} />
-
         <Routes>
-          <Route path="/" element={<Home points={points} setPoints={setPoints} level={level} setLevel={setLevel} user={user} />} />
-          <Route path="/tasks" element={<Tasks points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} userId={user?.id} />} />
+          <Route path="/" element={<Home user={user} points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
+          <Route path="/tasks" element={<Tasks userId={user?.id} points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
           <Route path="/friends" element={<Friends user={user} />} />
           <Route path="/info" element={<Info />} />
-          <Route path="/wallet" element={<Wallet wallet={wallet} setWallet={setWallet} userId={user?.id} />} />
+          <Route path="/wallet" element={<Wallet userId={user?.id} wallet={wallet} setWallet={setWallet} />} />
           <Route path="/level" element={<LevelPage level={level} user={user} />} />
-          <Route path="/balance" element={<BalancePage points={points} pointsHistory={pointsHistory} userId={user?.id} />} />
+          <Route path="/balance" element={<BalancePage userId={user?.id} points={points} pointsHistory={pointsHistory} />} />
           <Route path="/ranking" element={<RankingPage userId={user?.id} />} />
-          <Route path="/validate-task/:taskId" element={<ValidateTask points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} userId={user?.id} />} />
+          <Route path="/validate-task/:taskId" element={<ValidateTask userId={user?.id} points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
           <Route path="/sidebar" element={<SidebarPage user={user} />} />
           <Route path="/sidebar/my-actions" element={<MyActions user={user} />} />
           <Route path="/sidebar/status" element={<Status user={user} />} />
           <Route path="/dino" element={<DinoGame user={user} />} />
+          <Route path="/auth-choice" element={<AuthChoice />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/verify" element={<VerifyEmail />} />
+
+          {/* 🔐 Route admin protégée */}
+          <Route
+            path="/admin"
+            element={user?.id === TON_ID_ADMIN ? <AdminDashboardPage /> : <Navigate to="/" />}
+          />
         </Routes>
       </div>
-
       <Footer />
     </div>
   );
