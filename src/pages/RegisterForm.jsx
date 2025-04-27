@@ -1,83 +1,296 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getNames, getCode } from 'country-list';
 import './RegisterForm.css';
 
-const countries = [
-  'Côte d’Ivoire', 'France', 'Sénégal', 'Cameroun', 'Mali', 'Togo', 'Bénin', 'Burkina Faso',
-  'Maroc', 'Algérie', 'Tunisie', 'Guinée', 'Congo', 'Gabon', 'RDC', 'Autre'
-];
-
 const RegisterForm = () => {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const allCountries = getNames().sort();
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     birthDate: '',
+    phoneCode: '+225',
     phoneNumber: '',
     telegramUsername: '',
     email: '',
-    country: '',
+    country: 'Côte d’Ivoire',
     password: '',
     confirmPassword: ''
   });
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [passwordCriteria, setPasswordCriteria] = useState({
+    length: false,
+    uppercase: false,
+    number: false,
+    specialChar: false
+  });
 
-  const handleChange = e => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Gestion du RTL pour l'arabe
+  useEffect(() => {
+    document.documentElement.dir = i18n.dir();
+  }, [i18n.language]);
+
+  // Validation du mot de passe en temps réel
+  useEffect(() => {
+    const validatePassword = (password) => {
+      setPasswordCriteria({
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        number: /\d/.test(password),
+        specialChar: /[!@#$%^&*]/.test(password)
+      });
+    };
+    validatePassword(formData.password);
+  }, [formData.password]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'phoneNumber' ? value.replace(/\D/g, '') : value
+    }));
   };
 
-  const handleSubmit = async e => {
+  const validateForm = () => {
+    const errors = [];
+    const phoneRegex = /^\d{8,15}$/;
+
+    if (!/^[a-zA-ZÀ-ÿ\s-]{2,}$/.test(formData.firstName)) {
+      errors.push(t('register.errors.invalidFirstName'));
+    }
+
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      errors.push(t('register.errors.invalidPhone'));
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      errors.push(t('register.errors.passwordMismatch'));
+    }
+
+    return errors;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     setError('');
     setSuccess('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.");
+    const formErrors = validateForm();
+    if (formErrors.length > 0) {
+      setError(formErrors.join(' • '));
+      setIsLoading(false);
       return;
     }
 
     try {
+      const fullPhone = `${formData.phoneCode}${formData.phoneNumber}`;
+      const payload = {
+        ...formData,
+        phoneNumber: fullPhone,
+        countryCode: getCode(formData.country)
+      };
+
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('tempToken')}`
+        },
+        body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
-      if (response.ok) {
-        setSuccess("Un code de validation a été envoyé à votre email.");
-      } else {
-        setError(result.detail || "Erreur lors de l'inscription.");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || t('register.errors.generic'));
       }
+
+      localStorage.setItem('pendingVerification', JSON.stringify({
+        email: formData.email,
+        expires: Date.now() + 900000
+      }));
+
+      navigate('/verify', {
+        state: {
+          email: formData.email,
+          resendCooldown: 60
+        }
+      });
+
     } catch (err) {
-      setError("Une erreur est survenue.");
+      console.error('Registration error:', err);
+      setError(err.message || t('register.errors.generic'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <form className="register-form" onSubmit={handleSubmit}>
-      <h2>Inscription</h2>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
-      
-      <input type="text" name="firstName" placeholder="Prénom" onChange={handleChange} required />
-      <input type="text" name="lastName" placeholder="Nom" onChange={handleChange} required />
-      <input type="date" name="birthDate" onChange={handleChange} required />
-      <input type="tel" name="phoneNumber" placeholder="Numéro de téléphone" onChange={handleChange} required />
-      <input type="text" name="telegramUsername" placeholder="Nom d'utilisateur Telegram" onChange={handleChange} required />
-      <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-      
-      <select name="country" onChange={handleChange} required>
-        <option value="">-- Choisissez votre pays --</option>
-        {countries.map((c, i) => (
-          <option key={i} value={c}>{c}</option>
-        ))}
-      </select>
-      
-      <input type="password" name="password" placeholder="Mot de passe" onChange={handleChange} required />
-      <input type="password" name="confirmPassword" placeholder="Confirmer mot de passe" onChange={handleChange} required />
-      
-      <button type="submit">S'inscrire</button>
+    <form className={`register-form ${i18n.dir()}`} onSubmit={handleSubmit}>
+      <div className="language-switcher">
+        <select 
+          value={i18n.language}
+          onChange={(e) => i18n.changeLanguage(e.target.value)}
+        >
+          <option value="fr">🇫🇷 Français</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="ar">🇸🇦 العربية</option>
+        </select>
+      </div>
+
+      <h2>{t('register.title')}</h2>
+
+      {error && <div className="error-message">⚠️ {error}</div>}
+      {success && <div className="success-message">✅ {success}</div>}
+
+      <fieldset>
+        <legend>{t('register.personalInfo')}</legend>
+        <div className="input-group">
+          <input
+            type="text"
+            name="firstName"
+            placeholder={`${t('register.firstName')} *`}
+            value={formData.firstName}
+            onChange={handleChange}
+            minLength="2"
+            required
+          />
+          <input
+            type="text"
+            name="lastName"
+            placeholder={`${t('register.lastName')} *`}
+            value={formData.lastName}
+            onChange={handleChange}
+            minLength="2"
+            required
+          />
+        </div>
+
+        <input
+          type="date"
+          name="birthDate"
+          value={formData.birthDate}
+          onChange={handleChange}
+          required
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend>{t('register.contactInfo')}</legend>
+        <div className="phone-input">
+          <select
+            name="phoneCode"
+            value={formData.phoneCode}
+            onChange={handleChange}
+            required
+          >
+            {allCountries.map((country) => (
+              <option key={country} value={`+${getCode(country)}`}>
+                {country} (+{getCode(country)})
+              </option>
+            ))}
+          </select>
+          <input
+            type="tel"
+            name="phoneNumber"
+            placeholder={`${t('register.phoneNumber')} *`}
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            pattern="\d{8,15}"
+            required
+          />
+        </div>
+
+        <input
+          type="email"
+          name="email"
+          placeholder={`${t('register.email')} *`}
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="text"
+          name="telegramUsername"
+          placeholder={`${t('register.telegram')} (${t('register.optional')})`}
+          value={formData.telegramUsername}
+          onChange={handleChange}
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend>{t('register.security')}</legend>
+        <select
+          name="country"
+          value={formData.country}
+          onChange={handleChange}
+          required
+        >
+          {allCountries.map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+
+        <div className="password-section">
+          <input
+            type="password"
+            name="password"
+            placeholder={`${t('register.password')} *`}
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder={`${t('register.confirmPassword')} *`}
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
+          <div className="password-criteria">
+            <span className={passwordCriteria.length ? 'valid' : ''}>
+              {t('register.passwordCriteria.length')}
+            </span>
+            <span className={passwordCriteria.uppercase ? 'valid' : ''}>
+              {t('register.passwordCriteria.uppercase')}
+            </span>
+            <span className={passwordCriteria.number ? 'valid' : ''}>
+              {t('register.passwordCriteria.number')}
+            </span>
+            <span className={passwordCriteria.specialChar ? 'valid' : ''}>
+              {t('register.passwordCriteria.specialChar')}
+            </span>
+          </div>
+        </div>
+      </fieldset>
+
+      <div className="form-footer">
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <div className="spinner"></div>
+          ) : (
+            t('register.submit')
+          )}
+        </button>
+        <p className="legal-text">
+          {t('register.termsText')}
+          <a href="/terms">{t('register.terms')}</a> {t('register.and')}{' '}
+          <a href="/privacy">{t('register.privacy')}</a>.
+        </p>
+      </div>
     </form>
   );
 };

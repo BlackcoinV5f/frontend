@@ -1,142 +1,149 @@
 // src/App.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import "./App.css";
 import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
-
+import { useDebounce } from "use-debounce";
+import PropTypes from "prop-types";
 
 // Assets
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
 
 // Components
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import SplashScreen from "./components/SplashScreen";
-import SidebarToggle from "./components/SidebarToggle";
+const Navbar = lazy(() => import("./components/Navbar"));
+const Footer = lazy(() => import("./components/Footer"));
+const SplashScreen = lazy(() => import("./components/SplashScreen"));
+const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
+const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
+const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 
-// Pages
-import Home from "./pages/Home";
-import Tasks from "./pages/Tasks";
-import Friends from "./pages/Friends";
-import Info from "./pages/Info";
-import Wallet from "./pages/Wallet";
-import LevelPage from "./pages/LevelPage";
-import BalancePage from "./pages/BalancePage";
-import RankingPage from "./pages/RankingPage";
-import ValidateTask from "./pages/ValidateTask";
-import SidebarPage from "./pages/SidebarPage";
-import MyActions from "./pages/MyActions";
-import Status from "./pages/Status";
-import DinoGame from "./pages/DinoGame";
-import RegisterForm from "./pages/RegisterForm";
-import Login from "./pages/Login";
-import AuthChoice from "./pages/AuthChoice";
-import VerifyEmail from "./pages/VerifyEmail";
-import AdminDashboardPage from './pages/AdminDashboardPage'
+// Pages - Lazy loaded
+const Home = lazy(() => import("./pages/Home"));
+const Tasks = lazy(() => import("./pages/Tasks"));
+const Friends = lazy(() => import("./pages/Friends"));
+const Info = lazy(() => import("./pages/Info"));
+const Wallet = lazy(() => import("./pages/Wallet"));
+const LevelPage = lazy(() => import("./pages/LevelPage"));
+const BalancePage = lazy(() => import("./pages/BalancePage"));
+const RankingPage = lazy(() => import("./pages/RankingPage"));
+const ValidateTask = lazy(() => import("./pages/ValidateTask"));
+const SidebarPage = lazy(() => import("./pages/SidebarPage"));
+const MyActions = lazy(() => import("./pages/MyActions"));
+const Status = lazy(() => import("./pages/Status"));
+const DinoGame = lazy(() => import("./pages/DinoGame"));
+const RegisterForm = lazy(() => import("./pages/RegisterForm"));
+const Login = lazy(() => import("./pages/Login"));
+const AuthChoice = lazy(() => import("./pages/AuthChoice"));
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 
+// Config
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 const TON_ID_ADMIN = import.meta.env.VITE_TON_ID_ADMIN;
 
-
-const App = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const [splashFinished, setSplashFinished] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
+// Custom hook for authentication
+const useAuth = () => {
   const [user, setUser] = useState(null);
-  const [points, setPoints] = useState(0);
-  const [wallet, setWallet] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [pointsHistory, setPointsHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchUserData = async (userId) => {
-    const res = await fetch(`${API_URL}/user-data/${userId}`);
-    if (!res.ok) throw new Error("Échec de la récupération des données utilisateur");
-    return await res.json();
+  const login = (userData) => {
+    sessionStorage.setItem("telegramUser", JSON.stringify(userData));
+    setUser(userData);
   };
 
-  useEffect(() => {
-    if (showSplash) return;
+  const logout = () => {
+    sessionStorage.removeItem("telegramUser");
+    setUser(null);
+  };
 
-    const init = async () => {
+  const checkAuth = async () => {
+    try {
       const telegram = window.Telegram?.WebApp;
-      const localData = localStorage.getItem("telegramUser");
+      const localData = sessionStorage.getItem("telegramUser");
 
-      if (!telegram || !telegram.initDataUnsafe?.user) {
-        if (!localData) {
-          setLoading(false);
-          return;
-        } else {
-          setUser(JSON.parse(localData));
-          setLoading(false);
-          return;
-        }
+      if (!telegram?.initDataUnsafe?.user && !localData) {
+        setLoading(false);
+        return;
+      }
+
+      if (localData) {
+        setUser(JSON.parse(localData));
+        setLoading(false);
+        return;
       }
 
       const initData = telegram.initData;
       const userId = telegram.initDataUnsafe.user?.id;
 
-      if (!userId) {
-        setError("Utilisateur Telegram non identifié.");
-        setLoading(false);
-        return;
-      }
+      if (!userId) throw new Error("Utilisateur Telegram non identifié");
 
-      try {
-        const authRes = await fetch(`${API_URL}/auth/telegram`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ initData }),
-        });
+      const authRes = await fetch(`${API_URL}/auth/telegram`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initData }),
+      });
 
-        if (!authRes.ok) throw new Error("Échec de l'authentification");
+      if (!authRes.ok) throw new Error("Échec de l'authentification");
 
-        const authData = await authRes.json();
-        localStorage.setItem("telegramUser", JSON.stringify(authData));
-
-        const userData = await fetchUserData(authData.id);
-
-        setUser(userData);
-        setPoints(userData.points || 0);
-        setWallet(userData.wallet || 0);
-        setLevel(userData.level || 1);
-        setPointsHistory(userData.pointsHistory || []);
-      } catch (err) {
-        console.error(err);
-        setError("Erreur de chargement des données");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    init();
-  }, [showSplash]);
-
-  useEffect(() => {
-    if (!splashFinished) return;
-
-    const isRegistered = localStorage.getItem("isRegistered") === "true";
-    const telegramUser = localStorage.getItem("telegramUser");
-
-    const onAuthPages = ["/auth-choice", "/register", "/login"].includes(location.pathname);
-
-    if (!telegramUser || !isRegistered) {
-      if (!onAuthPages) navigate("/auth-choice");
-    } else {
-      if (onAuthPages) navigate("/");
+      const authData = await authRes.json();
+      login(authData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, [splashFinished, location.pathname, navigate]);
+  };
 
+  return { user, loading, error, login, logout, checkAuth };
+};
+
+// Protected Route Component
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  if (!user) {
+    return <Navigate to="/auth-choice" state={{ from: location }} replace />;
+  }
+
+  if (adminOnly && user.id !== TON_ID_ADMIN) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+  adminOnly: PropTypes.bool,
+};
+
+// Main App Component
+const App = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user, loading, error, checkAuth } = useAuth();
+
+  const [splashFinished, setSplashFinished] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const [points, setPoints] = useState(0);
+  const [wallet, setWallet] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [pointsHistory, setPointsHistory] = useState([]);
+  const [debouncedPoints] = useDebounce(points, 1000);
+  const [debouncedWallet] = useDebounce(wallet, 1000);
+  const [debouncedLevel] = useDebounce(level, 1000);
+
+  // Handle referral program
   useEffect(() => {
     if (!user?.id) return;
 
-    const ref = new URLSearchParams(window.location.search).get("ref");
+    const ref = new URLSearchParams(location.search).get("ref");
+    const referralKey = `referredBy_${user.id}`;
 
-    if (ref && ref !== String(user.id) && !localStorage.getItem(`referredBy_${user.id}`)) {
-      localStorage.setItem(`referredBy_${user.id}`, ref);
+    if (ref && ref !== String(user.id) && !sessionStorage.getItem(referralKey)) {
+      sessionStorage.setItem(referralKey, ref);
 
       const handleReferral = async () => {
         try {
@@ -158,80 +165,257 @@ const App = () => {
 
       handleReferral();
     }
-  }, [user]);
+  }, [user?.id, location.search]);
 
+  // Auto-save user data
   useEffect(() => {
     if (!user?.id) return;
 
-    const saveTimeout = setTimeout(() => {
-      fetch(`${API_URL}/update-user`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          points,
-          wallet,
-          level,
-          pointsHistory,
-        }),
-      }).catch((err) => console.error("Sauvegarde échouée:", err));
-    }, 1000);
+    const saveUserData = async () => {
+      try {
+        await fetch(`${API_URL}/update-user`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            points: debouncedPoints,
+            wallet: debouncedWallet,
+            level: debouncedLevel,
+            pointsHistory,
+          }),
+        });
+      } catch (err) {
+        console.error("Sauvegarde échouée:", err);
+      }
+    };
 
-    return () => clearTimeout(saveTimeout);
-  }, [points, wallet, level, pointsHistory, user]);
+    saveUserData();
+  }, [debouncedPoints, debouncedWallet, debouncedLevel, pointsHistory, user?.id]);
+
+  // Auth check after splash screen
+  useEffect(() => {
+    if (!splashFinished) return;
+
+    const isRegistered = sessionStorage.getItem("isRegistered") === "true";
+    const onAuthPages = ["/auth-choice", "/register", "/login", "/verify"].includes(location.pathname);
+
+    if (!isRegistered && !onAuthPages) {
+      navigate("/auth-choice");
+    } else if (isRegistered && onAuthPages) {
+      navigate("/");
+    } else {
+      checkAuth();
+    }
+  }, [splashFinished, location.pathname, navigate, checkAuth]);
 
   if (showSplash || !splashFinished) {
     return (
-      <SplashScreen
-        onFinish={() => {
-          setShowSplash(false);
-          setSplashFinished(true);
-        }}
-      />
+      <Suspense fallback={<LoadingSpinner />}>
+        <SplashScreen
+          onFinish={() => {
+            setShowSplash(false);
+            setSplashFinished(true);
+          }}
+        />
+      </Suspense>
     );
   }
 
-  if (loading) return <div className="loading-container">Chargement...</div>;
-  if (error)
+  if (loading) {
     return (
-      <div className="error-container">
-        <h2>Erreur</h2>
-        <p>{error}</p>
+      <div className="app-container">
+        <LoadingSpinner fullScreen />
       </div>
     );
+  }
+
+  if (error) {
+    return (
+      <ErrorBoundary>
+        <div className="error-container">
+          <h2>Erreur</h2>
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Réessayer</button>
+        </div>
+      </ErrorBoundary>
+    );
+  }
 
   return (
     <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
-      <Navbar user={user} points={points} wallet={wallet} />
-      <div className="content">
-        <SidebarToggle logo={logo} user={user} />
-        <Routes>
-          <Route path="/" element={<Home user={user} points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
-          <Route path="/tasks" element={<Tasks userId={user?.id} points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
-          <Route path="/friends" element={<Friends user={user} />} />
-          <Route path="/info" element={<Info />} />
-          <Route path="/wallet" element={<Wallet userId={user?.id} wallet={wallet} setWallet={setWallet} />} />
-          <Route path="/level" element={<LevelPage level={level} user={user} />} />
-          <Route path="/balance" element={<BalancePage userId={user?.id} points={points} pointsHistory={pointsHistory} />} />
-          <Route path="/ranking" element={<RankingPage userId={user?.id} />} />
-          <Route path="/validate-task/:taskId" element={<ValidateTask userId={user?.id} points={points} setPoints={setPoints} wallet={wallet} setWallet={setWallet} />} />
-          <Route path="/sidebar" element={<SidebarPage user={user} />} />
-          <Route path="/sidebar/my-actions" element={<MyActions user={user} />} />
-          <Route path="/sidebar/status" element={<Status user={user} />} />
-          <Route path="/dino" element={<DinoGame user={user} />} />
-          <Route path="/auth-choice" element={<AuthChoice />} />
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/verify" element={<VerifyEmail />} />
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Navbar user={user} points={points} wallet={wallet} />
+        </Suspense>
+      </ErrorBoundary>
 
-          {/* 🔐 Route admin protégée */}
-          <Route
-            path="/admin"
-            element={user?.id === TON_ID_ADMIN ? <AdminDashboardPage /> : <Navigate to="/" />}
-          />
-        </Routes>
+      <div className="content">
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <SidebarToggle logo={logo} user={user} />
+          </Suspense>
+        </ErrorBoundary>
+
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Home
+                    user={user}
+                    points={points}
+                    setPoints={setPoints}
+                    level={level}
+                    setLevel={setLevel}
+                  />
+                }
+              />
+
+              <Route
+                path="/tasks"
+                element={
+                  <ProtectedRoute>
+                    <Tasks
+                      userId={user?.id}
+                      points={points}
+                      setPoints={setPoints}
+                      wallet={wallet}
+                      setWallet={setWallet}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/friends"
+                element={
+                  <ProtectedRoute>
+                    <Friends user={user} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/info" element={<Info />} />
+
+              <Route
+                path="/wallet"
+                element={
+                  <ProtectedRoute>
+                    <Wallet
+                      userId={user?.id}
+                      wallet={wallet}
+                      setWallet={setWallet}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/level"
+                element={
+                  <ProtectedRoute>
+                    <LevelPage level={level} user={user} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/balance"
+                element={
+                  <ProtectedRoute>
+                    <BalancePage
+                      userId={user?.id}
+                      points={points}
+                      pointsHistory={pointsHistory}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/ranking"
+                element={
+                  <ProtectedRoute>
+                    <RankingPage userId={user?.id} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/validate-task/:taskId"
+                element={
+                  <ProtectedRoute>
+                    <ValidateTask
+                      userId={user?.id}
+                      points={points}
+                      setPoints={setPoints}
+                      wallet={wallet}
+                      setWallet={setWallet}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/sidebar"
+                element={
+                  <ProtectedRoute>
+                    <SidebarPage user={user} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/sidebar/my-actions"
+                element={
+                  <ProtectedRoute>
+                    <MyActions user={user} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/sidebar/status"
+                element={
+                  <ProtectedRoute>
+                    <Status user={user} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/dino"
+                element={
+                  <ProtectedRoute>
+                    <DinoGame user={user} />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/auth-choice" element={<AuthChoice />} />
+              <Route path="/register" element={<RegisterForm />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/verify" element={<VerifyEmail />} />
+
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute adminOnly>
+                    <AdminDashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </div>
-      <Footer />
+
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Footer />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 };
