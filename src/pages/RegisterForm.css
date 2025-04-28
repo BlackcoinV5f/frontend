@@ -9,18 +9,29 @@
   justify-content: center;
   align-items: flex-start;
 }
+/* =============== Form Container =============== */
+.form-container {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  background: url('/background-stars.jpg') center/cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
 
 /* =============== Register Form =============== */
 .register-form {
   width: 100%;
   max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
+  background-color: rgba(0, 0, 0, 0.8); /* Légèrement plus opaque pour une meilleure lisibilité */
   padding: 2rem;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: #fff; /* Texte blanc par défaut dans le formulaire */
 }
 
 /* =============== Inputs and Selects =============== */
@@ -31,14 +42,20 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.95); /* fond clair visible */
+  color: #000; /* texte noir lisible */
   transition: border-color 0.3s, background-color 0.3s;
+}
+
+.register-form input::placeholder,
+.register-form select::placeholder {
+  color: #555; /* placeholder visible */
 }
 
 .register-form input:focus,
 .register-form select:focus {
   border-color: #4CAF50;
-  background-color: #f9f9f9;
+  background-color: #fff;
   outline: none;
 }
 
@@ -56,7 +73,7 @@
   color: #fff;
 }
 
-/* =============== Phone Input (Country Code + Number) =============== */
+/* =============== Phone Input =============== */
 .phone-input {
   display: flex;
   flex-direction: column;
@@ -90,7 +107,7 @@
 
 .password-criteria span {
   font-size: 0.9rem;
-  color: #888;
+  color: #ccc;
 }
 
 .password-criteria .valid {
@@ -112,7 +129,8 @@
 }
 
 /* =============== Error and Success Messages =============== */
-.error-message, .success-message {
+.error-message,
+.success-message {
   padding: 0.75rem;
   border-radius: 6px;
   font-weight: 600;
