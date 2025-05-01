@@ -1,17 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; // <-- ajoute ça
+import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [telegramUsername, setTelegramUsername] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    if (!telegramUsername.startsWith("@")) {
+      setError("Le nom d'utilisateur Telegram doit commencer par @");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch("http://localhost:8000/login", {
+      const res = await fetch(import.meta.env.VITE_BACKEND_URL + "/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, telegramUsername }),
@@ -25,7 +36,9 @@ const Login = () => {
 
       navigate("/");
     } catch (err) {
-      alert("Erreur : " + err.message);
+      setError("Erreur : " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,7 +67,16 @@ const Login = () => {
           onChange={(e) => setTelegramUsername(e.target.value)}
           required
         />
-        <button type="submit">Connexion</button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" disabled={loading}>
+          {loading ? "Connexion..." : "Connexion"}
+        </button>
+        <p className="register-link">
+          Pas encore de compte ?{" "}
+          <span onClick={() => navigate("/register")} className="link">
+            S’inscrire
+          </span>
+        </p>
       </form>
     </div>
   );

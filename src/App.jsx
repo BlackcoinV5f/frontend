@@ -5,11 +5,9 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-
 import { useDebounce } from "use-debounce";
 import PropTypes from "prop-types";
 
-// Assets
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
 
-// Components
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
@@ -17,7 +15,6 @@ const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 
-// Pages - Lazy loaded
 const Home = lazy(() => import("./pages/Home"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Friends = lazy(() => import("./pages/Friends"));
@@ -37,11 +34,9 @@ const AuthChoice = lazy(() => import("./pages/AuthChoice"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 
-// Config
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 const TON_ID_ADMIN = import.meta.env.VITE_TON_ID_ADMIN;
 
-// Custom hook for authentication
 const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,9 +93,7 @@ const useAuth = () => {
   return { user, loading, error, login, logout, checkAuth };
 };
 
-// Protected Route Component
-const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user } = useAuth();
+const ProtectedRoute = ({ children, user, adminOnly = false }) => {
   const location = useLocation();
 
   if (!user) {
@@ -116,11 +109,11 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
+  user: PropTypes.object,
   adminOnly: PropTypes.bool,
 };
 
-// Main App Component
-const App = () => {
+function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, error, checkAuth } = useAuth();
@@ -135,7 +128,13 @@ const App = () => {
   const [debouncedWallet] = useDebounce(wallet, 1000);
   const [debouncedLevel] = useDebounce(level, 1000);
 
-  // Handle referral program
+  useEffect(() => {
+    fetch(`${API_URL}/`)
+      .then((res) => res.json())
+      .then((data) => console.log("✅ Connexion au backend :", data.message))
+      .catch((err) => console.error("❌ Erreur de connexion au backend :", err));
+  }, []);
+
   useEffect(() => {
     if (!user?.id) return;
 
@@ -167,7 +166,6 @@ const App = () => {
     }
   }, [user?.id, location.search]);
 
-  // Auto-save user data
   useEffect(() => {
     if (!user?.id) return;
 
@@ -192,7 +190,6 @@ const App = () => {
     saveUserData();
   }, [debouncedPoints, debouncedWallet, debouncedLevel, pointsHistory, user?.id]);
 
-  // Auth check after splash screen
   useEffect(() => {
     if (!splashFinished) return;
 
@@ -211,22 +208,13 @@ const App = () => {
   if (showSplash || !splashFinished) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
-        <SplashScreen
-          onFinish={() => {
-            setShowSplash(false);
-            setSplashFinished(true);
-          }}
-        />
+        <SplashScreen onFinish={() => { setShowSplash(false); setSplashFinished(true); }} />
       </Suspense>
     );
   }
 
   if (loading) {
-    return (
-      <div className="app-container">
-        <LoadingSpinner fullScreen />
-      </div>
-    );
+    return <div className="app-container"><LoadingSpinner fullScreen /></div>;
   }
 
   if (error) {
@@ -259,153 +247,11 @@ const App = () => {
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home
-                    user={user}
-                    points={points}
-                    setPoints={setPoints}
-                    level={level}
-                    setLevel={setLevel}
-                  />
-                }
-              />
-
-              <Route
-                path="/tasks"
-                element={
-                  <ProtectedRoute>
-                    <Tasks
-                      userId={user?.id}
-                      points={points}
-                      setPoints={setPoints}
-                      wallet={wallet}
-                      setWallet={setWallet}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/friends"
-                element={
-                  <ProtectedRoute>
-                    <Friends user={user} />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route path="/info" element={<Info />} />
-
-              <Route
-                path="/wallet"
-                element={
-                  <ProtectedRoute>
-                    <Wallet
-                      userId={user?.id}
-                      wallet={wallet}
-                      setWallet={setWallet}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/level"
-                element={
-                  <ProtectedRoute>
-                    <LevelPage level={level} user={user} />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/balance"
-                element={
-                  <ProtectedRoute>
-                    <BalancePage
-                      userId={user?.id}
-                      points={points}
-                      pointsHistory={pointsHistory}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/ranking"
-                element={
-                  <ProtectedRoute>
-                    <RankingPage userId={user?.id} />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/validate-task/:taskId"
-                element={
-                  <ProtectedRoute>
-                    <ValidateTask
-                      userId={user?.id}
-                      points={points}
-                      setPoints={setPoints}
-                      wallet={wallet}
-                      setWallet={setWallet}
-                    />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/sidebar"
-                element={
-                  <ProtectedRoute>
-                    <SidebarPage user={user} />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/sidebar/my-actions"
-                element={
-                  <ProtectedRoute>
-                    <MyActions user={user} />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/sidebar/status"
-                element={
-                  <ProtectedRoute>
-                    <Status user={user} />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/dino"
-                element={
-                  <ProtectedRoute>
-                    <DinoGame user={user} />
-                  </ProtectedRoute>
-                }
-              />
-
+              <Route path="/" element={<Home user={user} points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
               <Route path="/auth-choice" element={<AuthChoice />} />
               <Route path="/register" element={<RegisterForm />} />
               <Route path="/login" element={<Login />} />
               <Route path="/verify" element={<VerifyEmail />} />
-
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute adminOnly>
-                    <AdminDashboardPage />
-                  </ProtectedRoute>
-                }
-              />
             </Routes>
           </Suspense>
         </ErrorBoundary>
@@ -418,6 +264,6 @@ const App = () => {
       </ErrorBoundary>
     </div>
   );
-};
+}
 
 export default App;

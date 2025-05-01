@@ -25,6 +25,7 @@ const RegisterForm = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
     uppercase: false,
@@ -37,23 +38,31 @@ const RegisterForm = () => {
   }, [i18n.language]);
 
   useEffect(() => {
-    const validatePassword = (password) => {
-      setPasswordCriteria({
-        length: password.length >= 8,
-        uppercase: /[A-Z]/.test(password),
-        number: /\d/.test(password),
-        specialChar: /[!@#$%^&*]/.test(password)
-      });
-    };
-    validatePassword(formData.password);
+    const { password } = formData;
+    setPasswordCriteria({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      specialChar: /[!@#$%^&*]/.test(password)
+    });
   }, [formData.password]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    const cleanedValue = name === 'phoneNumber' ? value.replace(/\D/g, '') : value;
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === 'phoneNumber' ? value.replace(/\D/g, '') : value
+      [name]: cleanedValue
     }));
+
+    if (name === 'telegramUsername' && !cleanedValue.startsWith('@')) {
+      setError(t('register.errors.telegramFormat'));
+    } else if (name === 'confirmPassword' && cleanedValue !== formData.password) {
+      setError(t('register.errors.passwordMismatch'));
+    } else {
+      setError('');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -62,35 +71,55 @@ const RegisterForm = () => {
     setError('');
     setSuccess('');
 
-    try {
-      const fullPhone = `${formData.phoneCode}${formData.phoneNumber}`;
-      const payload = {
-        ...formData,
-        phoneNumber: fullPhone,
-        countryCode: getCode(formData.country)
-      };
+    const fullPhone = `${formData.phoneCode}${formData.phoneNumber}`;
+    const payload = {
+      ...formData,
+      phoneNumber: fullPhone,
+      countryCode: getCode(formData.country),
+      telegramUsername: formData.telegramUsername.trim(),
+      email: formData.email.trim()
+    };
 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
+    if (formData.password !== formData.confirmPassword) {
+      setError(t('register.errors.passwordMismatch'));
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('tempToken')}`
+          Authorization: `Bearer ${localStorage.getItem('tempToken')}`
         },
         body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || t('register.errors.generic'));
+      const data = await res.json();
 
-      localStorage.setItem('pendingVerification', JSON.stringify({
-        email: formData.email,
-        expires: Date.now() + 900000
-      }));
+      if (!res.ok) {
+        if (data.message === 'Telegram username invalid') {
+          setError(t('register.errors.invalidTelegram'));
+        } else if (data.message === 'Email already exists') {
+          setError(t('register.errors.emailExists'));
+        } else {
+          setError(data.message || t('register.errors.generic'));
+        }
+        return;
+      }
+
+      localStorage.setItem(
+        'pendingVerification',
+        JSON.stringify({
+          email: formData.email,
+          expires: Date.now() + 15 * 60 * 1000 // 15 minutes
+        })
+      );
 
       navigate('/verify', { state: { email: formData.email, resendCooldown: 60 } });
 
     } catch (err) {
-      console.error('Registration error:', err);
       setError(err.message || t('register.errors.generic'));
     } finally {
       setIsLoading(false);
@@ -100,7 +129,6 @@ const RegisterForm = () => {
   return (
     <div className="form-container">
       <form className="register-form" onSubmit={handleSubmit}>
-
         <div className="language-switcher">
           <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)}>
             <option value="fr">🇫🇷 Français</option>
@@ -115,29 +143,34 @@ const RegisterForm = () => {
         {error && <div className="error-message">⚠️ {error}</div>}
         {success && <div className="success-message">✅ {success}</div>}
 
+        {/* Informations personnelles */}
         <div className="form-section">
           <p className="section-title">{t('register.personalInfo')}</p>
           <div className="input-group">
-            <input type="text" name="firstName" placeholder={`${t('register.firstName')} *`} value={formData.firstName} onChange={handleChange} required />
-            <input type="text" name="lastName" placeholder={`${t('register.lastName')} *`} value={formData.lastName} onChange={handleChange} required />
+            <input type="text" name="firstName" placeholder={t('register.firstName')} value={formData.firstName} onChange={handleChange} required />
+            <input type="text" name="lastName" placeholder={t('register.lastName')} value={formData.lastName} onChange={handleChange} required />
           </div>
           <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
         </div>
 
+        {/* Informations de contact */}
         <div className="form-section">
           <p className="section-title">{t('register.contactInfo')}</p>
           <div className="phone-input">
             <select name="phoneCode" value={formData.phoneCode} onChange={handleChange} required>
               {allCountries.map((country) => (
-                <option key={country} value={`+${getCode(country)}`}>{country} (+{getCode(country)})</option>
+                <option key={country} value={`+${getCode(country)}`}>
+                  {country} (+{getCode(country)})
+                </option>
               ))}
             </select>
-            <input type="tel" name="phoneNumber" placeholder={`${t('register.phoneNumber')} *`} value={formData.phoneNumber} onChange={handleChange} required />
+            <input type="tel" name="phoneNumber" placeholder={t('register.phoneNumber')} value={formData.phoneNumber} onChange={handleChange} required />
           </div>
-          <input type="email" name="email" placeholder={`${t('register.email')} *`} value={formData.email} onChange={handleChange} required />
+          <input type="email" name="email" placeholder={t('register.email')} value={formData.email} onChange={handleChange} required />
           <input type="text" name="telegramUsername" placeholder={`${t('register.telegram')} (${t('register.optional')})`} value={formData.telegramUsername} onChange={handleChange} />
         </div>
 
+        {/* Sécurité */}
         <div className="form-section">
           <p className="section-title">{t('register.security')}</p>
           <select name="country" value={formData.country} onChange={handleChange} required>
@@ -147,8 +180,8 @@ const RegisterForm = () => {
           </select>
 
           <div className="password-section">
-            <input type="password" name="password" placeholder={`${t('register.password')} *`} value={formData.password} onChange={handleChange} required />
-            <input type="password" name="confirmPassword" placeholder={`${t('register.confirmPassword')} *`} value={formData.confirmPassword} onChange={handleChange} required />
+            <input type="password" name="password" placeholder={t('register.password')} value={formData.password} onChange={handleChange} required />
+            <input type="password" name="confirmPassword" placeholder={t('register.confirmPassword')} value={formData.confirmPassword} onChange={handleChange} required />
             <div className="password-criteria">
               <span className={passwordCriteria.length ? 'valid' : ''}>{t('register.passwordCriteria.length')}</span>
               <span className={passwordCriteria.uppercase ? 'valid' : ''}>{t('register.passwordCriteria.uppercase')}</span>
@@ -158,6 +191,7 @@ const RegisterForm = () => {
           </div>
         </div>
 
+        {/* Pied de page */}
         <div className="form-footer">
           <button type="submit" disabled={isLoading}>
             {isLoading ? <div className="spinner"></div> : t('register.submit')}
@@ -167,7 +201,6 @@ const RegisterForm = () => {
             <a href="/terms">{t('register.terms')}</a> {t('register.and')} <a href="/privacy">{t('register.privacy')}</a>.
           </p>
         </div>
-
       </form>
     </div>
   );
