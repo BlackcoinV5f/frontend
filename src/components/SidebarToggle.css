@@ -1,0 +1,16 @@
+.sidebar-toggle {
+  position: fixed;
+  left: 10px; /* Bord gauche */
+  top: 50%; /* Centré verticalement */
+  transform: translateY(-50%);
+  width: 60px; /* Ajuste selon tes besoins */
+  height: 60px;
+  cursor: pointer;
+  z-index: 1000; /* Assure que l'icône reste visible au-dessus des autres éléments */
+}
+
+.sidebar-toggle img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

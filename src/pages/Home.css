@@ -1,0 +1,24 @@
+.home {
+  position: relative; /* important pour que .dino-launcher soit positionné à l’intérieur */
+}
+
+.dino-launcher {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 60px;
+  height: 60px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.dino-launcher img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.dino-launcher:hover img {
+  transform: scale(1.1);
+}

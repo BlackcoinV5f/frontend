@@ -1,0 +1,98 @@
+/* Conteneur principal */
+.sidebar-container {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 100px; /* Laisse l'espace pour la barre */
+  overflow-y: auto; /* Permet le scroll si nécessaire */
+}
+
+.sidebar-nav {
+  position: fixed; /* Fixe la barre en haut de l'écran */
+  top: 50px; /* Ajuste cette valeur selon la hauteur de la barre principale */
+  left: 0;
+  width: 100%; /* Assure que la barre ne dépasse pas */
+  height: 50px; /* Fixe une hauteur pour éviter qu'elle s'agrandisse */
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000; /* Assure qu'elle reste au-dessus */
+}
+
+.nav-item {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px 20px;
+  transition: background 0.3s;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+/* Contenu de la page */
+.sidebar-content {
+  flex: 1;
+  margin-top: 80px; /* ✅ Ajustement pour ne pas être caché */
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Grille pour les icônes */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+.action-icon {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 30px;
+  text-align: center;
+  padding: 20px;
+  border-radius: 10px;
+  transition: transform 0.2s;
+}
+
+.action-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Conteneur principal */
+.sidebar-container {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 110px; /* ✅ Laisse l'espace pour la barre principale et la barre secondaire */
+  overflow-y: auto; /* ✅ Permet de scroller si le contenu est grand */
+}
+
+/* Barre de navigation */
+.sidebar-nav {
+  position: absolute; /* ✅ Position absolue pour ne pas casser la mise en page */
+  top: 60px; /* ✅ Ajuste la hauteur sous la barre principale */
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center; /* ✅ Centre les éléments */
+  align-items: center;
+  z-index: 1000;
+}
+
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+/* Contenu de la page */
+.sidebar-content {
+  margin-top: 60px; /* ✅ Ajustement pour que le contenu ne passe pas sous la barre */
+  padding: 20px;
+  overflow-y: auto;
+}

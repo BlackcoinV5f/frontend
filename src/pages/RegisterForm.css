@@ -1,0 +1,178 @@
+/* RegisterForm.css */
+
+:root {
+  --primary-color: #4f46e5;
+  --danger-color: #e11d48;
+  --success-color: #10b981;
+  --border-radius: 0.75rem;
+  --input-border: #d1d5db;
+  --input-bg: #fff;
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --spacing: 1rem;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9fafb;
+  margin: 0;
+  padding: 0;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  direction: ltr;
+  overflow: hidden; /* Assurer que tout reste dans le conteneur */
+}
+
+html[dir='rtl'] .form-container {
+  direction: rtl;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+h2 {
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.language-switcher {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.language-switcher select {
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--input-border);
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.input-group input {
+  flex: 1;
+}
+
+input,
+select,
+.phone-input input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: var(--font-size-base);
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius);
+  background-color: var(--input-bg);
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  padding: 0.75rem;
+  font-size: var(--font-size-base);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 100%; /* S'assure que le bouton prend toute la largeur disponible */
+  margin-top: 1.5rem; /* Marge supérieure pour éloigner du reste du formulaire */
+}
+
+button:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #4338ca;
+}
+
+.password-criteria {
+  list-style: none;
+  padding-left: 1rem;
+  margin: 0.5rem 0 0;
+  font-size: var(--font-size-sm);
+}
+
+.password-criteria li {
+  margin-bottom: 0.25rem;
+}
+
+.password-criteria .valid {
+  color: var(--success-color);
+}
+
+.password-criteria .invalid {
+  color: var(--danger-color);
+}
+
+.error-message,
+.success-message {
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: var(--danger-color);
+  border: 1px solid #fca5a5;
+}
+
+.success-message {
+  background-color: #d1fae5;
+  color: var(--success-color);
+  border: 1px solid #6ee7b7;
+}
+
+@media (max-width: 600px) {
+  .input-group {
+    flex-direction: column;
+  }
+}
+
+.form-container {
+  max-width: 600px;
+  width: 90%;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  direction: ltr;
+  overflow-y: auto;
+  max-height: 90vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) #f1f1f1;
+}

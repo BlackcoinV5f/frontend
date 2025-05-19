@@ -1,0 +1,43 @@
+.auth-choice-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: #fdfdfd;
+  text-align: center;
+}
+
+.auth-choice-container h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.auth-choice-container p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.auth-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.auth-buttons button {
+  padding: 0.8rem 1.6rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 12px;
+  background-color: #2e2e2e;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-buttons button:hover {
+  background-color: #444;
+}

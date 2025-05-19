@@ -1,0 +1,30 @@
+.validate-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .validate-container input {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .validate-container button {
+    padding: 10px 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .error {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .info-message {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #aaa;
+  }
+  

@@ -1,0 +1,16 @@
+.crypto-prices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    background-color: #222;
+    color: white;
+    border-radius: 8px;
+  }
+  
+  .crypto-item {
+    background: #333;
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+  
