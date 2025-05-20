@@ -9,10 +9,10 @@ export const UserProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
-  const [verificationCode, setVerificationCode] = useState(null); // utilisé si vérif locale
+  const [verificationCode, setVerificationCode] = useState(null);
   const [telegramInfo, setTelegramInfo] = useState(null);
 
-  // Charger depuis localStorage au démarrage
+  // Chargement initial depuis localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('userData');
@@ -27,7 +27,7 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  // Sauvegarder automatiquement les changements importants
+  // Sauvegarde automatique des changements
   useEffect(() => {
     if (user) {
       localStorage.setItem('userData', JSON.stringify({
@@ -38,27 +38,35 @@ export const UserProvider = ({ children }) => {
     }
   }, [user, isVerified, telegramInfo]);
 
-  // Enregistrement utilisateur
+  // Fonction d'inscription
   const registerUser = async (userData, navigateFn = navigate) => {
     try {
-      // Vérification des champs requis
-      const requiredFields = ['first_name', 'last_name', 'birthdate', 'phone', 'telegramUsername', 'email', 'password'];
+      // Étape 1 : validation des champs requis
+      const requiredFields = [
+        'first_name', 'last_name', 'birthdate',
+        'phone', 'telegramUsername', 'email', 'password'
+      ];
+
       for (const field of requiredFields) {
         if (!userData[field]) {
           throw new Error(`Le champ ${field} est requis.`);
         }
       }
 
+      // Étape 2 : création du payload pour le backend
       const payload = {
         first_name: userData.first_name,
         last_name: userData.last_name,
         birthdate: userData.birthdate,
         phone: userData.phone,
-        telegram_username: userData.telegramUsername,
+        telegram_username: userData.telegramUsername, // normalisé pour le backend
         email: userData.email,
         password: userData.password,
       };
 
+      console.log("Envoi du payload d'inscription :", payload);
+
+      // Étape 3 : requête vers le backend
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/register`,
         payload
@@ -66,13 +74,16 @@ export const UserProvider = ({ children }) => {
 
       alert(data.message || "Inscription réussie. Vérifie ton email.");
 
+      // Étape 4 : sauvegarde temporaire utilisateur non vérifié
       localStorage.setItem('unverifiedUser', JSON.stringify({
         ...userData,
         verified: false,
         createdAt: new Date().toISOString(),
       }));
 
+      // Étape 5 : redirection vers page de vérification
       navigateFn('/verify');
+
     } catch (err) {
       console.error("Erreur lors de l'enregistrement :", err);
       const msg = err.response?.data?.detail || err.message || "Erreur inconnue.";
@@ -80,7 +91,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Vérification du code côté frontend (peut être améliorée avec appel API)
+  // Vérification locale du code (à améliorer)
   const verifyCode = (inputCode) => {
     const isValid = inputCode === verificationCode;
     if (isValid) {
@@ -95,6 +106,7 @@ export const UserProvider = ({ children }) => {
     return isValid;
   };
 
+  // Déconnexion complète
   const logout = () => {
     setUser(null);
     setIsVerified(false);
