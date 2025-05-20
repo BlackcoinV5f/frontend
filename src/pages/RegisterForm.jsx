@@ -45,10 +45,8 @@ const RegisterForm = () => {
     });
   }, [formData.password]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value.trimStart() }));
-
     if (name === 'confirmPassword' && value !== formData.password) {
       setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
     } else {
@@ -98,7 +96,6 @@ const RegisterForm = () => {
       return false;
     }
 
-    // Validate birthDate (ensure not in future)
     const birthDateObj = new Date(birthDate);
     const now = new Date();
     if (birthDateObj > now) {
@@ -112,19 +109,20 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFeedback({ error: '', success: '' });
-
     if (!isFormValid()) return;
 
     setIsLoading(true);
 
+    const { password, ...safeUserData } = formData;
+
     const userPayload = {
-      first_name: formData.firstName.trim(),
-      last_name: formData.lastName.trim(),
-      birthdate: formData.birthDate,
-      email: formData.email.trim(),
-      telegramUsername: formData.telegramUsername.trim(),
-      phone: formData.phoneNumber,
-      password: formData.password,
+      first_name: safeUserData.firstName.trim(),
+      last_name: safeUserData.lastName.trim(),
+      birthdate: safeUserData.birthDate,
+      email: safeUserData.email.trim(),
+      telegram_username: safeUserData.telegramUsername.trim(),
+      phone: safeUserData.phoneNumber,
+      password,
     };
 
     try {
@@ -167,7 +165,7 @@ const RegisterForm = () => {
               name="firstName"
               placeholder={t('register.firstName')}
               value={formData.firstName}
-              onChange={handleChange}
+              onChange={(e) => handleChange('firstName', e.target.value)}
               required
               aria-label={t('register.firstName')}
             />
@@ -176,7 +174,7 @@ const RegisterForm = () => {
               name="lastName"
               placeholder={t('register.lastName')}
               value={formData.lastName}
-              onChange={handleChange}
+              onChange={(e) => handleChange('lastName', e.target.value)}
               required
               aria-label={t('register.lastName')}
             />
@@ -185,9 +183,10 @@ const RegisterForm = () => {
             type="date"
             name="birthDate"
             value={formData.birthDate}
-            onChange={handleChange}
+            onChange={(e) => handleChange('birthDate', e.target.value)}
             required
             aria-label={t('register.birthDate')}
+            max={new Date().toISOString().split('T')[0]}
           />
         </div>
 
@@ -207,7 +206,7 @@ const RegisterForm = () => {
             name="email"
             placeholder={t('register.email')}
             value={formData.email}
-            onChange={handleChange}
+            onChange={(e) => handleChange('email', e.target.value)}
             required
             aria-label={t('register.email')}
           />
@@ -216,7 +215,7 @@ const RegisterForm = () => {
             name="telegramUsername"
             placeholder={t('register.telegramUsername')}
             value={formData.telegramUsername}
-            onChange={handleChange}
+            onChange={(e) => handleChange('telegramUsername', e.target.value)}
             required
             aria-label={t('register.telegramUsername')}
           />
@@ -229,7 +228,7 @@ const RegisterForm = () => {
             name="password"
             placeholder={t('register.password')}
             value={formData.password}
-            onChange={handleChange}
+            onChange={(e) => handleChange('password', e.target.value)}
             autoComplete="new-password"
             required
             aria-label={t('register.password')}
@@ -239,7 +238,7 @@ const RegisterForm = () => {
             name="confirmPassword"
             placeholder={t('register.confirmPassword')}
             value={formData.confirmPassword}
-            onChange={handleChange}
+            onChange={(e) => handleChange('confirmPassword', e.target.value)}
             autoComplete="new-password"
             required
             aria-label={t('register.confirmPassword')}
