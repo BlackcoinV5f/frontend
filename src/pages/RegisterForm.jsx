@@ -118,14 +118,14 @@ const RegisterForm = () => {
     setIsLoading(true);
 
     const userPayload = {
-      first_name: formData.firstName.trim(),
-      last_name: formData.lastName.trim(),
-      birthdate: formData.birthDate,
-      email: formData.email.trim(),
-      telegramUsername: formData.telegramUsername.trim(),
-      phone: formData.phoneNumber,
-      password: formData.password,
-    };
+  first_name: formData.firstName.trim(),
+  last_name: formData.lastName.trim(),
+  birthdate: formData.birthDate,
+  email: formData.email.trim(),
+  telegramUsername: formData.telegramUsername.trim().replace(/^@/, ''),
+  phone: formData.phoneNumber,
+  password: formData.password,
+};
 
     try {
       await registerUser(userPayload, navigate);
