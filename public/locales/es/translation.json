@@ -1,0 +1,36 @@
+{
+  "register": {
+    "title": "Crear cuenta",
+    "personalInfo": "Información personal",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "birthDate": "Fecha de nacimiento",
+    "contactInfo": "Información de contacto",
+    "phoneNumber": "Número de teléfono",
+    "email": "Correo electrónico",
+    "telegramUsername": "Usuario de Telegram",
+    "security": "Seguridad",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "submit": "Crear mi cuenta",
+    "loading": "Creando...",
+    "success": "¡Registro exitoso! Por favor revisa tu correo electrónico.",
+    "criteria": {
+      "length": "Al menos 8 caracteres",
+      "uppercase": "Una letra mayúscula",
+      "number": "Un número",
+      "specialChar": "Un carácter especial"
+    },
+    "errors": {
+      "missingFields": "Por favor complete todos los campos.",
+      "invalidEmail": "Dirección de correo inválida.",
+      "invalidPhoneNumber": "Número de teléfono inválido.",
+      "invalidTelegramUsername": "Nombre de usuario de Telegram inválido.",
+      "passwordMismatch": "Las contraseñas no coinciden.",
+      "passwordWeak": "La contraseña es demasiado débil.",
+      "invalidBirthDate": "Fecha de nacimiento inválida.",
+      "ageTooYoung": "Debes tener al menos 13 años para registrarte.",
+      "generic": "Ha ocurrido un error. Por favor, inténtalo de nuevo."
+    }
+  }
+}

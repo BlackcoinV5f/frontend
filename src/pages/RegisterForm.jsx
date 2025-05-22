@@ -47,13 +47,22 @@ const RegisterForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value.trimStart() }));
 
-    if (name === 'confirmPassword' && value !== formData.password) {
-      setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
-    } else {
-      setFeedback({ error: '', success: '' });
-    }
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value.trimStart() };
+
+      // Vérification immédiate des mots de passe
+      if (
+        (name === 'password' || name === 'confirmPassword') &&
+        updated.password !== updated.confirmPassword
+      ) {
+        setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
+      } else {
+        setFeedback({ error: '', success: '' });
+      }
+
+      return updated;
+    });
   };
 
   const handlePhoneChange = (value) => {
@@ -98,11 +107,17 @@ const RegisterForm = () => {
       return false;
     }
 
-    // Validate birthDate (ensure not in future)
     const birthDateObj = new Date(birthDate);
     const now = new Date();
+    const age = (now - birthDateObj) / (1000 * 60 * 60 * 24 * 365.25);
+
     if (birthDateObj > now) {
       setFeedback({ error: t('register.errors.invalidBirthDate'), success: '' });
+      return false;
+    }
+
+    if (age < 13) {
+      setFeedback({ error: t('register.errors.ageTooYoung'), success: '' });
       return false;
     }
 
@@ -118,21 +133,26 @@ const RegisterForm = () => {
     setIsLoading(true);
 
     const userPayload = {
-  first_name: formData.firstName.trim(),
-  last_name: formData.lastName.trim(),
-  birthdate: formData.birthDate,
-  email: formData.email.trim(),
-  telegramUsername: formData.telegramUsername.trim().replace(/^@/, ''),
-  phone: formData.phoneNumber,
-  password: formData.password,
-};
+      first_name: formData.firstName.trim(),
+      last_name: formData.lastName.trim(),
+      birth_date: formData.birthDate,
+      email: formData.email.trim(),
+      telegram_username: formData.telegramUsername.trim().replace(/^@/, ''),
+      phone: formData.phoneNumber,
+      password: formData.password,
+      confirm_password: formData.confirmPassword
+    };
 
     try {
       await registerUser(userPayload, navigate);
       setFeedback({ error: '', success: t('register.success') });
     } catch (err) {
       console.error(err);
-      setFeedback({ error: err?.message || t('register.errors.generic'), success: '' });
+      const errorMsg =
+        err?.response?.data?.detail ||
+        err?.message ||
+        t('register.errors.generic');
+      setFeedback({ error: errorMsg, success: '' });
     } finally {
       setIsLoading(false);
     }
@@ -260,7 +280,12 @@ const RegisterForm = () => {
           </ul>
         </div>
 
-        <button type="submit" disabled={isLoading} className={isLoading ? 'loading' : ''}>
+        <button
+          type="submit"
+          disabled={isLoading}
+          aria-busy={isLoading}
+          className={isLoading ? 'loading' : ''}
+        >
           {isLoading ? t('register.loading') : t('register.submit')}
         </button>
       </form>

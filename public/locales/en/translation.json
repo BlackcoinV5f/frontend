@@ -1,0 +1,36 @@
+{
+  "register": {
+    "title": "Create Account",
+    "personalInfo": "Personal Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "birthDate": "Birth Date",
+    "contactInfo": "Contact Information",
+    "phoneNumber": "Phone Number",
+    "email": "Email",
+    "telegramUsername": "Telegram Username",
+    "security": "Security",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Create My Account",
+    "loading": "Creating...",
+    "success": "Registration successful! Please check your email.",
+    "criteria": {
+      "length": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "number": "One number",
+      "specialChar": "One special character"
+    },
+    "errors": {
+      "missingFields": "Please fill in all fields.",
+      "invalidEmail": "Invalid email address.",
+      "invalidPhoneNumber": "Invalid phone number.",
+      "invalidTelegramUsername": "Invalid Telegram username.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordWeak": "Password is too weak.",
+      "invalidBirthDate": "Invalid birth date.",
+      "ageTooYoung": "You must be at least 13 years old to register.",
+      "generic": "An error occurred. Please try again."
+    }
+  }
+}

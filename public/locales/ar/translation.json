@@ -1,0 +1,36 @@
+{
+  "register": {
+    "title": "إنشاء حساب",
+    "personalInfo": "معلومات شخصية",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "birthDate": "تاريخ الميلاد",
+    "contactInfo": "معلومات الاتصال",
+    "phoneNumber": "رقم الهاتف",
+    "email": "البريد الإلكتروني",
+    "telegramUsername": "اسم مستخدم تيليغرام",
+    "security": "الأمان",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "submit": "إنشاء حسابي",
+    "loading": "جارٍ الإنشاء...",
+    "success": "تم التسجيل بنجاح! يرجى التحقق من بريدك الإلكتروني.",
+    "criteria": {
+      "length": "8 أحرف على الأقل",
+      "uppercase": "حرف كبير واحد",
+      "number": "رقم واحد",
+      "specialChar": "رمز خاص واحد"
+    },
+    "errors": {
+      "missingFields": "يرجى ملء جميع الحقول.",
+      "invalidEmail": "عنوان بريد إلكتروني غير صالح.",
+      "invalidPhoneNumber": "رقم هاتف غير صالح.",
+      "invalidTelegramUsername": "اسم مستخدم تيليغرام غير صالح.",
+      "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+      "passwordWeak": "كلمة المرور ضعيفة جدًا.",
+      "invalidBirthDate": "تاريخ ميلاد غير صالح.",
+      "ageTooYoung": "يجب أن يكون عمرك 13 عامًا على الأقل للتسجيل.",
+      "generic": "حدث خطأ ما. حاول مرة أخرى."
+    }
+  }
+}
