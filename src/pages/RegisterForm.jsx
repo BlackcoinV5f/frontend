@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { useUser } from '../contexts/UserContext';
-import DateInput from '../components/DateInput';
 import './RegisterForm.css';
 
 const RegisterForm = () => {
@@ -15,7 +14,7 @@ const RegisterForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    birthdate: '', // ✅ corrigé ici
+    birthDate: '',
     phoneNumber: '',
     email: '',
     telegramUsername: '',
@@ -48,32 +47,28 @@ const RegisterForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const updated = { ...prev, [name]: value.trimStart() };
-      if ((name === 'password' || name === 'confirmPassword') && updated.password !== updated.confirmPassword) {
-        setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
-      } else {
-        setFeedback({ error: '', success: '' });
-      }
-      return updated;
-    });
+    setFormData((prev) => ({ ...prev, [name]: value.trimStart() }));
+
+    if (name === 'confirmPassword' && value !== formData.password) {
+      setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
+    } else {
+      setFeedback({ error: '', success: '' });
+    }
   };
 
   const handlePhoneChange = (value) => {
     setFormData((prev) => ({ ...prev, phoneNumber: value }));
   };
 
-  const handleDateChange = (date) => {
-    setFormData((prev) => ({ ...prev, birthdate: date })); // ✅ corrigé ici aussi
-  };
-
   const isFormValid = () => {
     const {
-      firstName, lastName, birthdate, phoneNumber,
+      firstName, lastName, birthDate, phoneNumber,
       email, telegramUsername, password, confirmPassword,
     } = formData;
 
-    if ([firstName, lastName, birthdate, phoneNumber, email, telegramUsername, password, confirmPassword].some(v => !v.trim())) {
+    if (
+      [firstName, lastName, birthDate, phoneNumber, email, telegramUsername, password, confirmPassword].some(v => !v.trim())
+    ) {
       setFeedback({ error: t('register.errors.missingFields'), success: '' });
       return false;
     }
@@ -103,11 +98,10 @@ const RegisterForm = () => {
       return false;
     }
 
-    const birthDateObj = new Date(birthdate);
+    // Validate birthDate (ensure not in future)
+    const birthDateObj = new Date(birthDate);
     const now = new Date();
-    const age = (now - birthDateObj) / (1000 * 60 * 60 * 24 * 365.25);
-
-    if (birthDateObj > now || age < 13) {
+    if (birthDateObj > now) {
       setFeedback({ error: t('register.errors.invalidBirthDate'), success: '' });
       return false;
     }
@@ -120,25 +114,25 @@ const RegisterForm = () => {
     setFeedback({ error: '', success: '' });
 
     if (!isFormValid()) return;
+
     setIsLoading(true);
 
     const userPayload = {
-  first_name: formData.firstName.trim(),
-  last_name: formData.lastName.trim(),
-  birthdate: formData.birthdate,
-  email: formData.email.trim(),
-  telegram_username: (formData.telegramUsername || '').trim().replace(/^@/, ''), // ✅ corrigé ici
-  phone: formData.phoneNumber,
-  password: formData.password,
-  confirm_password: formData.confirmPassword,
-};
+      first_name: formData.firstName.trim(),
+      last_name: formData.lastName.trim(),
+      birthdate: formData.birthDate,
+      email: formData.email.trim(),
+      telegramUsername: formData.telegramUsername.trim(),
+      phone: formData.phoneNumber,
+      password: formData.password,
+    };
 
     try {
       await registerUser(userPayload, navigate);
       setFeedback({ error: '', success: t('register.success') });
     } catch (err) {
-      const errorMsg = err?.response?.data?.detail || err?.message || t('register.errors.generic');
-      setFeedback({ error: errorMsg, success: '' });
+      console.error(err);
+      setFeedback({ error: err?.message || t('register.errors.generic'), success: '' });
     } finally {
       setIsLoading(false);
     }
@@ -175,6 +169,7 @@ const RegisterForm = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
+              aria-label={t('register.firstName')}
             />
             <input
               type="text"
@@ -183,9 +178,17 @@ const RegisterForm = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
+              aria-label={t('register.lastName')}
             />
           </div>
-          <DateInput value={formData.birthdate} onChange={handleDateChange} />
+          <input
+            type="date"
+            name="birthDate"
+            value={formData.birthDate}
+            onChange={handleChange}
+            required
+            aria-label={t('register.birthDate')}
+          />
         </div>
 
         <div className="form-section">
@@ -197,6 +200,7 @@ const RegisterForm = () => {
             onChange={handlePhoneChange}
             placeholder={t('register.phoneNumber')}
             required
+            aria-label={t('register.phoneNumber')}
           />
           <input
             type="email"
@@ -205,6 +209,7 @@ const RegisterForm = () => {
             value={formData.email}
             onChange={handleChange}
             required
+            aria-label={t('register.email')}
           />
           <input
             type="text"
@@ -213,6 +218,7 @@ const RegisterForm = () => {
             value={formData.telegramUsername}
             onChange={handleChange}
             required
+            aria-label={t('register.telegramUsername')}
           />
         </div>
 
@@ -224,7 +230,9 @@ const RegisterForm = () => {
             placeholder={t('register.password')}
             value={formData.password}
             onChange={handleChange}
+            autoComplete="new-password"
             required
+            aria-label={t('register.password')}
           />
           <input
             type="password"
@@ -232,17 +240,27 @@ const RegisterForm = () => {
             placeholder={t('register.confirmPassword')}
             value={formData.confirmPassword}
             onChange={handleChange}
+            autoComplete="new-password"
             required
+            aria-label={t('register.confirmPassword')}
           />
           <ul className="password-criteria">
-            <li className={passwordCriteria.length ? 'valid' : 'invalid'}>{t('register.criteria.length')}</li>
-            <li className={passwordCriteria.uppercase ? 'valid' : 'invalid'}>{t('register.criteria.uppercase')}</li>
-            <li className={passwordCriteria.number ? 'valid' : 'invalid'}>{t('register.criteria.number')}</li>
-            <li className={passwordCriteria.specialChar ? 'valid' : 'invalid'}>{t('register.criteria.specialChar')}</li>
+            <li className={passwordCriteria.length ? 'valid' : 'invalid'}>
+              {t('register.criteria.length')}
+            </li>
+            <li className={passwordCriteria.uppercase ? 'valid' : 'invalid'}>
+              {t('register.criteria.uppercase')}
+            </li>
+            <li className={passwordCriteria.number ? 'valid' : 'invalid'}>
+              {t('register.criteria.number')}
+            </li>
+            <li className={passwordCriteria.specialChar ? 'valid' : 'invalid'}>
+              {t('register.criteria.specialChar')}
+            </li>
           </ul>
         </div>
 
-        <button type="submit" disabled={isLoading} aria-busy={isLoading} className={isLoading ? 'loading' : ''}>
+        <button type="submit" disabled={isLoading} className={isLoading ? 'loading' : ''}>
           {isLoading ? t('register.loading') : t('register.submit')}
         </button>
       </form>

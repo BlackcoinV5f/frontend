@@ -9,10 +9,10 @@ export const UserProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
-  const [verificationCode, setVerificationCode] = useState(null); // pour vérification locale éventuelle
+  const [verificationCode, setVerificationCode] = useState(null); // utilisé si vérif locale
   const [telegramInfo, setTelegramInfo] = useState(null);
 
-  // Charger les données utilisateur au démarrage
+  // Charger depuis localStorage au démarrage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('userData');
@@ -33,7 +33,7 @@ export const UserProvider = ({ children }) => {
       localStorage.setItem('userData', JSON.stringify({
         user,
         isVerified,
-        telegramInfo,
+        telegramInfo
       }));
     }
   }, [user, isVerified, telegramInfo]);
@@ -41,60 +41,33 @@ export const UserProvider = ({ children }) => {
   // Enregistrement utilisateur
   const registerUser = async (userData, navigateFn = navigate) => {
     try {
-      const requiredFields = [
-        'first_name',
-        'last_name',
-        'birthdate',
-        'phone',
-        'telegramUsername',
-        'email',
-        'password',
-      ];
-
+      // Vérification des champs requis
+      const requiredFields = ['first_name', 'last_name', 'birthdate', 'phone', 'telegramUsername', 'email', 'password'];
       for (const field of requiredFields) {
-        if (!userData[field]?.trim()) {
+        if (!userData[field]) {
           throw new Error(`Le champ ${field} est requis.`);
         }
       }
 
       const payload = {
-        first_name: userData.first_name.trim(),
-        last_name: userData.last_name.trim(),
+        first_name: userData.first_name,
+        last_name: userData.last_name,
         birthdate: userData.birthdate,
-        phone: userData.phone.trim(),
-        telegram_username: userData.telegramUsername.trim(),
-        email: userData.email.trim(),
+        phone: userData.phone,
+        telegram_username: userData.telegramUsername,
+        email: userData.email,
         password: userData.password,
       };
 
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/register`,
+        `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
         payload
       );
 
-      // Sauvegarde des données envoyées par le backend
-      const userInfo = {
-        id: data.user_id,
-        email: payload.email,
-        first_name: payload.first_name,
-        last_name: payload.last_name,
-        birthdate: payload.birthdate,
-        phone: payload.phone,
-        telegramUsername: payload.telegram_username,
-      };
+      alert(data.message || "Inscription réussie. Vérifie ton email.");
 
-      const telegram = {
-        id: data.telegram_id || null,
-        photo: data.telegram_photo_url || null,
-      };
-
-      setUser(userInfo);
-      setTelegramInfo(telegram);
-      setIsVerified(false);
-
-      // Sauvegarde dans localStorage temporaire en attente de vérification
       localStorage.setItem('unverifiedUser', JSON.stringify({
-        ...userInfo,
+        ...userData,
         verified: false,
         createdAt: new Date().toISOString(),
       }));
@@ -103,11 +76,11 @@ export const UserProvider = ({ children }) => {
     } catch (err) {
       console.error("Erreur lors de l'enregistrement :", err);
       const msg = err.response?.data?.detail || err.message || "Erreur inconnue.";
-      throw new Error(msg);
+      alert("Échec de l'inscription : " + msg);
     }
   };
 
-  // Vérification du code côté frontend (à améliorer avec API réelle)
+  // Vérification du code côté frontend (peut être améliorée avec appel API)
   const verifyCode = (inputCode) => {
     const isValid = inputCode === verificationCode;
     if (isValid) {
@@ -115,14 +88,13 @@ export const UserProvider = ({ children }) => {
       localStorage.setItem('userData', JSON.stringify({
         user,
         isVerified: true,
-        telegramInfo,
+        telegramInfo
       }));
       localStorage.removeItem('unverifiedUser');
     }
     return isValid;
   };
 
-  // Déconnexion complète
   const logout = () => {
     setUser(null);
     setIsVerified(false);
