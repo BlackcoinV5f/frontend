@@ -50,14 +50,15 @@ export const UserProvider = ({ children }) => {
       }
 
       const payload = {
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        birthdate: userData.birthdate,
-        phone: userData.phone,
-        telegram_username: userData.telegramUsername,
-        email: userData.email,
-        password: userData.password,
-      };
+  first_name: userData.first_name,
+  last_name: userData.last_name,
+  birth_date: userData.birthdate, // ✅ Corrigé ici
+  phone: userData.phone,
+  telegram_username: userData.telegramUsername, // ✅ ok
+  email: userData.email,
+  password: userData.password,
+  confirm_password: userData.password, // ✅ requis pour FastAPI
+};
 
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/register`,
