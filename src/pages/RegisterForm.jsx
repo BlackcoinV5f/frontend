@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { useUser } from '../contexts/UserContext';
-import DateInput from "../components/DateInput";
+import DateInput from '../components/DateInput';
 import './RegisterForm.css';
 
 const RegisterForm = () => {
@@ -15,7 +15,7 @@ const RegisterForm = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    birthDate: '',
+    birthdate: '', // ✅ corrigé ici
     phoneNumber: '',
     email: '',
     telegramUsername: '',
@@ -50,14 +50,11 @@ const RegisterForm = () => {
     const { name, value } = e.target;
     setFormData((prev) => {
       const updated = { ...prev, [name]: value.trimStart() };
-
-      if ((name === 'password' || name === 'confirmPassword') &&
-          updated.password !== updated.confirmPassword) {
+      if ((name === 'password' || name === 'confirmPassword') && updated.password !== updated.confirmPassword) {
         setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
       } else {
         setFeedback({ error: '', success: '' });
       }
-
       return updated;
     });
   };
@@ -66,17 +63,17 @@ const RegisterForm = () => {
     setFormData((prev) => ({ ...prev, phoneNumber: value }));
   };
 
-  const handleDateChange = (formattedDate) => {
-    setFormData((prev) => ({ ...prev, birthDate: formattedDate }));
+  const handleDateChange = (date) => {
+    setFormData((prev) => ({ ...prev, birthdate: date })); // ✅ corrigé ici aussi
   };
 
   const isFormValid = () => {
     const {
-      firstName, lastName, birthDate, phoneNumber,
+      firstName, lastName, birthdate, phoneNumber,
       email, telegramUsername, password, confirmPassword,
     } = formData;
 
-    if ([firstName, lastName, birthDate, phoneNumber, email, telegramUsername, password, confirmPassword].some(v => !v.trim())) {
+    if ([firstName, lastName, birthdate, phoneNumber, email, telegramUsername, password, confirmPassword].some(v => !v.trim())) {
       setFeedback({ error: t('register.errors.missingFields'), success: '' });
       return false;
     }
@@ -106,7 +103,7 @@ const RegisterForm = () => {
       return false;
     }
 
-    const birthDateObj = new Date(birthDate);
+    const birthDateObj = new Date(birthdate);
     const now = new Date();
     const age = (now - birthDateObj) / (1000 * 60 * 60 * 24 * 365.25);
 
@@ -128,12 +125,12 @@ const RegisterForm = () => {
     const userPayload = {
       first_name: formData.firstName.trim(),
       last_name: formData.lastName.trim(),
-      birth_date: formData.birthDate,
+      birthdate: formData.birthdate, // ✅ corrigé ici aussi
       email: formData.email.trim(),
       telegram_username: formData.telegramUsername.trim().replace(/^@/, ''),
       phone: formData.phoneNumber,
       password: formData.password,
-      confirm_password: formData.confirmPassword
+      confirm_password: formData.confirmPassword,
     };
 
     try {
@@ -168,7 +165,6 @@ const RegisterForm = () => {
         {feedback.error && <div className="error-message" role="alert">⚠️ {feedback.error}</div>}
         {feedback.success && <div className="success-message" role="status">✅ {feedback.success}</div>}
 
-        {/* Informations personnelles */}
         <div className="form-section">
           <p className="section-title">{t('register.personalInfo')}</p>
           <div className="input-group">
@@ -189,10 +185,9 @@ const RegisterForm = () => {
               required
             />
           </div>
-          <DateInput value={formData.birthDate} onChange={handleDateChange} />
+          <DateInput value={formData.birthdate} onChange={handleDateChange} />
         </div>
 
-        {/* Coordonnées */}
         <div className="form-section">
           <p className="section-title">{t('register.contactInfo')}</p>
           <PhoneInput
@@ -221,7 +216,6 @@ const RegisterForm = () => {
           />
         </div>
 
-        {/* Sécurité */}
         <div className="form-section">
           <p className="section-title">{t('register.security')}</p>
           <input
