@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { useUser } from '../contexts/UserContext';
+import DateInput from "../components/DateInput"; // 👈 Importation du composant date
 import './RegisterForm.css';
 
 const RegisterForm = () => {
@@ -47,15 +48,10 @@ const RegisterForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => {
       const updated = { ...prev, [name]: value.trimStart() };
 
-      // Vérification immédiate des mots de passe
-      if (
-        (name === 'password' || name === 'confirmPassword') &&
-        updated.password !== updated.confirmPassword
-      ) {
+      if ((name === 'password' || name === 'confirmPassword') && updated.password !== updated.confirmPassword) {
         setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
       } else {
         setFeedback({ error: '', success: '' });
@@ -69,15 +65,17 @@ const RegisterForm = () => {
     setFormData((prev) => ({ ...prev, phoneNumber: value }));
   };
 
+  const handleDateChange = (date) => {
+    setFormData((prev) => ({ ...prev, birthDate: date }));
+  };
+
   const isFormValid = () => {
     const {
       firstName, lastName, birthDate, phoneNumber,
       email, telegramUsername, password, confirmPassword,
     } = formData;
 
-    if (
-      [firstName, lastName, birthDate, phoneNumber, email, telegramUsername, password, confirmPassword].some(v => !v.trim())
-    ) {
+    if ([firstName, lastName, birthDate, phoneNumber, email, telegramUsername, password, confirmPassword].some(v => !v.trim())) {
       setFeedback({ error: t('register.errors.missingFields'), success: '' });
       return false;
     }
@@ -111,13 +109,8 @@ const RegisterForm = () => {
     const now = new Date();
     const age = (now - birthDateObj) / (1000 * 60 * 60 * 24 * 365.25);
 
-    if (birthDateObj > now) {
+    if (birthDateObj > now || age < 13) {
       setFeedback({ error: t('register.errors.invalidBirthDate'), success: '' });
-      return false;
-    }
-
-    if (age < 13) {
-      setFeedback({ error: t('register.errors.ageTooYoung'), success: '' });
       return false;
     }
 
@@ -129,13 +122,12 @@ const RegisterForm = () => {
     setFeedback({ error: '', success: '' });
 
     if (!isFormValid()) return;
-
     setIsLoading(true);
 
     const userPayload = {
       first_name: formData.firstName.trim(),
       last_name: formData.lastName.trim(),
-      birth_date: formData.birthDate,
+      birth_date: formData.birthDate, // format ISO à envoyer: 1988-01-01
       email: formData.email.trim(),
       telegram_username: formData.telegramUsername.trim().replace(/^@/, ''),
       phone: formData.phoneNumber,
@@ -147,11 +139,7 @@ const RegisterForm = () => {
       await registerUser(userPayload, navigate);
       setFeedback({ error: '', success: t('register.success') });
     } catch (err) {
-      console.error(err);
-      const errorMsg =
-        err?.response?.data?.detail ||
-        err?.message ||
-        t('register.errors.generic');
+      const errorMsg = err?.response?.data?.detail || err?.message || t('register.errors.generic');
       setFeedback({ error: errorMsg, success: '' });
     } finally {
       setIsLoading(false);
@@ -179,6 +167,7 @@ const RegisterForm = () => {
         {feedback.error && <div className="error-message" role="alert">⚠️ {feedback.error}</div>}
         {feedback.success && <div className="success-message" role="status">✅ {feedback.success}</div>}
 
+        {/* Informations personnelles */}
         <div className="form-section">
           <p className="section-title">{t('register.personalInfo')}</p>
           <div className="input-group">
@@ -189,7 +178,6 @@ const RegisterForm = () => {
               value={formData.firstName}
               onChange={handleChange}
               required
-              aria-label={t('register.firstName')}
             />
             <input
               type="text"
@@ -198,19 +186,17 @@ const RegisterForm = () => {
               value={formData.lastName}
               onChange={handleChange}
               required
-              aria-label={t('register.lastName')}
             />
           </div>
-          <input
-            type="date"
-            name="birthDate"
+
+          {/* Composant Date de Naissance */}
+          <DateInput
             value={formData.birthDate}
-            onChange={handleChange}
-            required
-            aria-label={t('register.birthDate')}
+            onChange={handleDateChange}
           />
         </div>
 
+        {/* Coordonnées */}
         <div className="form-section">
           <p className="section-title">{t('register.contactInfo')}</p>
           <PhoneInput
@@ -220,7 +206,6 @@ const RegisterForm = () => {
             onChange={handlePhoneChange}
             placeholder={t('register.phoneNumber')}
             required
-            aria-label={t('register.phoneNumber')}
           />
           <input
             type="email"
@@ -229,7 +214,6 @@ const RegisterForm = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            aria-label={t('register.email')}
           />
           <input
             type="text"
@@ -238,10 +222,10 @@ const RegisterForm = () => {
             value={formData.telegramUsername}
             onChange={handleChange}
             required
-            aria-label={t('register.telegramUsername')}
           />
         </div>
 
+        {/* Sécurité */}
         <div className="form-section">
           <p className="section-title">{t('register.security')}</p>
           <input
@@ -250,9 +234,7 @@ const RegisterForm = () => {
             placeholder={t('register.password')}
             value={formData.password}
             onChange={handleChange}
-            autoComplete="new-password"
             required
-            aria-label={t('register.password')}
           />
           <input
             type="password"
@@ -260,32 +242,17 @@ const RegisterForm = () => {
             placeholder={t('register.confirmPassword')}
             value={formData.confirmPassword}
             onChange={handleChange}
-            autoComplete="new-password"
             required
-            aria-label={t('register.confirmPassword')}
           />
           <ul className="password-criteria">
-            <li className={passwordCriteria.length ? 'valid' : 'invalid'}>
-              {t('register.criteria.length')}
-            </li>
-            <li className={passwordCriteria.uppercase ? 'valid' : 'invalid'}>
-              {t('register.criteria.uppercase')}
-            </li>
-            <li className={passwordCriteria.number ? 'valid' : 'invalid'}>
-              {t('register.criteria.number')}
-            </li>
-            <li className={passwordCriteria.specialChar ? 'valid' : 'invalid'}>
-              {t('register.criteria.specialChar')}
-            </li>
+            <li className={passwordCriteria.length ? 'valid' : 'invalid'}>{t('register.criteria.length')}</li>
+            <li className={passwordCriteria.uppercase ? 'valid' : 'invalid'}>{t('register.criteria.uppercase')}</li>
+            <li className={passwordCriteria.number ? 'valid' : 'invalid'}>{t('register.criteria.number')}</li>
+            <li className={passwordCriteria.specialChar ? 'valid' : 'invalid'}>{t('register.criteria.specialChar')}</li>
           </ul>
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          aria-busy={isLoading}
-          className={isLoading ? 'loading' : ''}
-        >
+        <button type="submit" disabled={isLoading} aria-busy={isLoading} className={isLoading ? 'loading' : ''}>
           {isLoading ? t('register.loading') : t('register.submit')}
         </button>
       </form>
