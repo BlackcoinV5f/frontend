@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { useUser } from '../contexts/UserContext';
-import DateInput from "../components/DateInput"; // 👈 Importation du composant date
+import DateInput from "../components/DateInput";
 import './RegisterForm.css';
 
 const RegisterForm = () => {
@@ -51,7 +51,8 @@ const RegisterForm = () => {
     setFormData((prev) => {
       const updated = { ...prev, [name]: value.trimStart() };
 
-      if ((name === 'password' || name === 'confirmPassword') && updated.password !== updated.confirmPassword) {
+      if ((name === 'password' || name === 'confirmPassword') &&
+          updated.password !== updated.confirmPassword) {
         setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
       } else {
         setFeedback({ error: '', success: '' });
@@ -65,8 +66,8 @@ const RegisterForm = () => {
     setFormData((prev) => ({ ...prev, phoneNumber: value }));
   };
 
-  const handleDateChange = (date) => {
-    setFormData((prev) => ({ ...prev, birthDate: date }));
+  const handleDateChange = (formattedDate) => {
+    setFormData((prev) => ({ ...prev, birthDate: formattedDate }));
   };
 
   const isFormValid = () => {
@@ -127,7 +128,7 @@ const RegisterForm = () => {
     const userPayload = {
       first_name: formData.firstName.trim(),
       last_name: formData.lastName.trim(),
-      birth_date: formData.birthDate, // format ISO à envoyer: 1988-01-01
+      birth_date: formData.birthDate,
       email: formData.email.trim(),
       telegram_username: formData.telegramUsername.trim().replace(/^@/, ''),
       phone: formData.phoneNumber,
@@ -188,12 +189,7 @@ const RegisterForm = () => {
               required
             />
           </div>
-
-          {/* Composant Date de Naissance */}
-          <DateInput
-            value={formData.birthDate}
-            onChange={handleDateChange}
-          />
+          <DateInput value={formData.birthDate} onChange={handleDateChange} />
         </div>
 
         {/* Coordonnées */}

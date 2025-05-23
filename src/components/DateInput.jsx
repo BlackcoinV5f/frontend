@@ -12,7 +12,12 @@ export default function DateInput({ onChange }) {
 
   const handleChange = (date) => {
     setSelectedDate(date);
-    if (onChange) onChange(date);
+    if (onChange) {
+      const formatted = date instanceof Date
+        ? date.toISOString().split("T")[0] // Format yyyy-mm-dd
+        : "";
+      onChange(formatted);
+    }
   };
 
   return (
