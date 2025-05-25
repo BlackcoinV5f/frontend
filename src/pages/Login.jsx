@@ -10,6 +10,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -21,33 +23,32 @@ const Login = () => {
       return;
     }
 
+    const cleanUsername = telegramUsername.slice(1); // Supprime le "@"
+
     try {
       const isAdmin =
         email === "admin@example.com" &&
         password === "motdepasse" &&
-        telegramUsername === "@admin";
+        cleanUsername === "admin";
 
       if (isAdmin) {
-        // Appel spécial pour l’admin
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/login`, {
+        const res = await fetch(`${API_URL}/admin/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, telegramUsername }),
+          body: JSON.stringify({ email, password, telegramUsername: cleanUsername }),
         });
 
         if (!res.ok) throw new Error("Erreur d'accès administrateur");
 
-        // Redirection vers la vérification du code
         localStorage.setItem("adminEmail", email);
         navigate("/admin-verify-code");
         return;
       }
 
-      // Cas standard : utilisateur
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, telegramUsername }),
+        body: JSON.stringify({ email, password, telegramUsername: cleanUsername }),
       });
 
       if (!res.ok) throw new Error("Identifiants incorrects ou utilisateur inconnu");
