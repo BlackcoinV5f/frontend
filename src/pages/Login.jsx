@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-// Optional: import { motion } from "framer-motion";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -23,6 +22,28 @@ const Login = () => {
     }
 
     try {
+      const isAdmin =
+        email === "admin@example.com" &&
+        password === "motdepasse" &&
+        telegramUsername === "@admin";
+
+      if (isAdmin) {
+        // Appel spécial pour l’admin
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, telegramUsername }),
+        });
+
+        if (!res.ok) throw new Error("Erreur d'accès administrateur");
+
+        // Redirection vers la vérification du code
+        localStorage.setItem("adminEmail", email);
+        navigate("/admin-verify-code");
+        return;
+      }
+
+      // Cas standard : utilisateur
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +66,6 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      {/* <motion.form ...> si framer-motion activé */}
       <form className="login-form" onSubmit={handleLogin}>
         <h2>Connexion</h2>
 

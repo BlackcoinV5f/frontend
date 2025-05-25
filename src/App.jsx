@@ -4,6 +4,8 @@ import "./App.css";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import { UserProvider } from "./contexts/UserContext";
+import AdminPanel from "./components/Dashboard/AdminPanel";
+import UserDetails from "./components/Dashboard/UserDetails";
 
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
@@ -15,6 +17,7 @@ const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
+const AdminVerifyCode = lazy(() => import("./pages/AdminVerifyCode"));
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -103,6 +106,11 @@ function AppContent() {
               <Route path="/register" element={<RegisterForm />} />
               <Route path="/login" element={<Login />} />
               <Route path="/verify" element={<VerifyEmail />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/user-details" element={<UserDetails />} />
+              <Route path="/admin/user-details" element={<UserDetails />} />
+              <Route path="/admin-verify-code" element={<AdminVerifyCode />} />
+              <Route path="/admin-panel" element={<AdminPanel />} />
               {/* Ajoute d'autres routes ici */}
             </Routes>
           </Suspense>
