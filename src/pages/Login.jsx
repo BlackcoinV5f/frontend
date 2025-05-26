@@ -23,19 +23,20 @@ const Login = () => {
       return;
     }
 
-    const cleanUsername = telegramUsername.slice(1); // Supprime le "@"
+    // Supprimer le @ pour envoyer au backend
+    const cleanedTelegramUsername = telegramUsername.slice(1);
 
     try {
       const isAdmin =
         email === "admin@example.com" &&
         password === "motdepasse" &&
-        cleanUsername === "admin";
+        telegramUsername === "@admin";
 
       if (isAdmin) {
         const res = await fetch(`${API_URL}/admin/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, telegramUsername: cleanUsername }),
+          body: JSON.stringify({ email, password, telegramUsername: cleanedTelegramUsername }),
         });
 
         if (!res.ok) throw new Error("Erreur d'accès administrateur");
@@ -45,10 +46,10 @@ const Login = () => {
         return;
       }
 
-      const res = await fetch(`${API_URL}/login`, {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, telegramUsername: cleanUsername }),
+        body: JSON.stringify({ email, password, telegramUsername: cleanedTelegramUsername }),
       });
 
       if (!res.ok) throw new Error("Identifiants incorrects ou utilisateur inconnu");
