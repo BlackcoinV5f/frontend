@@ -11,13 +11,15 @@ const VerifyEmail = () => {
   const [feedback, setFeedback] = useState({ error: "", success: "" });
   const [loading, setLoading] = useState(false);
 
+  // Vérifie si un email est présent pour la vérification
   useEffect(() => {
-    const saved = localStorage.getItem("emailToVerify");
-    if (!saved) {
-      navigate("/login"); // redirection si aucun email à vérifier
+    const email = localStorage.getItem("emailToVerify");
+    if (!email || !email.includes("@")) {
+      navigate("/login");
     }
   }, [navigate]);
 
+  // Gère la soumission du code
   const handleVerification = async () => {
     setLoading(true);
     setFeedback({ error: "", success: "" });
@@ -32,10 +34,7 @@ const VerifyEmail = () => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/auth/verify`,
-        {
-          email,
-          code,
-        }
+        { email, code }
       );
 
       const { user, telegram_info } = response.data;
@@ -62,13 +61,14 @@ const VerifyEmail = () => {
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       const msg =
-        err.response?.data?.detail || "Une erreur est survenue.";
+        err.response?.data?.detail || "Une erreur est survenue lors de la vérification.";
       setFeedback({ error: `❌ ${msg}`, success: "" });
     } finally {
       setLoading(false);
     }
   };
 
+  // Validation par touche "Entrée"
   useEffect(() => {
     const keyHandler = (e) => {
       if (e.key === "Enter" && code.length === 6) {
@@ -86,8 +86,10 @@ const VerifyEmail = () => {
           Vérifie ton adresse e-mail
         </h1>
 
+        {/* Message d'erreur */}
         {feedback.error && (
           <div
+            id="verification-error"
             className="text-red-700 bg-red-100 border border-red-300 rounded p-2 text-sm mb-4"
             role="alert"
             aria-live="assertive"
@@ -96,6 +98,7 @@ const VerifyEmail = () => {
           </div>
         )}
 
+        {/* Message de succès */}
         {feedback.success && (
           <div
             className="text-green-700 bg-green-100 border border-green-300 rounded p-2 text-sm mb-4"
@@ -106,6 +109,12 @@ const VerifyEmail = () => {
           </div>
         )}
 
+        {/* Affichage dynamique du nombre de chiffres saisis */}
+        <p className="text-sm text-gray-500 mb-2 text-center">
+          {code.length}/6 chiffres saisis
+        </p>
+
+        {/* Champ pour entrer le code */}
         <label htmlFor="code" className="sr-only">
           Code de vérification
         </label>
@@ -123,8 +132,11 @@ const VerifyEmail = () => {
           }
           required
           aria-label="Code de vérification"
+          aria-invalid={!!feedback.error}
+          aria-describedby={feedback.error ? "verification-error" : undefined}
         />
 
+        {/* Bouton de validation */}
         <button
           onClick={handleVerification}
           disabled={loading || code.length !== 6}

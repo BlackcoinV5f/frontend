@@ -83,7 +83,7 @@ const RegisterForm = () => {
       return false;
     }
 
-    if (!/^[a-zA-Z0-9_]{5,32}$/.test(telegramUsername)) {
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]{4,31}$/.test(telegramUsername)) {
       setFeedback({ error: t('register.errors.invalidTelegramUsername'), success: '' });
       return false;
     }
@@ -98,7 +98,6 @@ const RegisterForm = () => {
       return false;
     }
 
-    // Validate birthDate (ensure not in future)
     const birthDateObj = new Date(birthDate);
     const now = new Date();
     if (birthDateObj > now) {
@@ -110,22 +109,26 @@ const RegisterForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFeedback({ error: '', success: '' });
+  e.preventDefault();
+  // ... (vérifications existantes)
 
-    if (!isFormValid()) return;
+  const userPayload = {
+    firstName: formData.firstName.trim(),
+    lastName: formData.lastName.trim(),
+    birth_date: formData.birthDate,  // ✅ Nom corrigé et format direct (YYYY-MM-DD)
+    phone: formData.phoneNumber,     // ✅ Nom corrigé
+    email: formData.email.trim(),
+    telegram_username: formData.telegramUsername.replace(/^@/, "").trim(),
+    password: formData.password,
+    confirm_password: formData.confirmPassword,  // ✅ Nom corrigé
+  };
 
-    setIsLoading(true);
-
-    const userPayload = {
-      first_name: formData.firstName.trim(),
-      last_name: formData.lastName.trim(),
-      birthdate: formData.birthDate,
-      email: formData.email.trim(),
-      telegramUsername: formData.telegramUsername.trim(),
-      phone: formData.phoneNumber,
-      password: formData.password,
-    };
+  try {
+    await registerUser(userPayload, navigate);
+    // ...
+  } catch (err) {
+    // ...
+  }
 
     try {
       await registerUser(userPayload, navigate);
@@ -137,6 +140,13 @@ const RegisterForm = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (feedback.success) {
+      const timer = setTimeout(() => navigate('/validation'), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [feedback.success, navigate]);
 
   return (
     <div className="form-container">

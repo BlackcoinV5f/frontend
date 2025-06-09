@@ -1,11 +1,12 @@
 // src/App.jsx
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import "./App.css";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { UserProvider } from "./contexts/UserContext";
 import AdminPanel from "./components/Dashboard/AdminPanel";
 import UserDetails from "./components/Dashboard/UserDetails";
+import useTelegram from "./hooks/useTelegram";
 
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
@@ -33,17 +34,9 @@ const SidebarPage = lazy(() => import("./pages/SidebarPage"));
 const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
 const DinoGame = lazy(() => import("./pages/DinoGame"));
-const RegisterForm = lazy(() => import("./pages/RegisterForm"));
-const Login = lazy(() => import("./pages/Login"));
-const AuthChoice = lazy(() => import("./pages/AuthChoice"));
-const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 
 const ProtectedRoute = ({ children, user, adminOnly = false }) => {
-  const location = useLocation();
-  if (!user) {
-    return <Navigate to="/auth-choice" state={{ from: location }} replace />;
-  }
   return children;
 };
 
@@ -54,10 +47,8 @@ ProtectedRoute.propTypes = {
 };
 
 function AppContent() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const [user, setUser] = useState(null); // Sans Telegram
+  const telegramUser = useTelegram();
+  const [user, setUser] = useState({ username: "Guest", isLoggedIn: false });
   const [splashFinished, setSplashFinished] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [points, setPoints] = useState(0);
@@ -65,15 +56,17 @@ function AppContent() {
   const [level, setLevel] = useState(1);
 
   useEffect(() => {
-    const isRegistered = sessionStorage.getItem("isRegistered") === "true";
-    const onAuthPages = ["/auth-choice", "/register", "/login", "/verify"].includes(location.pathname);
-
-    if (!isRegistered && !onAuthPages) {
-      navigate("/auth-choice");
-    } else if (isRegistered && onAuthPages) {
-      navigate("/");
+    if (telegramUser) {
+      setUser({
+        id: telegramUser.id,
+        firstName: telegramUser.first_name,
+        lastName: telegramUser.last_name,
+        username: telegramUser.username,
+        photo_url: telegramUser.photo_url,
+        isLoggedIn: true,
+      });
     }
-  }, [splashFinished, location.pathname, navigate]);
+  }, [telegramUser]);
 
   if (showSplash || !splashFinished) {
     return (
@@ -102,16 +95,22 @@ function AppContent() {
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route path="/" element={<Home user={user} points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
-              <Route path="/auth-choice" element={<AuthChoice />} />
-              <Route path="/register" element={<RegisterForm />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/verify" element={<VerifyEmail />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/friends" element={<Friends />} />
+              <Route path="/info" element={<Info />} />
+              <Route path="/wallet" element={<Wallet />} />
+              <Route path="/level" element={<LevelPage />} />
+              <Route path="/balance" element={<BalancePage />} />
+              <Route path="/ranking" element={<RankingPage />} />
+              <Route path="/validate-task" element={<ValidateTask />} />
+              <Route path="/sidebar" element={<SidebarPage />} />
+              <Route path="/my-actions" element={<MyActions />} />
+              <Route path="/status" element={<Status />} />
+              <Route path="/dino-game" element={<DinoGame />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/admin/user-details" element={<UserDetails />} />
-              <Route path="/admin/user-details" element={<UserDetails />} />
               <Route path="/admin-verify-code" element={<AdminVerifyCode />} />
-              <Route path="/admin-panel" element={<AdminPanel />} />
-              {/* Ajoute d'autres routes ici */}
+              <Route path="/admin-panel" element={<AdminDashboardPage />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>
