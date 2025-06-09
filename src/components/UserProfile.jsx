@@ -21,23 +21,19 @@ const UserProfile = ({ onClose }) => {
   const formatLabel = (key) => {
     switch (key) {
       case "first_name":
-      case "firstName":
         return "Prénom";
       case "last_name":
-      case "lastName":
         return "Nom";
+      case "username":
+        return "Nom d'utilisateur Telegram";
       case "email":
         return "Email";
       case "email_verified":
         return "Email vérifié";
-      case "phoneNumber":
-      case "phone":
+      case "phone_number":
         return "Téléphone";
       case "country":
         return "Pays";
-      case "username":
-      case "telegramUsername":
-        return "Nom d'utilisateur Telegram";
       default:
         return key.charAt(0).toUpperCase() + key.slice(1);
     }
@@ -58,7 +54,7 @@ const UserProfile = ({ onClose }) => {
         {user.photo_url && (
           <img
             src={user.photo_url}
-            alt="Profil"
+            alt="Photo de profil"
             className="profile-picture"
           />
         )}
