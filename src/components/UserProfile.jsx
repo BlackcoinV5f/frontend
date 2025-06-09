@@ -12,28 +12,36 @@ const UserProfile = ({ onClose }) => {
         if (parsedUser?.id) {
           setUser(parsedUser);
         }
-      } catch (e) {
-        console.error("Erreur lors du parsing de l'utilisateur :", e);
+      } catch (error) {
+        console.error("Erreur de parsing des données utilisateur :", error);
       }
     }
   }, []);
 
   const formatLabel = (key) => {
     switch (key) {
+      case "id":
+        return "ID";
       case "first_name":
+      case "firstName":
         return "Prénom";
       case "last_name":
+      case "lastName":
         return "Nom";
-      case "username":
-        return "Nom d'utilisateur Telegram";
       case "email":
         return "Email";
       case "email_verified":
         return "Email vérifié";
-      case "phone_number":
+      case "phoneNumber":
+      case "phone":
         return "Téléphone";
       case "country":
         return "Pays";
+      case "username":
+      case "telegramUsername":
+        return "Nom d'utilisateur Telegram";
+      case "photo_url":
+        return "Photo de profil (URL)";
       default:
         return key.charAt(0).toUpperCase() + key.slice(1);
     }
