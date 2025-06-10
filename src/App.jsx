@@ -1,17 +1,19 @@
 // src/App.jsx
 import React, { useState, useEffect, lazy, Suspense } from "react";
-import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { UserProvider } from "./contexts/UserContext";
-import AdminPanel from "./components/Dashboard/AdminPanel";
-import UserDetails from "./components/Dashboard/UserDetails";
 import useTelegram from "./hooks/useTelegram";
 
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
+import "./App.css";
 
-// Lazy loaded components
+// Components
+import AdminPanel from "./components/Dashboard/AdminPanel";
+import UserDetails from "./components/Dashboard/UserDetails";
+
+// Lazy components
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
@@ -36,16 +38,13 @@ const Status = lazy(() => import("./pages/Status"));
 const DinoGame = lazy(() => import("./pages/DinoGame"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 
-const ProtectedRoute = ({ children, user, adminOnly = false }) => {
-  return children;
-};
+const ProtectedRoute = ({ children }) => children;
 
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
-  user: PropTypes.object,
-  adminOnly: PropTypes.bool,
 };
 
+// Contenu principal de l’application
 function AppContent() {
   const telegramUser = useTelegram();
   const [user, setUser] = useState({ username: "Guest", isLoggedIn: false });
@@ -55,27 +54,88 @@ function AppContent() {
   const [wallet, setWallet] = useState(0);
   const [level, setLevel] = useState(1);
 
+  // Enregistrement utilisateur Telegram
   useEffect(() => {
     if (telegramUser) {
-      setUser({
+      const newUser = {
         id: telegramUser.id,
         firstName: telegramUser.first_name,
         lastName: telegramUser.last_name,
         username: telegramUser.username,
         photo_url: telegramUser.photo_url,
         isLoggedIn: true,
-      });
+      };
+
+      setUser(newUser);
+      localStorage.setItem("telegramUser", JSON.stringify(newUser));
     }
   }, [telegramUser]);
 
+  // Récompense parrain + nouveau joueur
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const refId = params.get("ref");
+    const storedUser = localStorage.getItem("telegramUser");
+
+    if (refId && storedUser) {
+      try {
+        const currentUser = JSON.parse(storedUser);
+        const currentUserId = currentUser?.id?.toString();
+        const currentName = currentUser?.firstName || `Utilisateur ${currentUserId}`;
+        const alreadyRewarded = localStorage.getItem(`refRewarded_${currentUserId}`);
+
+        // Évite qu’un utilisateur se parraine lui-même ou qu’on le récompense plusieurs fois
+        if (currentUserId !== refId && !alreadyRewarded) {
+          const inviteKey = `invitedBy_${refId}`;
+          const invitedList = JSON.parse(localStorage.getItem(inviteKey)) || [];
+
+          if (!invitedList.includes(currentName)) {
+            invitedList.push(currentName);
+            localStorage.setItem(inviteKey, JSON.stringify(invitedList));
+
+            const reward = 1000;
+            const walletPart = Math.floor(reward * 0.15); // 150
+            const balancePart = reward - walletPart;      // 850
+
+            // Récompense parrain
+            const refBalanceKey = `balance_${refId}`;
+            const refWalletKey = `wallet_${refId}`;
+            const refBalance = parseInt(localStorage.getItem(refBalanceKey)) || 0;
+            const refWallet = parseInt(localStorage.getItem(refWalletKey)) || 0;
+            localStorage.setItem(refBalanceKey, (refBalance + balancePart).toString());
+            localStorage.setItem(refWalletKey, (refWallet + walletPart).toString());
+
+            // Récompense nouveau joueur
+            const newBalanceKey = `balance_${currentUserId}`;
+            const newWalletKey = `wallet_${currentUserId}`;
+            const newBalance = parseInt(localStorage.getItem(newBalanceKey)) || 0;
+            const newWallet = parseInt(localStorage.getItem(newWalletKey)) || 0;
+            localStorage.setItem(newBalanceKey, (newBalance + balancePart).toString());
+            localStorage.setItem(newWalletKey, (newWallet + walletPart).toString());
+
+            // Marque comme récompensé
+            localStorage.setItem(`refRewarded_${currentUserId}`, "true");
+          }
+        }
+      } catch (err) {
+        console.error("Erreur lors de l’enregistrement du parrain :", err);
+      }
+    }
+  }, []);
+
+  // Splash Screen
   if (showSplash || !splashFinished) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
-        <SplashScreen onFinish={() => { setShowSplash(false); setSplashFinished(true); }} />
+        <SplashScreen onFinish={() => {
+          setShowSplash(false);
+          setSplashFinished(true);
+        }} />
       </Suspense>
     );
   }
 
+  // Contenu principal
   return (
     <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <ErrorBoundary>
@@ -125,6 +185,7 @@ function AppContent() {
   );
 }
 
+// Application avec contexte utilisateur
 function App() {
   return (
     <UserProvider>

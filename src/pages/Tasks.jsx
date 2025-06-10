@@ -7,22 +7,19 @@ import tiktokIcon from "../assets/tiktok.png";
 import twitterIcon from "../assets/twitter.png";
 
 const tasksList = [
-  { id: 1, platform: "YouTube", points: 500, link: "https://youtube.com", icon: youtubeIcon },
-  { id: 2, platform: "Facebook", points: 300, link: "https://facebook.com", icon: facebookIcon },
-  { id: 3, platform: "TikTok", points: 700, link: "https://tiktok.com", icon: tiktokIcon },
-  { id: 4, platform: "Twitter", points: 400, link: "https://twitter.com", icon: twitterIcon },
-  { id: 1, platform: "YouTube", points: 100, link: "https://youtube.com", icon: youtubeIcon },
+  { id: 1, platform: "YouTube", points: 500, link: "https://youtube.com", icon: youtubeIcon, validationCode: "YT123" },
+  { id: 2, platform: "Facebook", points: 300, link: "https://facebook.com", icon: facebookIcon, validationCode: "FB456" },
+  { id: 3, platform: "TikTok", points: 700, link: "https://tiktok.com", icon: tiktokIcon, validationCode: "TT789" },
+  { id: 4, platform: "Twitter", points: 400, link: "https://twitter.com", icon: twitterIcon, validationCode: "TW321" },
 ];
 
 const Tasks = () => {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState([]);
-  const [completedCount, setCompletedCount] = useState(0);
-
+  const [completedTasks, setCompletedTasks] = useState([]);
+  
   useEffect(() => {
-    const completedTasks = JSON.parse(localStorage.getItem("completedTasks")) || [];
-    setCompletedCount(completedTasks.length);
-    setTasks(tasksList.filter(task => !completedTasks.includes(task.id)));
+    const stored = JSON.parse(localStorage.getItem("completedTasks")) || [];
+    setCompletedTasks(stored);
   }, []);
 
   const handleTaskClick = (task) => {
@@ -30,13 +27,24 @@ const Tasks = () => {
     setTimeout(() => navigate(`/validate-task/${task.id}`), 1000);
   };
 
+  // Fonction appelée depuis ValidateTask (à propager via contexte ou prop)
+  const handleValidateTask = (taskId) => {
+    if (!completedTasks.includes(taskId)) {
+      const updated = [...completedTasks, taskId];
+      setCompletedTasks(updated);
+      localStorage.setItem("completedTasks", JSON.stringify(updated));
+    }
+  };
+
+  const availableTasks = tasksList.filter(t => !completedTasks.includes(t.id));
+
   return (
     <div className="tasks-container">
       <h2>📋 Tâches à accomplir</h2>
-      <p className="tasks-counter">✅ Tâches accomplies : {completedCount} / {tasksList.length}</p>
+      <p className="tasks-counter">✅ Tâches accomplies : {completedTasks.length} / {tasksList.length}</p>
       <div className="tasks-list">
-        {tasks.length > 0 ? (
-          tasks.map(task => (
+        {availableTasks.length > 0 ? (
+          availableTasks.map(task => (
             <div key={task.id} className="task-item">
               <span>{task.platform} - 🏆 {task.points} pts</span>
               <button onClick={() => handleTaskClick(task)} className="task-button">
@@ -45,7 +53,7 @@ const Tasks = () => {
             </div>
           ))
         ) : (
-          <p>Aucune tâche disponible pour le moment.</p>
+          <p>🎉 Vous avez accompli toutes les tâches disponibles !</p>
         )}
       </div>
     </div>
