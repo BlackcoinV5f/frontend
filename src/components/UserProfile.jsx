@@ -1,53 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./UserProfile.css";
+import { useUser } from "../contexts/UserContext";
 
 const UserProfile = ({ onClose }) => {
-  const [user, setUser] = useState(null);
+  const {
+    user,
+    wallet,
+    level,
+    ranking,
+    status,
+    loading,
+    fetchWallet,
+    fetchLevel,
+    fetchRanking,
+    fetchStatus,
+  } = useUser();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("telegramUser");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser?.id) {
-          setUser(parsedUser);
-        }
-      } catch (error) {
-        console.error("Erreur de parsing des données utilisateur :", error);
-      }
+    if (user?.telegram_id) {
+      fetchWallet(user.telegram_id);
+      fetchLevel(user.telegram_id);
+      fetchRanking();
+      fetchStatus(user.telegram_id);
     }
-  }, []);
+  }, [user]);
 
   const formatLabel = (key) => {
     switch (key) {
-      case "id":
-        return "ID";
       case "first_name":
-      case "firstName":
-        return "Prénom";
+      case "firstName": return "Prénom";
       case "last_name":
-      case "lastName":
-        return "Nom";
-      case "email":
-        return "Email";
-      case "email_verified":
-        return "Email vérifié";
-      case "phoneNumber":
-      case "phone":
-        return "Téléphone";
-      case "country":
-        return "Pays";
-      case "username":
+      case "lastName": return "Nom";
+      case "email": return "Email";
+      case "email_verified": return "Email vérifié";
+      case "phone": return "Téléphone";
+      case "country": return "Pays";
       case "telegramUsername":
-        return "Nom d'utilisateur Telegram";
-      case "photo_url":
-        return "Photo de profil (URL)";
-      default:
-        return key.charAt(0).toUpperCase() + key.slice(1);
+      case "username": return "Nom d'utilisateur Telegram";
+      case "photo_url": return "Photo de profil (URL)";
+      default: return key.charAt(0).toUpperCase() + key.slice(1);
     }
   };
 
-  const renderProfile = () => {
+  const renderUserInfo = () => {
+    if (!user) return null;
+
     const entries = Object.entries(user).filter(
       ([key, value]) =>
         value !== null &&
@@ -86,18 +83,54 @@ const UserProfile = ({ onClose }) => {
     );
   };
 
+  const renderExtras = () => (
+    <ul className="profile-extras">
+      {wallet && (
+        <li>
+          <strong>Solde :</strong> {wallet.balance} ₿
+        </li>
+      )}
+      {level && (
+        <li>
+          <strong>Niveau :</strong> {level.level} (XP : {level.experience})
+        </li>
+      )}
+      {ranking && (
+        <li>
+          <strong>Classement :</strong>{" "}
+          {ranking.find((entry) => entry.telegram_id === user.telegram_id)?.rank ?? "N/A"}
+        </li>
+      )}
+      {status && (
+        <li>
+          <strong>Statut :</strong> {status.status}
+        </li>
+      )}
+    </ul>
+  );
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Profil du Joueur</h2>
-        {user ? (
-          renderProfile()
-        ) : (
+
+        {loading && <p>Chargement des données...</p>}
+
+        {!user && !loading && (
           <div className="error-message">
             <p>Aucune information utilisateur disponible.</p>
             <p>⚠️ Connecte-toi via Telegram pour voir ton profil.</p>
           </div>
         )}
+
+        {user && !loading && (
+          <>
+            {renderUserInfo()}
+            <hr />
+            {renderExtras()}
+          </>
+        )}
+
         <button className="close-button" onClick={onClose}>Fermer</button>
       </div>
     </div>

@@ -63,3 +63,29 @@
   font-size: 16px;
   font-weight: bold;
 }
+
+/* UserProfile.css */
+.profile-info,
+.profile-extras {
+  list-style-type: none;
+  padding: 0;
+}
+
+.profile-info li,
+.profile-extras li {
+  margin-bottom: 8px;
+}
+
+.verified {
+  color: green;
+  font-weight: bold;
+}
+.not-verified {
+  color: red;
+  font-weight: bold;
+}
+.profile-picture {
+  width: 100px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}

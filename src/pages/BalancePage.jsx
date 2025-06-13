@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useUser } from "../contexts/UserContext";
 
 const BalancePage = ({ points, pointsHistory }) => {
-  // ✅ Vérifier si pointsHistory est défini avant d'utiliser slice()
+  const { user, fetchBalance } = useUser();
+
+  useEffect(() => {
+    if (user?.telegram_id) {
+      fetchBalance(user.telegram_id)
+        .then(() => console.log("Balance récupérée"))
+        .catch((err) => console.error("Erreur fetch balance :", err));
+    }
+  }, [user, fetchBalance]);
+
   const history = pointsHistory ? pointsHistory.slice(-100).reverse() : [];
 
   return (

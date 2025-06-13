@@ -1,163 +1,168 @@
+// src/context/UserContext.jsx
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const UserContext = createContext();
 
+export const useUser = () => useContext(UserContext);
+
 export const UserProvider = ({ children }) => {
-  const navigate = useNavigate();
-
   const [user, setUser] = useState(null);
-  const [isVerified, setIsVerified] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [wallet, setWallet] = useState(null);
+  const [level, setLevel] = useState(null);
+  const [ranking, setRanking] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [status, setStatus] = useState(null);
+  const [myActions, setMyActions] = useState([]);
+  const [availableActions, setAvailableActions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // ✅ Charge les données utilisateur au démarrage
+  const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  });
+
+  // ⬇️ Chargement localStorage au démarrage
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('userData'));
-      if (saved) {
-        setUser(saved.user || null);
-        setIsVerified(!!saved.isVerified);
-      }
-    } catch (err) {
-      console.error("Erreur lors du chargement :", err);
-      const msg = err.message || "Erreur inconnue.";
-      setError(msg);
-    }
+    const storedUser = localStorage.getItem("telegramUser");
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
-  // ✅ Sauvegarde automatiquement quand les données changent
+  // ⬇️ Sync user -> localStorage
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('userData', JSON.stringify({ user, isVerified }));
-    }
-  }, [user, isVerified]);
+    if (user) localStorage.setItem("telegramUser", JSON.stringify(user));
+  }, [user]);
 
-  // 🔧 Convertit une date MM-DD-YYYY en format ISO YYYY-MM-DD
-  const formatDateToISO = (mmddyyyy) => {
-    if (!mmddyyyy || typeof mmddyyyy !== "string") return "";
-    const [month, day, year] = mmddyyyy.split("-");
-    if (!year || !month || !day) return "";
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-  };
-
-  // ✅ Enregistre un nouvel utilisateur
-  const registerUser = async (userData, navigateFn = navigate) => {
+  // ⬇️ Fonction générique pour setLoading
+  const withLoading = async (callback) => {
+    setLoading(true);
     try {
-      setIsLoading(true);
-      setError(null);
-
-      const payload = {
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        birth_date: userData.birth_date,
-        phone: userData.phone,
-        email: userData.email,
-        password: userData.password,
-        confirm_password: userData.confirm_password,
-      };
-
-      console.log("Payload final :", payload);
-
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/register`,
-        payload
-      );
-
-      alert(data.message || "Inscription réussie. Vérifie ton email.");
-
-      localStorage.setItem('unverifiedUser', JSON.stringify({
-        ...userData,
-        verified: false,
-        createdAt: new Date().toISOString()
-      }));
-
-      navigateFn('/verify');
-    } catch (err) {
-      console.error("Erreur lors de l'enregistrement :", err);
-      const msg = err.response?.data?.detail || err.message || "Erreur inconnue.";
-      setError(msg);
-      alert("Échec de l'inscription : " + msg);
+      return await callback();
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  // ✅ Vérifie le code reçu par email
-  const verifyCode = async (inputCode, navigateFn = navigate) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const unverified = JSON.parse(localStorage.getItem('unverifiedUser')) || {};
-      const { email } = unverified;
-      if (!email) throw new Error("Email introuvable dans le stockage local.");
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/verify-code`,
-        { email, code: inputCode }
-      );
-
-      const { user } = response.data;
-
-      setUser(user);
-      setIsVerified(true);
-
-      localStorage.setItem(
-        'userData',
-        JSON.stringify({ user, isVerified: true })
-      );
-
-      localStorage.removeItem('unverifiedUser');
-      navigateFn('/home');
-      return true;
-    } catch (err) {
-      console.error("Échec de la vérification :", err);
-      const msg = err.response?.data?.detail || err.message || "Erreur de vérification.";
-      setError(msg);
-      alert(msg);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
+  // ⬇️ Auth & profil
+  const registerUser = async (userData) => {
+    return withLoading(async () => {
+      const res = await api.post('/auth/register', userData);
+      setUser(res.data);
+      return res.data;
+    });
   };
 
-  // ✅ Déconnecte l'utilisateur
-  const logout = () => {
-    setUser(null);
-    setIsVerified(false);
-    setError(null);
-    setIsLoading(false);
-
-    localStorage.removeItem('userData');
-    localStorage.removeItem('unverifiedUser');
-    navigate('/auth-choice');
+  const updateUser = async (telegramId, updates) => {
+    return withLoading(async () => {
+      const res = await api.put(`/user/update/${telegramId}`, updates);
+      setUser(res.data);
+      return res.data;
+    });
   };
+
+  const fetchTelegramData = async (telegramData) => {
+    return withLoading(async () => {
+      const res = await api.post('/telegram/verify', telegramData);
+      setUser(res.data);
+      return res.data;
+    });
+  };
+
+  const fetchUserProfile = async (telegramId) => {
+    const res = await api.get(`/user/profile/${telegramId}`);
+    setUser(res.data);
+    return res.data;
+  };
+
+  // ⬇️ Données associées
+  const fetchWallet = async (telegramId) => {
+    const res = await api.get(`/wallet/${telegramId}`);
+    setWallet(res.data);
+    return res.data;
+  };
+
+  const fetchLevel = async (telegramId) => {
+    const res = await api.get(`/level/${telegramId}`);
+    setLevel(res.data);
+    return res.data;
+  };
+
+  const fetchRanking = async () => {
+    const res = await api.get('/ranking/top');
+    setRanking(res.data);
+    return res.data;
+  };
+
+  const fetchTasks = async () => {
+    const res = await api.get('/tasks');
+    setTasks(res.data);
+    return res.data;
+  };
+
+  const validateTask = async (telegramId, taskId) => {
+    const res = await api.post(`/tasks/validate`, { telegramId, taskId });
+    return res.data;
+  };
+
+  const fetchFriends = async (telegramId) => {
+    const res = await api.get(`/friends/${telegramId}`);
+    setFriends(res.data);
+    return res.data;
+  };
+
+  const fetchStatus = async (telegramId) => {
+    const res = await api.get(`/status/${telegramId}`);
+    setStatus(res.data);
+    return res.data;
+  };
+
+  const fetchAvailableActions = async () => {
+    const res = await api.get(`/actions`);
+    setAvailableActions(res.data);
+    return res.data;
+  };
+
+  const fetchUserActions = async (telegramId) => {
+    const res = await api.get(`/myactions/${telegramId}`);
+    setMyActions(res.data);
+    return res.data;
+  };
+
+  const isAuthenticated = !!user?.telegram_id;
+  const isEmailVerified = !!user?.email_verified;
 
   return (
     <UserContext.Provider
       value={{
         user,
-        isVerified,
-        isLoading,
-        error,
+        wallet,
+        level,
+        ranking,
+        tasks,
+        friends,
+        status,
+        myActions,
+        availableActions,
+        loading,
+        isAuthenticated,
+        isEmailVerified,
         registerUser,
-        verifyCode,
-        logout,
-        setUser,
+        updateUser,
+        fetchTelegramData,
+        fetchUserProfile,
+        fetchWallet,
+        fetchLevel,
+        fetchRanking,
+        fetchTasks,
+        validateTask,
+        fetchFriends,
+        fetchStatus,
+        fetchAvailableActions,
+        fetchUserActions,
       }}
     >
       {children}
     </UserContext.Provider>
   );
-};
-
-// ✅ Hook personnalisé pour accéder au contexte
-export const useUser = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error("useUser doit être utilisé dans un UserProvider");
-  }
-  return context;
 };

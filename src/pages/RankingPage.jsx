@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useUser } from "../contexts/UserContext";
 
 const RankingPage = ({ players }) => {
-  // ✅ Vérifier si players est défini avant d'utiliser slice()
-  const topPlayers = players ? [...players].sort((a, b) => b.points - a.points).slice(0, 100) : [];
+  const { user, fetchBalance } = useUser();
+
+  useEffect(() => {
+    if (user?.telegram_id) {
+      fetchBalance(user.telegram_id)
+        .then(() => console.log("Solde mis à jour."))
+        .catch((err) => console.error("Erreur de récupération du solde :", err));
+    }
+  }, [user, fetchBalance]);
+
+  const topPlayers = players
+    ? [...players].sort((a, b) => b.points - a.points).slice(0, 100)
+    : [];
 
   return (
     <div className="page-container">
