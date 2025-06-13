@@ -1,11 +1,31 @@
-// src/context/UserContext.jsx
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const UserContext = createContext();
-
 export const useUser = () => useContext(UserContext);
+
+// Axios instance avec configuration
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'https://backend-7nzi.onrender.com',
+});
+
+// Gestion d'erreurs globales
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    console.error("🔴 API Error:", err.response?.data || err.message);
+    return Promise.reject(err);
+  }
+);
+
+// Ajout du token si disponible
+api.interceptors.request.use((config) => {
+  const user = JSON.parse(localStorage.getItem('telegramUser'));
+  if (user?.token) {
+    config.headers.Authorization = `Bearer ${user.token}`;
+  }
+  return config;
+});
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -19,22 +39,22 @@ export const UserProvider = ({ children }) => {
   const [availableActions, setAvailableActions] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
-  });
-
-  // ⬇️ Chargement localStorage au démarrage
+  // ⬇️ Chargement user depuis localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("telegramUser");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("telegramUser"));
+      if (storedUser) setUser(storedUser);
+    } catch (err) {
+      console.warn("🟡 Données corrompues dans localStorage. Suppression.");
+      localStorage.removeItem("telegramUser");
+    }
   }, []);
 
-  // ⬇️ Sync user -> localStorage
+  // ⬇️ Synchronisation user -> localStorage
   useEffect(() => {
     if (user) localStorage.setItem("telegramUser", JSON.stringify(user));
   }, [user]);
 
-  // ⬇️ Fonction générique pour setLoading
   const withLoading = async (callback) => {
     setLoading(true);
     try {
@@ -44,30 +64,32 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // ⬇️ Auth & profil
-  const registerUser = async (userData) => {
-    return withLoading(async () => {
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("telegramUser");
+  };
+
+  // ⬇️ Authentification & profil
+  const registerUser = async (userData) =>
+    withLoading(async () => {
       const res = await api.post('/auth/register', userData);
       setUser(res.data);
       return res.data;
     });
-  };
 
-  const updateUser = async (telegramId, updates) => {
-    return withLoading(async () => {
+  const updateUser = async (telegramId, updates) =>
+    withLoading(async () => {
       const res = await api.put(`/user/update/${telegramId}`, updates);
       setUser(res.data);
       return res.data;
     });
-  };
 
-  const fetchTelegramData = async (telegramData) => {
-    return withLoading(async () => {
+  const fetchTelegramData = async (telegramData) =>
+    withLoading(async () => {
       const res = await api.post('/telegram/verify', telegramData);
       setUser(res.data);
       return res.data;
     });
-  };
 
   const fetchUserProfile = async (telegramId) => {
     const res = await api.get(`/user/profile/${telegramId}`);
@@ -89,12 +111,14 @@ export const UserProvider = ({ children }) => {
   };
 
   const fetchRanking = async () => {
+    if (ranking) return ranking;
     const res = await api.get('/ranking/top');
     setRanking(res.data);
     return res.data;
   };
 
   const fetchTasks = async () => {
+    if (tasks.length > 0) return tasks;
     const res = await api.get('/tasks');
     setTasks(res.data);
     return res.data;
@@ -118,6 +142,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const fetchAvailableActions = async () => {
+    if (availableActions.length > 0) return availableActions;
     const res = await api.get(`/actions`);
     setAvailableActions(res.data);
     return res.data;
@@ -160,6 +185,7 @@ export const UserProvider = ({ children }) => {
         fetchStatus,
         fetchAvailableActions,
         fetchUserActions,
+        logout,
       }}
     >
       {children}
