@@ -44,15 +44,26 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// Contenu principal de l’application
 function AppContent() {
   const telegramUser = useTelegram();
   const [user, setUser] = useState({ username: "Guest", isLoggedIn: false });
+  const [initData, setInitData] = useState(null);
   const [splashFinished, setSplashFinished] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [points, setPoints] = useState(0);
   const [wallet, setWallet] = useState(0);
   const [level, setLevel] = useState(1);
+
+  // Vérifie les données Telegram
+  useEffect(() => {
+    const tg = window.Telegram?.WebApp;
+    if (!tg?.initDataUnsafe) {
+      alert("❌ Données Telegram introuvables !");
+      return;
+    }
+    setInitData(tg.initDataUnsafe);
+    console.log("✅ Données Telegram détectées !", tg.initDataUnsafe);
+  }, []);
 
   // Enregistrement utilisateur Telegram
   useEffect(() => {
@@ -65,7 +76,6 @@ function AppContent() {
         photo_url: telegramUser.photo_url,
         isLoggedIn: true,
       };
-
       setUser(newUser);
       localStorage.setItem("telegramUser", JSON.stringify(newUser));
     }
@@ -84,7 +94,6 @@ function AppContent() {
         const currentName = currentUser?.firstName || `Utilisateur ${currentUserId}`;
         const alreadyRewarded = localStorage.getItem(`refRewarded_${currentUserId}`);
 
-        // Évite qu’un utilisateur se parraine lui-même ou qu’on le récompense plusieurs fois
         if (currentUserId !== refId && !alreadyRewarded) {
           const inviteKey = `invitedBy_${refId}`;
           const invitedList = JSON.parse(localStorage.getItem(inviteKey)) || [];
@@ -94,10 +103,9 @@ function AppContent() {
             localStorage.setItem(inviteKey, JSON.stringify(invitedList));
 
             const reward = 1000;
-            const walletPart = Math.floor(reward * 0.15); // 150
-            const balancePart = reward - walletPart;      // 850
+            const walletPart = Math.floor(reward * 0.15);
+            const balancePart = reward - walletPart;
 
-            // Récompense parrain
             const refBalanceKey = `balance_${refId}`;
             const refWalletKey = `wallet_${refId}`;
             const refBalance = parseInt(localStorage.getItem(refBalanceKey)) || 0;
@@ -105,7 +113,6 @@ function AppContent() {
             localStorage.setItem(refBalanceKey, (refBalance + balancePart).toString());
             localStorage.setItem(refWalletKey, (refWallet + walletPart).toString());
 
-            // Récompense nouveau joueur
             const newBalanceKey = `balance_${currentUserId}`;
             const newWalletKey = `wallet_${currentUserId}`;
             const newBalance = parseInt(localStorage.getItem(newBalanceKey)) || 0;
@@ -113,7 +120,6 @@ function AppContent() {
             localStorage.setItem(newBalanceKey, (newBalance + balancePart).toString());
             localStorage.setItem(newWalletKey, (newWallet + walletPart).toString());
 
-            // Marque comme récompensé
             localStorage.setItem(`refRewarded_${currentUserId}`, "true");
           }
         }
@@ -135,7 +141,6 @@ function AppContent() {
     );
   }
 
-  // Contenu principal
   return (
     <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <ErrorBoundary>
@@ -185,7 +190,6 @@ function AppContent() {
   );
 }
 
-// Application avec contexte utilisateur
 function App() {
   return (
     <UserProvider>

@@ -4,27 +4,22 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Blackcoin App</title>
+
+    <!-- Script Telegram WebApp AVANT React -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
   </head>
   <body>
-    <div id="root"></div> <!-- React va s'afficher ici -->
     <div id="root"></div>
 
+    <!-- React App -->
     <script type="module" src="/src/main.jsx"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-
-
-    <!-- Widget Telegram -->
-    <script
-      async
-      src="https://telegram.org/js/telegram-widget.js?22"
-      data-telegram-login="TON_BOT_USERNAME"
-      data-size="large"
-      data-auth-url="https://blackcoin-backend-uv43.onrender.com/auth/telegram"
-      data-request-access="write"
-    ></script>
+    <!-- Erreur globale -->
+    <script>
+      window.onerror = function (message, source, lineno, colno, error) {
+        alert(`Erreur: ${message}\nÀ: ${source}:${lineno}:${colno}`);
+      };
+    </script>
   </body>
 </html>
