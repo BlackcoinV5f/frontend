@@ -4,21 +4,12 @@ import axios from 'axios';
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
 
-// Axios instance avec configuration
+// Axios instance avec baseURL dynamique
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://backend-7nzi.onrender.com',
 });
 
-// Gestion d'erreurs globales
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    console.error("🔴 API Error:", err.response?.data || err.message);
-    return Promise.reject(err);
-  }
-);
-
-// Ajout du token si disponible
+// ➕ Ajout du token si disponible
 api.interceptors.request.use((config) => {
   const user = JSON.parse(localStorage.getItem('telegramUser'));
   if (user?.token) {
@@ -26,6 +17,15 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// 🛑 Gestion globale des erreurs
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    console.error("🔴 API Error:", err.response?.data || err.message);
+    return Promise.reject(err);
+  }
+);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -39,18 +39,18 @@ export const UserProvider = ({ children }) => {
   const [availableActions, setAvailableActions] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ⬇️ Chargement user depuis localStorage
+  // ▶️ Initialiser user depuis localStorage
   useEffect(() => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem("telegramUser"));
-      if (storedUser) setUser(storedUser);
+      const stored = JSON.parse(localStorage.getItem("telegramUser"));
+      if (stored) setUser(stored);
     } catch (err) {
-      console.warn("🟡 Données corrompues dans localStorage. Suppression.");
+      console.warn("🟡 Données corrompues localStorage. Reset.");
       localStorage.removeItem("telegramUser");
     }
   }, []);
 
-  // ⬇️ Synchronisation user -> localStorage
+  // 💾 Synchroniser user -> localStorage
   useEffect(() => {
     if (user) localStorage.setItem("telegramUser", JSON.stringify(user));
   }, [user]);
@@ -69,7 +69,7 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem("telegramUser");
   };
 
-  // ⬇️ Authentification & profil
+  // 🔐 Auth / Profil
   const registerUser = async (userData) =>
     withLoading(async () => {
       const res = await api.post('/auth/register', userData);
@@ -80,7 +80,7 @@ export const UserProvider = ({ children }) => {
   const updateUser = async (telegramId, updates) =>
     withLoading(async () => {
       const res = await api.put(`/user/update/${telegramId}`, updates);
-      setUser(res.data);
+      setUser((prev) => ({ ...prev, ...res.data }));
       return res.data;
     });
 
@@ -97,7 +97,12 @@ export const UserProvider = ({ children }) => {
     return res.data;
   };
 
-  // ⬇️ Données associées
+  const fetchBalance = async (telegramId) => {
+    const res = await api.get(`/wallet/${telegramId}/balance`);
+    return res.data?.balance ?? 0;
+  };
+
+  // 📦 Données supplémentaires
   const fetchWallet = async (telegramId) => {
     const res = await api.get(`/wallet/${telegramId}`);
     setWallet(res.data);
@@ -154,6 +159,7 @@ export const UserProvider = ({ children }) => {
     return res.data;
   };
 
+  // ✅ États utiles globalement
   const isAuthenticated = !!user?.telegram_id;
   const isEmailVerified = !!user?.email_verified;
 
@@ -177,6 +183,7 @@ export const UserProvider = ({ children }) => {
         fetchTelegramData,
         fetchUserProfile,
         fetchWallet,
+        fetchBalance,
         fetchLevel,
         fetchRanking,
         fetchTasks,
