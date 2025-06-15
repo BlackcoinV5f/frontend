@@ -6,7 +6,7 @@ const Friends = () => {
   const [invitedNicknames, setInvitedNicknames] = useState([]);
   const { user, fetchBalance } = useUser();
 
-  // 🔄 Met à jour le solde à l'affichage de la page
+  // 🔄 Recharge le solde à l'ouverture
   useEffect(() => {
     if (user?.telegram_id) {
       fetchBalance(user.telegram_id).catch((err) =>
@@ -15,18 +15,24 @@ const Friends = () => {
     }
   }, [user, fetchBalance]);
 
-  // 🔗 Génère le lien de parrainage + récupère les invités locaux
+  // 🔗 Génère le lien de parrainage et récupère les invités
   useEffect(() => {
-    if (user?.id) {
-      setReferralLink(`${window.location.origin}/?ref=${user.id}`);
+    if (user?.telegram_id) {
+      // ✅ Utilise telegram_id pour générer le lien unique
+      const refId = user.telegram_id;
+      const link = `${window.location.origin}/?ref=${refId}`;
+      setReferralLink(link);
 
-      const key = `invitedBy_${user.id}`;
-      const localInvites = JSON.parse(localStorage.getItem(key)) || [];
+      // ✅ Utilise la bonne clé pour récupérer les invités
+      const storageKey = `invitedBy_${refId}`;
+      const localInvites = JSON.parse(localStorage.getItem(storageKey)) || [];
       setInvitedNicknames(localInvites);
     }
   }, [user]);
 
   const handleCopyLink = () => {
+    if (!referralLink) return;
+
     navigator.clipboard
       .writeText(referralLink)
       .then(() => alert("Lien copié dans le presse-papiers 📋"))
@@ -37,13 +43,16 @@ const Friends = () => {
     <div className="page-container">
       <h2>👥 Parrainage</h2>
       <p>Partage ton lien pour inviter tes amis :</p>
+
       <input
         type="text"
-        value={referralLink}
+        value={referralLink || "Chargement..."}
         readOnly
         className="referral-link"
       />
-      <button onClick={handleCopyLink}>📋 Copier</button>
+      <button onClick={handleCopyLink} disabled={!referralLink}>
+        📋 Copier
+      </button>
 
       <h3>📜 Joueurs invités</h3>
       {invitedNicknames.length > 0 ? (

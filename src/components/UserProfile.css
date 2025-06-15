@@ -23,69 +23,91 @@
 }
 
 .profile-picture {
-  width: 130px;
-  height: 130px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 20px;
+  margin: 1rem auto 1.5rem auto;
+  display: block;
 }
 
-.profile-info {
-  list-style-type: none;
-  padding: 0;
-  margin: 0 0 20px 0;
-  text-align: left;
-}
-
-.profile-info li {
-  margin: 10px 0;
-  font-size: 16px;
-  color: #333;
-}
-
-.verified {
-  color: green;
-  font-weight: bold;
-}
-
-.not-verified {
-  color: red;
-  font-weight: bold;
-}
-
-.close-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-/* UserProfile.css */
 .profile-info,
 .profile-extras {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
+  margin: 0;
+  text-align: left;
 }
 
 .profile-info li,
 .profile-extras li {
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.icon {
+  margin-right: 8px;
+  color: #ffcc00;
+  font-size: 18px;
 }
 
 .verified {
   color: green;
   font-weight: bold;
 }
+
 .not-verified {
   color: red;
   font-weight: bold;
 }
-.profile-picture {
-  width: 100px;
-  border-radius: 50%;
-  margin-bottom: 16px;
+
+.profile-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.logout-button,
+.close-button {
+  background-color: #222;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover,
+.close-button:hover {
+  background-color: #444;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .modal-content {
+    width: 95%;
+    font-size: 0.9rem;
+  }
+
+  .profile-buttons {
+    flex-direction: column;
+  }
+
+  .logout-button,
+  .close-button {
+    width: 100%;
+  }
 }

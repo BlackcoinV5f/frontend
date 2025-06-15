@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import "./UserProfile.css";
 import { useUser } from "../contexts/UserContext";
+import { FiLogOut } from "react-icons/fi"; // Icône de déconnexion
+import { FaCoins, FaLevelUpAlt, FaUserAlt, FaFlag } from "react-icons/fa"; // Icônes jolis
 
 const UserProfile = ({ onClose }) => {
   const {
@@ -14,6 +16,7 @@ const UserProfile = ({ onClose }) => {
     fetchLevel,
     fetchRanking,
     fetchStatus,
+    logoutUser,
   } = useUser();
 
   useEffect(() => {
@@ -40,6 +43,11 @@ const UserProfile = ({ onClose }) => {
       case "photo_url": return "Photo de profil (URL)";
       default: return key.charAt(0).toUpperCase() + key.slice(1);
     }
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    onClose(); // Ferme le modal après déconnexion
   };
 
   const renderUserInfo = () => {
@@ -87,32 +95,38 @@ const UserProfile = ({ onClose }) => {
     <ul className="profile-extras">
       {wallet && (
         <li>
+          <FaCoins className="icon" />
           <strong>Solde :</strong> {wallet.balance} ₿
         </li>
       )}
       {level && (
         <li>
+          <FaLevelUpAlt className="icon" />
           <strong>Niveau :</strong> {level.level} (XP : {level.experience})
         </li>
       )}
       {ranking && (
         <li>
+          <FaUserAlt className="icon" />
           <strong>Classement :</strong>{" "}
-          {ranking.find((entry) => entry.telegram_id === user.telegram_id)?.rank ?? "N/A"}
+          {ranking.find((entry) => entry.telegram_id === user?.telegram_id)?.rank ?? "N/A"}
         </li>
       )}
       {status && (
         <li>
+          <FaFlag className="icon" />
           <strong>Statut :</strong> {status.status}
         </li>
       )}
     </ul>
   );
 
+  const displayName = user?.first_name || "Guest";
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Profil du Joueur</h2>
+        <h2>👤 Profil de {displayName}</h2>
 
         {loading && <p>Chargement des données...</p>}
 
@@ -131,7 +145,14 @@ const UserProfile = ({ onClose }) => {
           </>
         )}
 
-        <button className="close-button" onClick={onClose}>Fermer</button>
+        <div className="profile-buttons">
+          <button className="logout-button" onClick={handleLogout}>
+            <FiLogOut /> Déconnexion
+          </button>
+          <button className="close-button" onClick={onClose}>
+            Fermer
+          </button>
+        </div>
       </div>
     </div>
   );
