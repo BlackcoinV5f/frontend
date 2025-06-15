@@ -7,7 +7,7 @@ import { useUser } from "../contexts/UserContext";
  */
 export default function useTelegram() {
   const [user, setUser] = useState(null);
-  const { fetchBalance, updateUser } = useUser(); // ← Si tu veux synchroniser avec UserContext
+  const { fetchBalance, updateUser } = useUser();
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
@@ -26,15 +26,15 @@ export default function useTelegram() {
       setUser(userData);
       localStorage.setItem("telegramUser", JSON.stringify(userData));
 
-      // Facultatif : synchroniser avec le contexte global (UserContext)
-      updateUser?.(userData);
+      // ✅ Correction ici
+      updateUser?.(userData.telegram_id, userData);
     } else {
       // Fallback: essayer localStorage
       const storedUser = localStorage.getItem("telegramUser");
       if (storedUser) {
         const parsed = JSON.parse(storedUser);
         setUser(parsed);
-        updateUser?.(parsed);
+        updateUser?.(parsed.telegram_id, parsed); // ✅ Correction ici aussi
       }
     }
   }, [updateUser]);
