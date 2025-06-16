@@ -1,0 +1,67 @@
+.page-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  color: #222;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+.page-container h2 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #28a745; /* Vert pour rappeler les points */
+  text-align: center;
+}
+
+.page-container p {
+  font-size: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.page-container h3 {
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  color: #444;
+  text-align: left;
+}
+
+.page-container ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.page-container li {
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-weight: 500;
+}
+
+.page-container li:hover {
+  background-color: #e9fbe9;
+  cursor: default;
+}
+
+@media screen and (max-width: 600px) {
+  .page-container h2 {
+    font-size: 24px;
+  }
+
+  .page-container h3 {
+    font-size: 18px;
+  }
+
+  .page-container p {
+    font-size: 14px;
+  }
+
+  .page-container li {
+    font-size: 14px;
+  }
+}

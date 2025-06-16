@@ -1,5 +1,13 @@
 import React, { useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
+import "./BalancePage.css";
+
+// Fonction pour formater les points (ex: 1500 -> "1.5K", 1000000 -> "1M")
+const formatPoints = (points) => {
+  if (points >= 1_000_000) return `${(points / 1_000_000).toFixed(1)}M`;
+  if (points >= 1_000) return `${(points / 1_000).toFixed(1)}K`;
+  return points.toString().padStart(2, "0");
+};
 
 const BalancePage = ({ points, pointsHistory }) => {
   const { user, fetchBalance } = useUser();
@@ -7,8 +15,8 @@ const BalancePage = ({ points, pointsHistory }) => {
   useEffect(() => {
     if (user?.telegram_id) {
       fetchBalance(user.telegram_id)
-        .then(() => console.log("Balance récupérée"))
-        .catch((err) => console.error("Erreur fetch balance :", err));
+        .then(() => console.log("✅ Balance récupérée"))
+        .catch((err) => console.error("❌ Erreur fetch balance :", err));
     }
   }, [user, fetchBalance]);
 
@@ -16,7 +24,9 @@ const BalancePage = ({ points, pointsHistory }) => {
 
   return (
     <div className="page-container">
-      <h2>💰 Balance des Points</h2>
+      {/* 💰 Titre personnalisé avec solde formaté */}
+      <h2>💰 {formatPoints(points)} pts</h2>
+
       <p>Total des points : {points} pts</p>
 
       <h3>📜 Historique des derniers points gagnés :</h3>

@@ -14,12 +14,17 @@ const LevelPage = ({ level }) => {
   }, [user, fetchBalance]);
 
   return (
-    <div className="page-container">
-      <h2>🏆 Niveau actuel : {level}</h2>
-      <div className="progress-bar">
-        <div className="progress" style={{ width: `${(level / 9) * 100}%` }}></div>
+    <div className="level-container">
+      <h2 className="level-title">🏆 lvl {level}</h2>
+
+      <div className="level-progress-bar">
+        <div
+          className="level-progress"
+          style={{ width: `${(level / 9) * 100}%` }}
+        ></div>
       </div>
-      <p>Vous êtes au niveau {level} sur 9.</p>
+
+      <p className="level-info">Niveau {level} sur 9</p>
     </div>
   );
 };
