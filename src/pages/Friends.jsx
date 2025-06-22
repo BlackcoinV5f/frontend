@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
+import { FaUserFriends, FaCopy, FaTelegram, FaUserPlus, FaClipboardList } from "react-icons/fa";
+import { GiPartyPopper } from "react-icons/gi";
+import "./Friends.css";
 
 const Friends = () => {
   const [referralLink, setReferralLink] = useState("");
   const [invitedNicknames, setInvitedNicknames] = useState([]);
+  const [isCopied, setIsCopied] = useState(false);
   const { user, fetchBalance } = useUser();
 
   // 🔁 Recharge le solde au chargement
@@ -37,7 +42,10 @@ const Friends = () => {
 
     navigator.clipboard
       .writeText(referralLink)
-      .then(() => alert("Lien copié dans le presse-papiers 📋"))
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      })
       .catch(() => alert("Erreur lors de la copie du lien."));
   };
 
@@ -57,37 +65,117 @@ const Friends = () => {
   };
 
   return (
-    <div className="page-container">
-      <h2>👥 Parrainage</h2>
-      <p>Partage ce lien avec tes amis pour les inviter :</p>
+    <motion.div 
+      className="friends-container"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="friends-header"
+        initial={{ y: -20 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 300 }}
+      >
+        <FaUserFriends className="header-icon" />
+        <h2>Programme de Parrainage</h2>
+        <GiPartyPopper className="header-icon" />
+      </motion.div>
 
-      <input
-        type="text"
-        value={referralLink || "Chargement..."}
-        readOnly
-        className="referral-link"
-      />
+      <motion.p
+        className="friends-description"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        Invitez vos amis et gagnez des récompenses ensemble !
+      </motion.p>
 
-      <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-        <button onClick={handleCopyLink} disabled={!referralLink}>
-          📋 Copier
-        </button>
-        <button onClick={openTelegramBot} disabled={!referralLink}>
-          🚀 Ouvrir le bot Telegram
-        </button>
-      </div>
+      <motion.div
+        className="referral-section"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        <h3>
+          <FaUserPlus className="section-icon" />
+          Votre lien de parrainage
+        </h3>
+        
+        <div className="referral-link-container">
+          <input
+            type="text"
+            value={referralLink || "Génération du lien..."}
+            readOnly
+            className="referral-link-input"
+          />
+          
+          <motion.button
+            className="copy-button"
+            onClick={handleCopyLink}
+            disabled={!referralLink}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaCopy className="button-icon" />
+            {isCopied ? "Copié !" : "Copier"}
+          </motion.button>
+        </div>
+        
+        <motion.button
+          className="telegram-button"
+          onClick={openTelegramBot}
+          disabled={!referralLink}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaTelegram className="button-icon" />
+          Ouvrir dans Telegram
+        </motion.button>
+      </motion.div>
 
-      <h3 style={{ marginTop: "30px" }}>📜 Joueurs invités</h3>
-      {invitedNicknames.length > 0 ? (
-        <ul>
-          {invitedNicknames.map((nickname, index) => (
-            <li key={index}>👤 {nickname}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>🕳️ Aucun joueur invité pour le moment.</p>
-      )}
-    </div>
+      <motion.div
+        className="invited-section"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <h3>
+          <FaClipboardList className="section-icon" />
+          Vos filleuls
+        </h3>
+        
+        {invitedNicknames.length > 0 ? (
+          <motion.ul className="invited-list">
+            <AnimatePresence>
+              {invitedNicknames.map((nickname, index) => (
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <div className="user-avatar"></div>
+                  <span>{nickname}</span>
+                  <div className="user-badge">Filleul</div>
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </motion.ul>
+        ) : (
+          <motion.div
+            className="empty-invites"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <img src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png" alt="No friends" />
+            <p>Vous n'avez pas encore invité d'amis</p>
+            <p>Partagez votre lien pour commencer à gagner des récompenses !</p>
+          </motion.div>
+        )}
+      </motion.div>
+    </motion.div>
   );
 };
 

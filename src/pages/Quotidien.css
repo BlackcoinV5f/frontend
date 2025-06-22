@@ -1,0 +1,86 @@
+/* src/pages/Quotidien.css */
+
+.quotidien-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+  padding: 20px;
+  background-color: #f5f5f5;
+  animation: fadeInScale 0.3s ease-in-out;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reward-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #00c851;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.reward-toast.fade-out {
+  opacity: 0;
+}
+
+.claim-btn {
+  background-color: #2196f3;
+  color: white;
+  padding: 10px 20px;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.claim-btn:hover {
+  background-color: #0d8bf2;
+}
+
+.claim-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.close-btn {
+  margin-top: 10px;
+  background-color: #ff4d4d;
+  color: white;
+  padding: 8px 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background-color: #cc0000;
+}
+
+.message {
+  margin-top: 15px;
+  font-style: italic;
+  text-align: center;
+  color: #444;
+}

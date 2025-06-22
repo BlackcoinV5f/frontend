@@ -1,24 +1,50 @@
-.home {
-  position: relative; /* important pour que .dino-launcher soit positionné à l’intérieur */
-}
-
-.dino-launcher {
+/* 📅 Bouton calendrier */
+.calendar-button {
   position: absolute;
-  bottom: 30px;
-  left: 30px;
-  width: 60px;
-  height: 60px;
-  z-index: 10;
+  top: 55px;
+  left: 14px;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  color: #222;
+  font-size: 20px;
   cursor: pointer;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-.dino-launcher img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.2s ease;
+.calendar-button:hover {
+  background-color: #f1f1f1;
+  transform: scale(1.05);
 }
 
-.dino-launcher:hover img {
-  transform: scale(1.1);
+.calendar-button.claimed {
+  background-color: #00c851;
+  color: white;
+  border-color: #00a94d;
+}
+
+/* 🧱 Modale plein écran (ajoutée aussi à Quotidien.css) */
+.fullscreen-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }

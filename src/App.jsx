@@ -4,7 +4,6 @@ import { Routes, Route } from "react-router-dom";
 import PropTypes from "prop-types";
 import { UserProvider } from "./contexts/UserContext";
 import useTelegram from "./hooks/useTelegram";
-
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
 import "./App.css";
@@ -13,7 +12,7 @@ import "./App.css";
 import AdminPanel from "./components/Dashboard/AdminPanel";
 import UserDetails from "./components/Dashboard/UserDetails";
 
-// Lazy components
+// Lazy loaded components
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
@@ -21,6 +20,7 @@ const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const AdminVerifyCode = lazy(() => import("./pages/AdminVerifyCode"));
+const Welcome = lazy(() => import("./pages/Welcome"));
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -37,9 +37,9 @@ const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
 const DinoGame = lazy(() => import("./pages/DinoGame"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
+const Quotidien = lazy(() => import("./pages/Quotidien"));
 
 const ProtectedRoute = ({ children }) => children;
-
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
@@ -54,7 +54,6 @@ function AppContent() {
   const [wallet, setWallet] = useState(0);
   const [level, setLevel] = useState(1);
 
-  // Vérifie les données Telegram
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (!tg?.initDataUnsafe) {
@@ -65,7 +64,6 @@ function AppContent() {
     console.log("✅ Données Telegram détectées !", tg.initDataUnsafe);
   }, []);
 
-  // Enregistrement utilisateur Telegram
   useEffect(() => {
     if (telegramUser) {
       const newUser = {
@@ -81,7 +79,6 @@ function AppContent() {
     }
   }, [telegramUser]);
 
-  // Récompense parrain + nouveau joueur
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const refId = params.get("ref");
@@ -91,7 +88,7 @@ function AppContent() {
       try {
         const currentUser = JSON.parse(storedUser);
         const currentUserId = currentUser?.id?.toString();
-        const currentName = currentUser?.firstName || `Utilisateur ${currentUserId}`;
+        const currentName = currentUser?.firstName || `User ${currentUserId}`;
         const alreadyRewarded = localStorage.getItem(`refRewarded_${currentUserId}`);
 
         if (currentUserId !== refId && !alreadyRewarded) {
@@ -129,7 +126,7 @@ function AppContent() {
     }
   }, []);
 
-  // Splash Screen
+  // Splash screen
   if (showSplash || !splashFinished) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
@@ -137,6 +134,15 @@ function AppContent() {
           setShowSplash(false);
           setSplashFinished(true);
         }} />
+      </Suspense>
+    );
+  }
+
+  // Welcome screen if not logged in
+  if (!user.isLoggedIn && splashFinished) {
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <Welcome />
       </Suspense>
     );
   }
@@ -165,7 +171,7 @@ function AppContent() {
               <Route path="/info" element={<Info />} />
               <Route path="/wallet" element={<Wallet />} />
               <Route path="/level" element={<LevelPage />} />
-              <Route path="/balance" element={<BalancePage />} />
+              <Route path="/balance" element={<BalancePage points={points} />} />
               <Route path="/ranking" element={<RankingPage />} />
               <Route path="/validate-task" element={<ValidateTask />} />
               <Route path="/sidebar" element={<SidebarPage />} />
@@ -176,6 +182,7 @@ function AppContent() {
               <Route path="/admin/user-details" element={<UserDetails />} />
               <Route path="/admin-verify-code" element={<AdminVerifyCode />} />
               <Route path="/admin-panel" element={<AdminDashboardPage />} />
+              <Route path="/daily" element={<Quotidien />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>
