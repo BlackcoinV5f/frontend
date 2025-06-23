@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
-import { FaUserFriends, FaCopy, FaTelegram, FaUserPlus, FaClipboardList } from "react-icons/fa";
+import { FaUserFriends, FaCopy, FaTelegram, FaUserPlus, FaClipboardList, FaCheck } from "react-icons/fa";
 import { GiPartyPopper } from "react-icons/gi";
 import "./Friends.css";
 
@@ -11,7 +11,6 @@ const Friends = () => {
   const [isCopied, setIsCopied] = useState(false);
   const { user, fetchBalance } = useUser();
 
-  // 🔁 Recharge le solde au chargement
   useEffect(() => {
     if (user?.telegram_id) {
       fetchBalance(user.telegram_id).catch((err) =>
@@ -20,47 +19,68 @@ const Friends = () => {
     }
   }, [user, fetchBalance]);
 
-  // 📎 Génère le lien de parrainage et récupère les invités
   useEffect(() => {
     if (user?.telegram_id) {
       const refId = user.telegram_id;
-
-      // ✅ Lien de parrainage Telegram compatible app & mobile
       const link = `https://t.me/Blackmaketbot/start?startapp=ref_${refId}`;
       setReferralLink(link);
 
-      // 📥 Récupère les invités depuis le localStorage
       const storageKey = `invitedBy_${refId}`;
       const localInvites = JSON.parse(localStorage.getItem(storageKey)) || [];
       setInvitedNicknames(localInvites);
     }
   }, [user]);
 
-  // 📋 Copier le lien dans le presse-papiers
   const handleCopyLink = () => {
     if (!referralLink) return;
 
-    navigator.clipboard
-      .writeText(referralLink)
-      .then(() => {
+    // Solution de repli pour les navigateurs qui ne supportent pas clipboard API
+    const copyToClipboardFallback = (text) => {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      try {
+        document.execCommand('copy');
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
-      })
-      .catch(() => alert("Erreur lors de la copie du lien."));
+      } catch (err) {
+        console.error('Erreur lors de la copie:', err);
+        alert("Erreur lors de la copie du lien. Veuillez copier manuellement.");
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    };
+
+    // Essayer d'abord avec l'API Clipboard moderne
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(referralLink)
+        .then(() => {
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000);
+        })
+        .catch(() => {
+          // Fallback si l'API échoue
+          copyToClipboardFallback(referralLink);
+        });
+    } else {
+      // Fallback pour les anciens navigateurs
+      copyToClipboardFallback(referralLink);
+    }
   };
 
-  // 🚀 Ouvre Telegram (app mobile en priorité)
   const openTelegramBot = () => {
     if (!user?.telegram_id) return;
 
     const telegramLink = `tg://resolve?domain=Blackmaketbot&startapp=ref_${user.telegram_id}`;
     const fallbackLink = `https://t.me/Blackmaketbot/start?startapp=ref_${user.telegram_id}`;
     
-    window.location.href = telegramLink;
+    window.open(telegramLink, '_blank');
 
-    // Si l'app Telegram n'est pas installée, bascule vers navigateur
     setTimeout(() => {
-      window.location.href = fallbackLink;
+      window.open(fallbackLink, '_blank');
     }, 1500);
   };
 
@@ -108,17 +128,27 @@ const Friends = () => {
             value={referralLink || "Génération du lien..."}
             readOnly
             className="referral-link-input"
+            onClick={(e) => e.target.select()}
           />
           
           <motion.button
-            className="copy-button"
+            className={`copy-button ${isCopied ? "copied" : ""}`}
             onClick={handleCopyLink}
             disabled={!referralLink}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <FaCopy className="button-icon" />
-            {isCopied ? "Copié !" : "Copier"}
+            {isCopied ? (
+              <>
+                <FaCheck className="button-icon" />
+                Copié !
+              </>
+            ) : (
+              <>
+                <FaCopy className="button-icon" />
+                Copier
+              </>
+            )}
           </motion.button>
         </div>
         

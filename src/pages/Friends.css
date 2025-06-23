@@ -235,3 +235,88 @@
     height: 35px;
   }
 }
+
+/* Ajoutez ces styles à votre fichier Friends.css */
+
+.referral-link-container {
+  position: relative;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.referral-link-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 14px;
+  cursor: text;
+  transition: all 0.3s ease;
+}
+
+.referral-link-input:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.copy-button {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.copy-button.copied {
+  background: #4CAF50;
+}
+
+.copy-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-icon {
+  font-size: 16px;
+}
+
+.telegram-button {
+  width: 100%;
+  background: #0088cc;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.telegram-button:hover {
+  background: #0077b3;
+}
+
+.telegram-button:disabled {
+  background: rgba(0, 136, 204, 0.5);
+  cursor: not-allowed;
+}
