@@ -8,10 +8,6 @@ import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
 import "./App.css";
 
-// Components
-import AdminPanel from "./components/Dashboard/AdminPanel";
-import UserDetails from "./components/Dashboard/UserDetails";
-
 // Lazy loaded components
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
@@ -19,8 +15,6 @@ const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
-const AdminVerifyCode = lazy(() => import("./pages/AdminVerifyCode"));
-const Welcome = lazy(() => import("./pages/Welcome"));
 
 // Pages
 const Home = lazy(() => import("./pages/Home"));
@@ -36,7 +30,6 @@ const SidebarPage = lazy(() => import("./pages/SidebarPage"));
 const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
 const DinoGame = lazy(() => import("./pages/DinoGame"));
-const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 const Quotidien = lazy(() => import("./pages/Quotidien"));
 
 const ProtectedRoute = ({ children }) => children;
@@ -138,15 +131,6 @@ function AppContent() {
     );
   }
 
-  // Welcome screen if not logged in
-  if (!user.isLoggedIn && splashFinished) {
-    return (
-      <Suspense fallback={<LoadingSpinner />}>
-        <Welcome />
-      </Suspense>
-    );
-  }
-
   return (
     <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <ErrorBoundary>
@@ -178,10 +162,6 @@ function AppContent() {
               <Route path="/my-actions" element={<MyActions />} />
               <Route path="/status" element={<Status />} />
               <Route path="/dino-game" element={<DinoGame />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/admin/user-details" element={<UserDetails />} />
-              <Route path="/admin-verify-code" element={<AdminVerifyCode />} />
-              <Route path="/admin-panel" element={<AdminDashboardPage />} />
               <Route path="/daily" element={<Quotidien />} />
             </Routes>
           </Suspense>
