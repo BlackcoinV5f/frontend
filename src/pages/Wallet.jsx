@@ -7,7 +7,7 @@ import { RiCoinsFill } from "react-icons/ri";
 import "./Wallet.css";
 
 const Wallet = () => {
-  const { user, wallet, fetchWallet } = useUser();
+  const { user, soldeBKC, fetchWallet } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [animateBalance, setAnimateBalance] = useState(false);
   const controls = useAnimation();
@@ -75,9 +75,9 @@ const Wallet = () => {
           </motion.div>
         </div>
 
-        <p className="balance-label">Solde actuel</p>
+        <p className="balance-label">Solde Wallet ($BKC)</p>
         <motion.p
-          className="balance-amount"
+          className="solde-amount"
           animate={controls}
         >
           {isLoading ? (
@@ -89,7 +89,7 @@ const Wallet = () => {
           ) : (
             <>
               <GiCash className="cash-icon" />
-              {wallet?.balance !== undefined ? wallet.balance.toLocaleString() : "0"} pts
+              {soldeBKC !== undefined ? soldeBKC.toLocaleString() : "0"} $BKC
             </>
           )}
         </motion.p>

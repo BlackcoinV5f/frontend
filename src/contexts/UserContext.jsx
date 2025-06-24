@@ -168,6 +168,7 @@ export const UserProvider = ({ children }) => {
       value={{
         user,
         wallet,
+        soldeBKC: wallet?.balance,  // ✅ Ajout ici
         level,
         ranking,
         tasks,

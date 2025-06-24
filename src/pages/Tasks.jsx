@@ -6,9 +6,9 @@ import youtubeIcon from "../assets/youtube.png";
 import facebookIcon from "../assets/facebook.png";
 import tiktokIcon from "../assets/tiktok.png";
 import twitterIcon from "../assets/twitter.png";
-import telegramIcon from "../assets/telegram.png"; // Ajoutez cette icône
+import telegramIcon from "../assets/telegram.png";
 import { useUser } from "../contexts/UserContext";
-import { FaCheck, FaTrophy, FaLock, FaExternalLinkAlt } from "react-icons/fa";
+import { FaCheck, FaTrophy, FaExternalLinkAlt } from "react-icons/fa";
 
 const tasksList = [
   {
@@ -76,25 +76,29 @@ const Tasks = () => {
       setCompletedTasks(stored);
     }
 
-    // Simulation de chargement
     setTimeout(() => setLoading(false), 800);
   }, []);
 
   const handleTaskClick = (task) => {
-    if (task.id === 0) {
-      window.open(task.link, "_blank");
-      return;
-    }
-
     window.open(task.link, "_blank");
-    setTimeout(() => navigate(`/validate-task/${task.id}`), 1000);
+
+    // Redirection différée uniquement pour les tâches nécessitant une validation
+    if (task.id !== 0) {
+      // Utiliser le stockage temporaire pour suivre quelle tâche est lancée
+      localStorage.setItem("pendingTaskId", task.id);
+    }
   };
+
+  // Redirection automatique après retour dans l'application
+  useEffect(() => {
+    const pendingId = localStorage.getItem("pendingTaskId");
+    if (pendingId !== null) {
+      localStorage.removeItem("pendingTaskId");
+      navigate(`/validate-task/${pendingId}`);
+    }
+  }, [navigate]);
 
   const isCompleted = (id) => completedTasks.includes(id);
-
-  const calculateProgress = () => {
-    return (completedTasks.length / tasksList.length) * 100;
-  };
 
   return (
     <motion.div 
@@ -115,12 +119,12 @@ const Tasks = () => {
             <motion.div
               className="progress-fill"
               initial={{ width: 0 }}
-              animate={{ width: `${calculateProgress()}%` }}
+              animate={{ width: `${(completedTasks.length / tasksList.length) * 100}%` }}
               transition={{ delay: 0.4, duration: 1, type: "spring" }}
             />
           </div>
           <span className="progress-text">
-            {completedTasks.length} / {tasksList.length} tâches complétées
+            {completedTasks.length} tâche(s) complétée(s)
           </span>
         </div>
       </motion.div>
