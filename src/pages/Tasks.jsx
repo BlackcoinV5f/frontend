@@ -65,37 +65,64 @@ const Tasks = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("completedTasks")) || [];
-    const hasJoinedTelegram = localStorage.getItem("joinedTelegramChannel") === "true";
+    const loadCompletedTasks = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem("completedTasks")) || [];
+        const hasJoinedTelegram = localStorage.getItem("joinedTelegramChannel") === "true";
 
-    if (hasJoinedTelegram && !stored.includes(0)) {
-      const updated = [...stored, 0];
-      localStorage.setItem("completedTasks", JSON.stringify(updated));
-      setCompletedTasks(updated);
-    } else {
-      setCompletedTasks(stored);
-    }
+        let updatedTasks = [...stored];
+        
+        if (hasJoinedTelegram && !stored.includes(0)) {
+          updatedTasks = [...stored, 0];
+          localStorage.setItem("completedTasks", JSON.stringify(updatedTasks));
+        }
 
-    setTimeout(() => setLoading(false), 800);
+        setCompletedTasks(updatedTasks);
+      } catch (error) {
+        console.error("Error loading tasks:", error);
+        setCompletedTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCompletedTasks();
   }, []);
 
   const handleTaskClick = (task) => {
-    window.open(task.link, "_blank");
+    if (isCompleted(task.id)) return;
 
-    // Redirection différée uniquement pour les tâches nécessitant une validation
-    if (task.id !== 0) {
-      // Utiliser le stockage temporaire pour suivre quelle tâche est lancée
+    // Pour les tâches nécessitant une validation
+    if (task.validationCode) {
       localStorage.setItem("pendingTaskId", task.id);
+      localStorage.setItem("taskStartTime", Date.now());
     }
+
+    window.open(task.link, "_blank");
   };
 
-  // Redirection automatique après retour dans l'application
+  // Vérifie si une tâche est en attente de validation au retour dans l'app
   useEffect(() => {
-    const pendingId = localStorage.getItem("pendingTaskId");
-    if (pendingId !== null) {
-      localStorage.removeItem("pendingTaskId");
-      navigate(`/validate-task/${pendingId}`);
-    }
+    const checkPendingTask = () => {
+      const pendingId = localStorage.getItem("pendingTaskId");
+      const taskStartTime = localStorage.getItem("taskStartTime");
+
+      if (pendingId && taskStartTime) {
+        const timeElapsed = Date.now() - parseInt(taskStartTime);
+        
+        // Seulement rediriger si l'utilisateur revient dans un délai raisonnable (5 minutes)
+        if (timeElapsed < 5 * 60 * 1000) {
+          navigate(`/validate-task/${pendingId}`);
+        } else {
+          // Nettoyer si trop de temps a passé
+          localStorage.removeItem("pendingTaskId");
+          localStorage.removeItem("taskStartTime");
+        }
+      }
+    };
+
+    const interval = setInterval(checkPendingTask, 1000);
+    return () => clearInterval(interval);
   }, [navigate]);
 
   const isCompleted = (id) => completedTasks.includes(id);
@@ -124,7 +151,7 @@ const Tasks = () => {
             />
           </div>
           <span className="progress-text">
-            {completedTasks.length} tâche(s) complétée(s)
+            {completedTasks.length} {/* Affiche seulement le nombre de tâches complétées */}
           </span>
         </div>
       </motion.div>
