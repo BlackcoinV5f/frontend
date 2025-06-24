@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCheck, FaTimes, FaCoins, FaWallet, FaArrowLeft } from "react-icons/fa";
+import {
+  FaCheck,
+  FaTimes,
+  FaCoins,
+  FaWallet,
+  FaArrowLeft,
+  FaYoutube,
+  FaFacebook,
+  FaTwitter,
+  FaTiktok,
+} from "react-icons/fa";
 import "./ValidateTask.css";
 
 const validationCodes = {
@@ -20,6 +30,14 @@ const platformIcons = {
   5: <FaYoutube size={32} color="#FF0000" />,
 };
 
+const taskData = {
+  1: { platform: "YouTube", points: 500, color: "#FF0000" },
+  2: { platform: "Facebook", points: 300, color: "#1877F2" },
+  3: { platform: "TikTok", points: 700, color: "#000000" },
+  4: { platform: "Twitter", points: 400, color: "#1DA1F2" },
+  5: { platform: "YouTube", points: 100, color: "#FF0000" },
+};
+
 const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
   const { taskId } = useParams();
   const navigate = useNavigate();
@@ -29,13 +47,7 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [rewardDetails, setRewardDetails] = useState(null);
 
-  const task = {
-    1: { platform: "YouTube", points: 500, color: "#FF0000" },
-    2: { platform: "Facebook", points: 300, color: "#1877F2" },
-    3: { platform: "TikTok", points: 700, color: "#000000" },
-    4: { platform: "Twitter", points: 400, color: "#1DA1F2" },
-    5: { platform: "YouTube", points: 100, color: "#FF0000" },
-  }[taskId];
+  const task = taskData[taskId];
 
   useEffect(() => {
     if (isSuccess) {
@@ -55,15 +67,14 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
     setIsValidating(true);
     setError("");
 
-    // Simulation de délai pour la validation
     setTimeout(() => {
       if (code === validationCodes[taskId]) {
         const mainReward = Math.floor(task.points * 0.8);
         const walletReward = Math.floor(task.points * 0.2);
-        
+
         const newPoints = points + mainReward;
         const newWallet = wallet + walletReward;
-        
+
         setPoints(newPoints);
         setWallet(newWallet);
         localStorage.setItem("points", JSON.stringify(newPoints));
@@ -76,8 +87,9 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
         setRewardDetails({
           mainReward,
           walletReward,
-          total: task.points
+          total: task.points,
         });
+
         setIsSuccess(true);
       } else {
         setError("Code incorrect. Réessayez.");
@@ -133,135 +145,46 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
             >
               <FaCheck size={60} />
             </motion.div>
-            
             <h2>Tâche validée avec succès !</h2>
-            
-            <motion.div 
-              className="reward-breakdown"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="reward-item">
-                <FaCoins color="#FFD700" />
-                <span>Balance principale: +{rewardDetails?.mainReward} pts</span>
-              </div>
-              <div className="reward-item">
-                <FaWallet color="#4CAF50" />
-                <span>Portefeuille: +{rewardDetails?.walletReward} pts</span>
-              </div>
-              <div className="reward-total">
-                Total gagné: {rewardDetails?.total} pts
-              </div>
+            <motion.div className="reward-breakdown" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+              <div className="reward-item"><FaCoins color="#FFD700" /> <span>Balance principale: +{rewardDetails?.mainReward} pts</span></div>
+              <div className="reward-item"><FaWallet color="#4CAF50" /> <span>Portefeuille: +{rewardDetails?.walletReward} pts</span></div>
+              <div className="reward-total">Total gagné: {rewardDetails?.total} pts</div>
             </motion.div>
-            
-            <motion.p
-              className="redirect-message"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
+            <motion.p className="redirect-message" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
               Redirection vers les tâches...
             </motion.p>
           </motion.div>
         ) : (
-          <motion.div
-            key="form"
-            className="validation-form"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div 
-              className="task-header"
-              style={{ backgroundColor: `${task.color}20` }}
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="platform-icon">
-                {platformIcons[taskId]}
-              </div>
+          <motion.div key="form" className="validation-form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div className="task-header" style={{ backgroundColor: `${task.color}20` }} initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
+              <div className="platform-icon">{platformIcons[taskId]}</div>
               <h2>Validation {task.platform}</h2>
             </motion.div>
-            
-            <motion.p
-              className="instructions"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
+            <motion.p className="instructions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
               Entrez le code de validation fourni après avoir complété la tâche sur {task.platform}
             </motion.p>
-            
-            <motion.div
-              className="input-container"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <input
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="Entrez le code ici"
-                className={error ? "error-input" : ""}
-              />
+            <motion.div className="input-container" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+              <input type="text" value={code} onChange={(e) => setCode(e.target.value)} placeholder="Entrez le code ici" className={error ? "error-input" : ""} />
               {error && (
-                <motion.p
-                  className="error-message"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                >
+                <motion.p className="error-message" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
                   <FaTimes /> {error}
                 </motion.p>
               )}
             </motion.div>
-            
-            <motion.button
-              className={`validate-button ${isValidating ? "validating" : ""}`}
-              onClick={handleValidation}
-              disabled={isValidating}
-              whileHover={!isValidating ? { scale: 1.05 } : {}}
-              whileTap={!isValidating ? { scale: 0.95 } : {}}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              {isValidating ? (
-                <span className="spinner"></span>
-              ) : (
-                <>
-                  <FaCheck /> Valider
-                </>
-              )}
+            <motion.button className={`validate-button ${isValidating ? "validating" : ""}`} onClick={handleValidation} disabled={isValidating} whileHover={!isValidating ? { scale: 1.05 } : {}} whileTap={!isValidating ? { scale: 0.95 } : {}} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
+              {isValidating ? <span className="spinner"></span> : (<><FaCheck /> Valider</>)}
             </motion.button>
-            
-            <motion.div
-              className="reward-info"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-            >
+            <motion.div className="reward-info" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
               <div className="info-card">
                 <h3>💡 Comment obtenir le code ?</h3>
                 <p>Complétez la tâche sur {task.platform} et le code vous sera fourni.</p>
               </div>
-              
               <div className="reward-distribution">
                 <h4>Répartition des récompenses :</h4>
                 <div className="distribution-bar">
-                  <div 
-                    className="main-balance" 
-                    style={{ width: "80%" }}
-                    data-tooltip="80% - Balance principale"
-                  ></div>
-                  <div 
-                    className="wallet-balance" 
-                    style={{ width: "20%" }}
-                    data-tooltip="20% - Portefeuille convertible"
-                  ></div>
+                  <div className="main-balance" style={{ width: "80%" }} data-tooltip="80% - Balance principale"></div>
+                  <div className="wallet-balance" style={{ width: "20%" }} data-tooltip="20% - Portefeuille convertible"></div>
                 </div>
                 <div className="distribution-labels">
                   <span><FaCoins /> 80% Balance</span>
