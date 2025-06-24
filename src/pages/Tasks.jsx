@@ -63,9 +63,10 @@ const Tasks = () => {
   const [completedTasks, setCompletedTasks] = useState([]);
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
+  const [visibleTasks, setVisibleTasks] = useState([]);
 
   useEffect(() => {
-    const loadCompletedTasks = () => {
+    const loadTasks = () => {
       try {
         const stored = JSON.parse(localStorage.getItem("completedTasks")) || [];
         const hasJoinedTelegram = localStorage.getItem("joinedTelegramChannel") === "true";
@@ -78,15 +79,17 @@ const Tasks = () => {
         }
 
         setCompletedTasks(updatedTasks);
+        setVisibleTasks(tasksList); // Assure que toutes les tâches sont visibles
       } catch (error) {
         console.error("Error loading tasks:", error);
         setCompletedTasks([]);
+        setVisibleTasks(tasksList);
       } finally {
         setLoading(false);
       }
     };
 
-    loadCompletedTasks();
+    loadTasks();
   }, []);
 
   const handleTaskClick = (task) => {
@@ -94,35 +97,35 @@ const Tasks = () => {
 
     // Pour les tâches nécessitant une validation
     if (task.validationCode) {
-      localStorage.setItem("pendingTaskId", task.id);
-      localStorage.setItem("taskStartTime", Date.now());
+      localStorage.setItem("pendingTask", JSON.stringify({
+        id: task.id,
+        timestamp: Date.now()
+      }));
     }
 
     window.open(task.link, "_blank");
   };
 
-  // Vérifie si une tâche est en attente de validation au retour dans l'app
+  // Vérifie les tâches en attente au retour dans l'app
   useEffect(() => {
-    const checkPendingTask = () => {
-      const pendingId = localStorage.getItem("pendingTaskId");
-      const taskStartTime = localStorage.getItem("taskStartTime");
-
-      if (pendingId && taskStartTime) {
-        const timeElapsed = Date.now() - parseInt(taskStartTime);
+    const handleAppVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const pendingTask = JSON.parse(localStorage.getItem("pendingTask"));
         
-        // Seulement rediriger si l'utilisateur revient dans un délai raisonnable (5 minutes)
-        if (timeElapsed < 5 * 60 * 1000) {
-          navigate(`/validate-task/${pendingId}`);
-        } else {
-          // Nettoyer si trop de temps a passé
-          localStorage.removeItem("pendingTaskId");
-          localStorage.removeItem("taskStartTime");
+        if (pendingTask && (Date.now() - pendingTask.timestamp < 300000)) { // 5 minutes
+          navigate(`/validate-task/${pendingTask.id}`);
+          localStorage.removeItem("pendingTask");
+        } else if (pendingTask) {
+          localStorage.removeItem("pendingTask");
         }
       }
     };
 
-    const interval = setInterval(checkPendingTask, 1000);
-    return () => clearInterval(interval);
+    document.addEventListener('visibilitychange', handleAppVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleAppVisibilityChange);
+    };
   }, [navigate]);
 
   const isCompleted = (id) => completedTasks.includes(id);
@@ -151,7 +154,7 @@ const Tasks = () => {
             />
           </div>
           <span className="progress-text">
-            {completedTasks.length} {/* Affiche seulement le nombre de tâches complétées */}
+            <span className="tasks-count">{completedTasks.length}</span>
           </span>
         </div>
       </motion.div>
@@ -162,6 +165,7 @@ const Tasks = () => {
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           />
+          <p>Chargement des tâches...</p>
         </div>
       ) : (
         <motion.div 
@@ -171,7 +175,7 @@ const Tasks = () => {
           transition={{ delay: 0.6 }}
         >
           <AnimatePresence>
-            {tasksList.map((task, index) => (
+            {visibleTasks.map((task, index) => (
               <motion.div
                 key={task.id}
                 className={`task-item ${isCompleted(task.id) ? "task-completed" : ""}`}
