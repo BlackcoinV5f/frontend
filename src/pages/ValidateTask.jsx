@@ -41,7 +41,7 @@ const taskData = {
 
 const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
   const { taskId } = useParams();
-  const taskKey = parseInt(taskId); // Conversion en entier
+  const taskKey = parseInt(taskId); // ✅ conversion ici
   const task = taskData[taskKey];
   const navigate = useNavigate();
 
@@ -51,7 +51,6 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [rewardDetails, setRewardDetails] = useState(null);
 
-  // Redirection après validation
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
@@ -60,14 +59,6 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
       return () => clearTimeout(timer);
     }
   }, [isSuccess, navigate]);
-
-  // Vérification des données et console.log pour débogage
-  useEffect(() => {
-    console.log("TaskId:", taskId, "TaskKey:", taskKey, "Task:", task);
-    if (!task) {
-      console.error("Tâche introuvable ou mal configurée.");
-    }
-  }, [taskId, taskKey, task]);
 
   const handleValidation = () => {
     if (!code.trim()) {
@@ -111,7 +102,6 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
     }, 1500);
   };
 
-  // Gestion de tâche introuvable
   if (!task) {
     return (
       <motion.div
@@ -119,7 +109,7 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <h1>Erreur : Tâche introuvable</h1>
+        <p>❌ Tâche introuvable.</p>
         <button onClick={() => navigate("/tasks")}>Retour aux tâches</button>
       </motion.div>
     );
@@ -160,29 +150,65 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
               <FaCheck size={60} />
             </motion.div>
             <h2>Tâche validée avec succès !</h2>
-            <div className="reward-breakdown">
+            <motion.div
+              className="reward-breakdown"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
               <div className="reward-item">
-                <FaCoins color="#FFD700" />
+                <FaCoins color="#FFD700" />{" "}
                 <span>Balance principale: +{rewardDetails?.mainReward} pts</span>
               </div>
               <div className="reward-item">
-                <FaWallet color="#4CAF50" />
+                <FaWallet color="#4CAF50" />{" "}
                 <span>Portefeuille: +{rewardDetails?.walletReward} pts</span>
               </div>
-              <div className="reward-total">Total gagné: {rewardDetails?.total} pts</div>
-            </div>
-            <p className="redirect-message">Redirection vers les tâches...</p>
+              <div className="reward-total">
+                Total gagné: {rewardDetails?.total} pts
+              </div>
+            </motion.div>
+            <motion.p
+              className="redirect-message"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              Redirection vers les tâches...
+            </motion.p>
           </motion.div>
         ) : (
-          <motion.div key="form" className="validation-form">
-            <div className="task-header" style={{ backgroundColor: `${task.color}20` }}>
+          <motion.div
+            key="form"
+            className="validation-form"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="task-header"
+              style={{ backgroundColor: `${task.color}20` }}
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
               <div className="platform-icon">{platformIcons[taskKey]}</div>
               <h2>Validation {task.platform}</h2>
-            </div>
-            <p className="instructions">
-              Entrez le code de validation fourni après avoir complété la tâche sur {task.platform}.
-            </p>
-            <div className="input-container">
+            </motion.div>
+            <motion.p
+              className="instructions"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              Entrez le code de validation fourni après avoir complété la tâche sur {task.platform}
+            </motion.p>
+            <motion.div
+              className="input-container"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
               <input
                 type="text"
                 value={code}
@@ -191,18 +217,58 @@ const ValidateTask = ({ points, setPoints, wallet, setWallet }) => {
                 className={error ? "error-input" : ""}
               />
               {error && (
-                <p className="error-message">
+                <motion.p
+                  className="error-message"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                >
                   <FaTimes /> {error}
-                </p>
+                </motion.p>
               )}
-            </div>
-            <button
+            </motion.div>
+            <motion.button
               className={`validate-button ${isValidating ? "validating" : ""}`}
               onClick={handleValidation}
               disabled={isValidating}
+              whileHover={!isValidating ? { scale: 1.05 } : {}}
+              whileTap={!isValidating ? { scale: 0.95 } : {}}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
             >
-              {isValidating ? <span className="spinner"></span> : <><FaCheck /> Valider</>}
-            </button>
+              {isValidating ? <span className="spinner"></span> : (<><FaCheck /> Valider</>)}
+            </motion.button>
+            <motion.div
+              className="reward-info"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
+              <div className="info-card">
+                <h3>💡 Comment obtenir le code ?</h3>
+                <p>Complétez la tâche sur {task.platform} et le code vous sera fourni.</p>
+              </div>
+              <div className="reward-distribution">
+                <h4>Répartition des récompenses :</h4>
+                <div className="distribution-bar">
+                  <div
+                    className="main-balance"
+                    style={{ width: "80%" }}
+                    data-tooltip="80% - Balance principale"
+                  ></div>
+                  <div
+                    className="wallet-balance"
+                    style={{ width: "20%" }}
+                    data-tooltip="20% - Portefeuille convertible"
+                  ></div>
+                </div>
+                <div className="distribution-labels">
+                  <span><FaCoins /> 80% Balance</span>
+                  <span><FaWallet /> 20% Portefeuille</span>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,51 +1,75 @@
 .info-container {
-    color: white;
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-    max-height: 70vh;            /* Limite la hauteur */
-    overflow-y: auto;            /* Ajoute un scroll vertical si nécessaire */
-    scrollbar-width: thin;       /* Scroll discret pour Firefox */
-    scrollbar-color: #999 #333;  /* Couleurs pour Firefox */
-  }
-  
-  /* Scroll custom pour Chrome */
-  .info-container::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .info-container::-webkit-scrollbar-thumb {
-    background: #999;
-    border-radius: 3px;
-  }
-  
-  .info-container::-webkit-scrollbar-track {
-    background: #333;
-  }
-  
-  .info-container h2 {
-    font-size: 28px;
-    margin-bottom: 10px;
-  }
-  
-  .info-container h3 {
-    margin-top: 20px;
-    font-size: 22px;
-  }
-  
-  .info-container ul {
-    padding-left: 20px;
-    text-align: left;
-  }
-  
-  .info-container li {
-    margin-bottom: 8px;
-  }
-  
-  .info-container p {
-    line-height: 1.6;
-  }
-  
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 2rem auto;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+.highlight {
+  background: rgba(255, 215, 0, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid gold;
+}
+
+.social-grid {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.social-icon {
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.roadmap {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+}
+
+.roadmap ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.roadmap li {
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.roadmap li:before {
+  content: "✓";
+  color: gold;
+  position: absolute;
+  left: 0;
+}
+
+.footer-note {
+  text-align: center;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Animations supplémentaires */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.info-container:hover {
+  animation: pulse 3s infinite;
+}
