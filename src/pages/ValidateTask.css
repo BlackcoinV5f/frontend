@@ -36,6 +36,10 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+.validate-container {
+  background-color: red !important;
+}
+
 /* Task header styling */
 .task-header {
   display: flex;
