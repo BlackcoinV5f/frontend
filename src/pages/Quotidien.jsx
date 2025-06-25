@@ -2,32 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaGift, FaFire, FaCheck, FaTimes, FaCoins } from "react-icons/fa";
+import { useUser } from "../contexts/UserContext";
 import "./Quotidien.css";
 
 const Quotidien = () => {
+  const { user, fetchUserProfile, updateUser } = useUser();
+  const navigate = useNavigate();
   const [streak, setStreak] = useState(0);
   const [claimedToday, setClaimedToday] = useState(false);
   const [message, setMessage] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
   const [toasts, setToasts] = useState([]);
-  const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("telegramUser"));
-  const userId = user?.id;
-
+  // Récupérer les données utilisateur au montage
   useEffect(() => {
-    if (!userId) return;
-
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/daily-streak/${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setStreak(data.streak || 0);
-        setClaimedToday(data.claimed_today || false);
-      })
-      .catch((err) => {
-        console.error("❌ Erreur récupération streak :", err);
-      });
-  }, [userId]);
+    if (user?.telegram_id) {
+      fetchUserProfile(user.telegram_id)
+        .then((data) => {
+          setStreak(data.streak || 0);
+          setClaimedToday(data.claimed_today || false);
+        })
+        .catch((err) => {
+          console.error("Erreur lors de la récupération des données utilisateur :", err);
+        });
+    }
+  }, [user?.telegram_id, fetchUserProfile]);
 
   const addToast = (text) => {
     const id = Date.now();
@@ -38,36 +37,27 @@ const Quotidien = () => {
   };
 
   const handleClaim = async () => {
-    if (claimedToday || !userId) {
+    if (claimedToday || !user?.telegram_id) {
       setMessage("✅ Récompense déjà réclamée aujourd'hui !");
       return;
     }
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/claim-daily-reward?user_id=${userId}`,
-        { method: "POST" }
-      );
-      const data = await res.json();
-
-      if (res.ok) {
-        setStreak(data.streak);
-        setClaimedToday(true);
-        setMessage(`🎉 +${data.reward_points} points ! Streak : ${data.streak} jours`);
-        setShowConfetti(true);
-        addToast(`+${data.reward_points} points`);
-        setTimeout(() => setShowConfetti(false), 5000);
-      } else {
-        setMessage(data.detail || "❌ Une erreur est survenue.");
-      }
+      const updatedUser = await updateUser(user.telegram_id, { action: "claim_daily_reward" });
+      setStreak(updatedUser.streak || 0);
+      setClaimedToday(true);
+      setMessage(`🎉 +${updatedUser.reward_points} points ! Streak : ${updatedUser.streak} jours`);
+      setShowConfetti(true);
+      addToast(`+${updatedUser.reward_points} points`);
+      setTimeout(() => setShowConfetti(false), 5000);
     } catch (err) {
-      console.error("❌ Erreur lors de la réclamation :", err);
-      setMessage("❌ Une erreur réseau est survenue.");
+      console.error("Erreur lors de la réclamation :", err);
+      setMessage("❌ Une erreur est survenue.");
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="quotidien-page"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -81,15 +71,15 @@ const Quotidien = () => {
               key={i}
               className="confetti"
               initial={{ y: -100, x: Math.random() * 100 - 50, opacity: 1 }}
-              animate={{ 
+              animate={{
                 y: window.innerHeight,
                 x: Math.random() * 200 - 100,
                 rotate: Math.random() * 360,
-                opacity: 0
+                opacity: 0,
               }}
-              transition={{ 
+              transition={{
                 duration: 3 + Math.random() * 2,
-                ease: "linear"
+                ease: "linear",
               }}
               style={{
                 background: `hsl(${Math.random() * 360}, 100%, 50%)`,
@@ -101,7 +91,12 @@ const Quotidien = () => {
         </div>
       )}
 
-      <motion.div className="reward-card" initial={{ scale: 0.9 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300 }}>
+      <motion.div
+        className="reward-card"
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ type: "spring", stiffness: 300 }}
+      >
         <motion.div
           className="reward-icon"
           animate={{ y: [0, -10, 0], rotate: [0, 5, -5, 0] }}
@@ -152,7 +147,7 @@ const Quotidien = () => {
         </motion.button>
 
         {message && (
-          <motion.p 
+          <motion.p
             className="message"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

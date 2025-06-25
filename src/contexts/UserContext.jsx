@@ -159,6 +159,17 @@ export const UserProvider = ({ children }) => {
     return res.data;
   };
 
+  // 📅 Fonctionnalités Quotidiennes
+  const fetchDailyStreak = async (telegramId) => {
+    const res = await api.get(`/daily-streak/${telegramId}`);
+    return res.data; // { streak, claimed_today }
+  };
+
+  const claimDailyReward = async (telegramId) => {
+    const res = await api.post(`/daily-streak/claim`, { telegram_id: telegramId });
+    return res.data; // { streak, reward_points }
+  };
+
   // ✅ États utiles globalement
   const isAuthenticated = !!user?.telegram_id;
   const isEmailVerified = !!user?.email_verified;
@@ -168,7 +179,7 @@ export const UserProvider = ({ children }) => {
       value={{
         user,
         wallet,
-        soldeBKC: wallet?.balance,  // ✅ Ajout ici
+        soldeBKC: wallet?.balance, // ✅ Ajout ici
         level,
         ranking,
         tasks,
@@ -193,6 +204,8 @@ export const UserProvider = ({ children }) => {
         fetchStatus,
         fetchAvailableActions,
         fetchUserActions,
+        fetchDailyStreak, // ✅ Ajout ici
+        claimDailyReward, // ✅ Ajout ici
         logout,
       }}
     >
