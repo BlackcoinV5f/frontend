@@ -2,13 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "./Tasks.css";
-
 import youtubeIcon from "../assets/youtube.png";
 import facebookIcon from "../assets/facebook.png";
 import tiktokIcon from "../assets/tiktok.png";
 import twitterIcon from "../assets/twitter.png";
 import telegramIcon from "../assets/telegram.png";
-
 import { useUser } from "../contexts/UserContext";
 import { FaCheck, FaTrophy, FaExternalLinkAlt } from "react-icons/fa";
 
@@ -46,7 +44,7 @@ const tasksList = [
     points: 700,
     link: "https://tiktok.com",
     icon: tiktokIcon,
-    validationCode: "TK789", // corrigé ici
+    validationCode: "TT789",
     color: "#000000",
   },
   {
@@ -63,58 +61,77 @@ const tasksList = [
 const Tasks = () => {
   const navigate = useNavigate();
   const [completedTasks, setCompletedTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { user } = useUser();
+  const [loading, setLoading] = useState(true);
+  const [visibleTasks, setVisibleTasks] = useState([]);
 
   useEffect(() => {
-    try {
-      const storedCompleted = JSON.parse(localStorage.getItem("completedTasks")) || [];
-      const joinedTelegram = localStorage.getItem("joinedTelegramChannel") === "true";
+    const loadTasks = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem("completedTasks")) || [];
+        const hasJoinedTelegram = localStorage.getItem("joinedTelegramChannel") === "true";
 
-      let updatedCompleted = [...storedCompleted];
+        let updatedTasks = [...stored];
+        
+        if (hasJoinedTelegram && !stored.includes(0)) {
+          updatedTasks = [...stored, 0];
+          localStorage.setItem("completedTasks", JSON.stringify(updatedTasks));
+        }
 
-      if (joinedTelegram && !storedCompleted.includes(0)) {
-        updatedCompleted.push(0);
-        localStorage.setItem("completedTasks", JSON.stringify(updatedCompleted));
+        setCompletedTasks(updatedTasks);
+        setVisibleTasks(tasksList); // Assure que toutes les tâches sont visibles
+      } catch (error) {
+        console.error("Error loading tasks:", error);
+        setCompletedTasks([]);
+        setVisibleTasks(tasksList);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setCompletedTasks(updatedCompleted);
-    } catch (err) {
-      console.error("Erreur lors du chargement des tâches :", err);
-    } finally {
-      setLoading(false);
-    }
+    loadTasks();
   }, []);
-
-  const isCompleted = (id) => completedTasks.includes(id);
 
   const handleTaskClick = (task) => {
     if (isCompleted(task.id)) return;
 
-    // Ouvre le lien dans une nouvelle fenêtre
-    window.open(task.link, "_blank");
-
-    // Si validation nécessaire, on sauvegarde la tâche et redirige directement
+    // Pour les tâches nécessitant une validation
     if (task.validationCode) {
       localStorage.setItem("pendingTask", JSON.stringify({
         id: task.id,
-        timestamp: Date.now(),
+        timestamp: Date.now()
       }));
+    }
 
-      setTimeout(() => {
-        navigate(`/validate-task/${task.id}`);
-      }, 500); // petit délai pour laisser charger l'onglet
-    } else if (task.id === 0) {
-      // Telegram — tâche automatique
-      const newCompleted = [...completedTasks, 0];
-      setCompletedTasks(newCompleted);
-      localStorage.setItem("completedTasks", JSON.stringify(newCompleted));
-      localStorage.setItem("joinedTelegramChannel", "true");
+    window.open(task.link, "_blank");
+  };
+
+  // Vérifie les tâches en attente au retour dans l'app
+  useEffect(() => {
+  const handleAppVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      const pendingTask = JSON.parse(localStorage.getItem("pendingTask"));
+
+      if (pendingTask && (Date.now() - pendingTask.timestamp < 300000)) {
+        navigate(`/validate-task/${parseInt(pendingTask.id)}`); // ✅ Correction ici
+        localStorage.removeItem("pendingTask"); // ou déplacer dans ValidateTask.jsx
+      } else if (pendingTask) {
+        localStorage.removeItem("pendingTask");
+      }
     }
   };
 
+  document.addEventListener('visibilitychange', handleAppVisibilityChange);
+
+  return () => {
+    document.removeEventListener('visibilitychange', handleAppVisibilityChange);
+  };
+}, [navigate]);
+
+  const isCompleted = (id) => completedTasks.includes(id);
+
   return (
-    <motion.div
+    <motion.div 
       className="tasks-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -132,14 +149,12 @@ const Tasks = () => {
             <motion.div
               className="progress-fill"
               initial={{ width: 0 }}
-              animate={{
-                width: `${(completedTasks.length / tasksList.length) * 100}%`,
-              }}
+              animate={{ width: `${(completedTasks.length / tasksList.length) * 100}%` }}
               transition={{ delay: 0.4, duration: 1, type: "spring" }}
             />
           </div>
           <span className="progress-text">
-            <span className="tasks-count">{completedTasks.length} / {tasksList.length}</span>
+            <span className="tasks-count">{completedTasks.length}</span>
           </span>
         </div>
       </motion.div>
@@ -153,14 +168,14 @@ const Tasks = () => {
           <p>Chargement des tâches...</p>
         </div>
       ) : (
-        <motion.div
+        <motion.div 
           className="tasks-list"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
           <AnimatePresence>
-            {tasksList.map((task, index) => (
+            {visibleTasks.map((task, index) => (
               <motion.div
                 key={task.id}
                 className={`task-item ${isCompleted(task.id) ? "task-completed" : ""}`}
