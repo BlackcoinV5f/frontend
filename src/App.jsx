@@ -39,22 +39,28 @@ ProtectedRoute.propTypes = {
 
 function AppContent() {
   const telegramUser = useTelegram();
+
+  // Initialisation sécurisée des états
   const [user, setUser] = useState({ username: "Guest", isLoggedIn: false });
+  const [points, setPoints] = useState(() => {
+    return JSON.parse(localStorage.getItem("points")) || 0;
+  });
+  const [wallet, setWallet] = useState(() => {
+    return JSON.parse(localStorage.getItem("wallet")) || 0;
+  });
+  const [level, setLevel] = useState(1);
   const [initData, setInitData] = useState(null);
   const [splashFinished, setSplashFinished] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-  const [points, setPoints] = useState(0);
-  const [wallet, setWallet] = useState(0);
-  const [level, setLevel] = useState(1);
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
     if (!tg?.initDataUnsafe) {
-      alert("❌ Données Telegram introuvables !");
+      console.error("❌ Données Telegram introuvables !");
       return;
     }
     setInitData(tg.initDataUnsafe);
-    console.log("✅ Données Telegram détectées !", tg.initDataUnsafe);
+    console.log("✅ Données Telegram détectées :", tg.initDataUnsafe);
   }, []);
 
   useEffect(() => {
@@ -72,54 +78,7 @@ function AppContent() {
     }
   }, [telegramUser]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const refId = params.get("ref");
-    const storedUser = localStorage.getItem("telegramUser");
-
-    if (refId && storedUser) {
-      try {
-        const currentUser = JSON.parse(storedUser);
-        const currentUserId = currentUser?.id?.toString();
-        const currentName = currentUser?.firstName || `User ${currentUserId}`;
-        const alreadyRewarded = localStorage.getItem(`refRewarded_${currentUserId}`);
-
-        if (currentUserId !== refId && !alreadyRewarded) {
-          const inviteKey = `invitedBy_${refId}`;
-          const invitedList = JSON.parse(localStorage.getItem(inviteKey)) || [];
-
-          if (!invitedList.includes(currentName)) {
-            invitedList.push(currentName);
-            localStorage.setItem(inviteKey, JSON.stringify(invitedList));
-
-            const reward = 1000;
-            const walletPart = Math.floor(reward * 0.15);
-            const balancePart = reward - walletPart;
-
-            const refBalanceKey = `balance_${refId}`;
-            const refWalletKey = `wallet_${refId}`;
-            const refBalance = parseInt(localStorage.getItem(refBalanceKey)) || 0;
-            const refWallet = parseInt(localStorage.getItem(refWalletKey)) || 0;
-            localStorage.setItem(refBalanceKey, (refBalance + balancePart).toString());
-            localStorage.setItem(refWalletKey, (refWallet + walletPart).toString());
-
-            const newBalanceKey = `balance_${currentUserId}`;
-            const newWalletKey = `wallet_${currentUserId}`;
-            const newBalance = parseInt(localStorage.getItem(newBalanceKey)) || 0;
-            const newWallet = parseInt(localStorage.getItem(newWalletKey)) || 0;
-            localStorage.setItem(newBalanceKey, (newBalance + balancePart).toString());
-            localStorage.setItem(newWalletKey, (newWallet + walletPart).toString());
-
-            localStorage.setItem(`refRewarded_${currentUserId}`, "true");
-          }
-        }
-      } catch (err) {
-        console.error("Erreur lors de l’enregistrement du parrain :", err);
-      }
-    }
-  }, []);
-
-  // Splash screen
+  // Gestion des splash screen
   if (showSplash || !splashFinished) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
@@ -149,7 +108,18 @@ function AppContent() {
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              <Route path="/" element={<Home user={user} points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
+              <Route
+                path="/"
+                element={
+                  <Home
+                    user={user}
+                    points={points}
+                    setPoints={setPoints}
+                    level={level}
+                    setLevel={setLevel}
+                  />
+                }
+              />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/info" element={<Info />} />
@@ -157,7 +127,17 @@ function AppContent() {
               <Route path="/level" element={<LevelPage />} />
               <Route path="/balance" element={<BalancePage points={points} />} />
               <Route path="/ranking" element={<RankingPage />} />
-              <Route path="/validate-task" element={<ValidateTask />} />
+              <Route
+                path="/validate/:taskId"
+                element={
+                  <ValidateTask
+                    points={points}
+                    setPoints={setPoints}
+                    wallet={wallet}
+                    setWallet={setWallet}
+                  />
+                }
+              />
               <Route path="/sidebar" element={<SidebarPage />} />
               <Route path="/my-actions" element={<MyActions />} />
               <Route path="/status" element={<Status />} />
