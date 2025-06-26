@@ -1,25 +1,20 @@
 // src/App.jsx
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import React, { useEffect, lazy, Suspense, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import PropTypes from "prop-types";
-import { UserProvider } from "./contexts/UserContext";
+import { UserProvider, useUser } from "./contexts/UserContext";
 import useTelegram from "./hooks/useTelegram";
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
 import "./App.css";
 
 // Components
-import AdminPanel from "./components/Dashboard/AdminPanel";
-import UserDetails from "./components/Dashboard/UserDetails";
-
-// Lazy loaded components
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
-const AdminVerifyCode = lazy(() => import("./pages/AdminVerifyCode"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 
 // Pages
@@ -37,6 +32,9 @@ const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
 const DinoGame = lazy(() => import("./pages/DinoGame"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
+const AdminPanel = lazy(() => import("./components/Dashboard/AdminPanel"));
+const AdminVerifyCode = lazy(() => import("./pages/AdminVerifyCode"));
+const UserDetails = lazy(() => import("./components/Dashboard/UserDetails"));
 const Quotidien = lazy(() => import("./pages/Quotidien"));
 
 const ProtectedRoute = ({ children }) => children;
@@ -45,86 +43,23 @@ ProtectedRoute.propTypes = {
 };
 
 function AppContent() {
-  const telegramUser = useTelegram();
-  const [user, setUser] = useState({ username: "Guest", isLoggedIn: false });
-  const [initData, setInitData] = useState(null);
-  const [splashFinished, setSplashFinished] = useState(false);
+  const { fetchTelegramData, user, loading } = useUser();
   const [showSplash, setShowSplash] = useState(true);
-  const [points, setPoints] = useState(0);
-  const [wallet, setWallet] = useState(0);
-  const [level, setLevel] = useState(1);
+  const [splashFinished, setSplashFinished] = useState(false);
 
+  // Récupération des données Telegram + auth
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
+
     if (!tg?.initDataUnsafe) {
       alert("❌ Données Telegram introuvables !");
       return;
     }
-    setInitData(tg.initDataUnsafe);
-    console.log("✅ Données Telegram détectées !", tg.initDataUnsafe);
-  }, []);
 
-  useEffect(() => {
-    if (telegramUser) {
-      const newUser = {
-        id: telegramUser.id,
-        firstName: telegramUser.first_name,
-        lastName: telegramUser.last_name,
-        username: telegramUser.username,
-        photo_url: telegramUser.photo_url,
-        isLoggedIn: true,
-      };
-      setUser(newUser);
-      localStorage.setItem("telegramUser", JSON.stringify(newUser));
-    }
-  }, [telegramUser]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const refId = params.get("ref");
-    const storedUser = localStorage.getItem("telegramUser");
-
-    if (refId && storedUser) {
-      try {
-        const currentUser = JSON.parse(storedUser);
-        const currentUserId = currentUser?.id?.toString();
-        const currentName = currentUser?.firstName || `User ${currentUserId}`;
-        const alreadyRewarded = localStorage.getItem(`refRewarded_${currentUserId}`);
-
-        if (currentUserId !== refId && !alreadyRewarded) {
-          const inviteKey = `invitedBy_${refId}`;
-          const invitedList = JSON.parse(localStorage.getItem(inviteKey)) || [];
-
-          if (!invitedList.includes(currentName)) {
-            invitedList.push(currentName);
-            localStorage.setItem(inviteKey, JSON.stringify(invitedList));
-
-            const reward = 1000;
-            const walletPart = Math.floor(reward * 0.15);
-            const balancePart = reward - walletPart;
-
-            const refBalanceKey = `balance_${refId}`;
-            const refWalletKey = `wallet_${refId}`;
-            const refBalance = parseInt(localStorage.getItem(refBalanceKey)) || 0;
-            const refWallet = parseInt(localStorage.getItem(refWalletKey)) || 0;
-            localStorage.setItem(refBalanceKey, (refBalance + balancePart).toString());
-            localStorage.setItem(refWalletKey, (refWallet + walletPart).toString());
-
-            const newBalanceKey = `balance_${currentUserId}`;
-            const newWalletKey = `wallet_${currentUserId}`;
-            const newBalance = parseInt(localStorage.getItem(newBalanceKey)) || 0;
-            const newWallet = parseInt(localStorage.getItem(newWalletKey)) || 0;
-            localStorage.setItem(newBalanceKey, (newBalance + balancePart).toString());
-            localStorage.setItem(newWalletKey, (newWallet + walletPart).toString());
-
-            localStorage.setItem(`refRewarded_${currentUserId}`, "true");
-          }
-        }
-      } catch (err) {
-        console.error("Erreur lors de l’enregistrement du parrain :", err);
-      }
-    }
-  }, []);
+    fetchTelegramData(tg.initDataUnsafe).catch((err) => {
+      console.error("Erreur Auth Telegram :", err);
+    });
+  }, [fetchTelegramData]);
 
   // Splash screen
   if (showSplash || !splashFinished) {
@@ -138,12 +73,13 @@ function AppContent() {
     );
   }
 
-  // Welcome screen if not logged in
-  if (!user.isLoggedIn && splashFinished) {
+  // Chargement ou pas encore authentifié
+  if (loading || !user?.telegram_id) {
     return (
-      <Suspense fallback={<LoadingSpinner />}>
-        <Welcome />
-      </Suspense>
+      <div style={{ textAlign: "center", paddingTop: "5rem" }}>
+        <LoadingSpinner />
+        <p>Connexion en cours...</p>
+      </div>
     );
   }
 
@@ -151,7 +87,7 @@ function AppContent() {
     <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
-          <Navbar user={user} points={points} wallet={wallet} />
+          <Navbar user={user} />
         </Suspense>
       </ErrorBoundary>
 
@@ -165,13 +101,14 @@ function AppContent() {
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              <Route path="/" element={<Home user={user} points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/welcome" element={<Welcome />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/info" element={<Info />} />
               <Route path="/wallet" element={<Wallet />} />
               <Route path="/level" element={<LevelPage />} />
-              <Route path="/balance" element={<BalancePage points={points} />} />
+              <Route path="/balance" element={<BalancePage />} />
               <Route path="/ranking" element={<RankingPage />} />
               <Route path="/validate-task" element={<ValidateTask />} />
               <Route path="/sidebar" element={<SidebarPage />} />
