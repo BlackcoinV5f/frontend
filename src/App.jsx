@@ -2,7 +2,7 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import PropTypes from "prop-types";
-import { UserProvider, useUser } from "./contexts/UserContext";
+import { UserProvider } from "./contexts/UserContext";
 import useTelegram from "./hooks/useTelegram";
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
@@ -45,32 +45,86 @@ ProtectedRoute.propTypes = {
 };
 
 function AppContent() {
-  const { fetchTelegramData, user, loading } = useUser();
+  const telegramUser = useTelegram();
+  const [user, setUser] = useState({ username: "Guest", isLoggedIn: false });
+  const [initData, setInitData] = useState(null);
   const [splashFinished, setSplashFinished] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-  const [authError, setAuthError] = useState(null);
-  const telegramUser = useTelegram();
+  const [points, setPoints] = useState(0);
+  const [wallet, setWallet] = useState(0);
+  const [level, setLevel] = useState(1);
 
-  // Récupérer les données Telegram & appeler le backend
   useEffect(() => {
-    const init = async () => {
-      const tg = window.Telegram?.WebApp;
+    const tg = window.Telegram?.WebApp;
+    if (!tg?.initDataUnsafe) {
+      alert("❌ Données Telegram introuvables !");
+      return;
+    }
+    setInitData(tg.initDataUnsafe);
+    console.log("✅ Données Telegram détectées !", tg.initDataUnsafe);
+  }, []);
 
-      if (!tg?.initDataUnsafe) {
-        setAuthError("❌ Données Telegram introuvables !");
-        return;
-      }
+  useEffect(() => {
+    if (telegramUser) {
+      const newUser = {
+        id: telegramUser.id,
+        firstName: telegramUser.first_name,
+        lastName: telegramUser.last_name,
+        username: telegramUser.username,
+        photo_url: telegramUser.photo_url,
+        isLoggedIn: true,
+      };
+      setUser(newUser);
+      localStorage.setItem("telegramUser", JSON.stringify(newUser));
+    }
+  }, [telegramUser]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const refId = params.get("ref");
+    const storedUser = localStorage.getItem("telegramUser");
+
+    if (refId && storedUser) {
       try {
-        await fetchTelegramData(tg.initDataUnsafe);
-      } catch (error) {
-        console.error("Erreur Auth Telegram :", error);
-        setAuthError("❌ Échec de l’authentification. Veuillez réessayer.");
-      }
-    };
+        const currentUser = JSON.parse(storedUser);
+        const currentUserId = currentUser?.id?.toString();
+        const currentName = currentUser?.firstName || `User ${currentUserId}`;
+        const alreadyRewarded = localStorage.getItem(`refRewarded_${currentUserId}`);
 
-    init();
-  }, [fetchTelegramData]);
+        if (currentUserId !== refId && !alreadyRewarded) {
+          const inviteKey = `invitedBy_${refId}`;
+          const invitedList = JSON.parse(localStorage.getItem(inviteKey)) || [];
+
+          if (!invitedList.includes(currentName)) {
+            invitedList.push(currentName);
+            localStorage.setItem(inviteKey, JSON.stringify(invitedList));
+
+            const reward = 1000;
+            const walletPart = Math.floor(reward * 0.15);
+            const balancePart = reward - walletPart;
+
+            const refBalanceKey = `balance_${refId}`;
+            const refWalletKey = `wallet_${refId}`;
+            const refBalance = parseInt(localStorage.getItem(refBalanceKey)) || 0;
+            const refWallet = parseInt(localStorage.getItem(refWalletKey)) || 0;
+            localStorage.setItem(refBalanceKey, (refBalance + balancePart).toString());
+            localStorage.setItem(refWalletKey, (refWallet + walletPart).toString());
+
+            const newBalanceKey = `balance_${currentUserId}`;
+            const newWalletKey = `wallet_${currentUserId}`;
+            const newBalance = parseInt(localStorage.getItem(newBalanceKey)) || 0;
+            const newWallet = parseInt(localStorage.getItem(newWalletKey)) || 0;
+            localStorage.setItem(newBalanceKey, (newBalance + balancePart).toString());
+            localStorage.setItem(newWalletKey, (newWallet + walletPart).toString());
+
+            localStorage.setItem(`refRewarded_${currentUserId}`, "true");
+          }
+        }
+      } catch (err) {
+        console.error("Erreur lors de l’enregistrement du parrain :", err);
+      }
+    }
+  }, []);
 
   // Splash screen
   if (showSplash || !splashFinished) {
@@ -84,22 +138,12 @@ function AppContent() {
     );
   }
 
-  // 🔐 Affichage d'un message d'erreur d'authentification
-  if (authError) {
+  // Welcome screen if not logged in
+  if (!user.isLoggedIn && splashFinished) {
     return (
-      <div style={{ textAlign: "center", padding: "2rem", color: "red" }}>
-        <h2>{authError}</h2>
-      </div>
-    );
-  }
-
-  // ⏳ Chargement de l’utilisateur
-  if (loading || !user?.telegram_id) {
-    return (
-      <div style={{ textAlign: "center", paddingTop: "5rem" }}>
-        <LoadingSpinner />
-        <p>Connexion en cours...</p>
-      </div>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Welcome />
+      </Suspense>
     );
   }
 
@@ -107,7 +151,7 @@ function AppContent() {
     <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
-          <Navbar user={user} points={0} wallet={0} />
+          <Navbar user={user} points={points} wallet={wallet} />
         </Suspense>
       </ErrorBoundary>
 
@@ -121,13 +165,13 @@ function AppContent() {
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              <Route path="/" element={<Home user={user} points={0} setPoints={() => {}} level={1} setLevel={() => {}} />} />
+              <Route path="/" element={<Home user={user} points={points} setPoints={setPoints} level={level} setLevel={setLevel} />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/info" element={<Info />} />
               <Route path="/wallet" element={<Wallet />} />
               <Route path="/level" element={<LevelPage />} />
-              <Route path="/balance" element={<BalancePage points={0} />} />
+              <Route path="/balance" element={<BalancePage points={points} />} />
               <Route path="/ranking" element={<RankingPage />} />
               <Route path="/validate-task" element={<ValidateTask />} />
               <Route path="/sidebar" element={<SidebarPage />} />
@@ -140,7 +184,6 @@ function AppContent() {
               <Route path="/admin-panel" element={<AdminDashboardPage />} />
               <Route path="/validate-task/:taskId" element={<ValidateTask />} />
               <Route path="/daily" element={<Quotidien />} />
-              <Route path="/welcome" element={<Welcome />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>
