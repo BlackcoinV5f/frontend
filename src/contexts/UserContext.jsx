@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
@@ -39,6 +40,8 @@ export const UserProvider = ({ children }) => {
   const [availableActions, setAvailableActions] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   // ▶️ Initialiser user depuis localStorage
   useEffect(() => {
     try {
@@ -69,11 +72,19 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem("telegramUser");
   };
 
-  // 🔐 Auth / Profil
-  const registerUser = async (userData) =>
+  // 🔐 Auth avec Telegram (mise à jour ici)
+  const fetchTelegramData = async (telegramData) =>
     withLoading(async () => {
-      const res = await api.post('/auth/register', userData);
-      setUser(res.data);
+      const res = await api.post('/auth/telegram', telegramData);
+      const { isNew, ...userData } = res.data;
+
+      setUser(userData);
+
+      // 🔁 Redirection automatique si nouvel utilisateur
+      if (isNew) {
+        navigate("/welcome");
+      }
+
       return res.data;
     });
 
@@ -81,13 +92,6 @@ export const UserProvider = ({ children }) => {
     withLoading(async () => {
       const res = await api.put(`/user/update/${telegramId}`, updates);
       setUser((prev) => ({ ...prev, ...res.data }));
-      return res.data;
-    });
-
-  const fetchTelegramData = async (telegramData) =>
-    withLoading(async () => {
-      const res = await api.post('/telegram/verify', telegramData);
-      setUser(res.data);
       return res.data;
     });
 
@@ -102,7 +106,6 @@ export const UserProvider = ({ children }) => {
     return res.data?.balance ?? 0;
   };
 
-  // 📦 Données supplémentaires
   const fetchWallet = async (telegramId) => {
     const res = await api.get(`/wallet/${telegramId}`);
     setWallet(res.data);
@@ -159,18 +162,16 @@ export const UserProvider = ({ children }) => {
     return res.data;
   };
 
-  // 📅 Fonctionnalités Quotidiennes
   const fetchDailyStreak = async (telegramId) => {
     const res = await api.get(`/daily-streak/${telegramId}`);
-    return res.data; // { streak, claimed_today }
+    return res.data;
   };
 
   const claimDailyReward = async (telegramId) => {
     const res = await api.post(`/daily-streak/claim`, { telegram_id: telegramId });
-    return res.data; // { streak, reward_points }
+    return res.data;
   };
 
-  // ✅ États utiles globalement
   const isAuthenticated = !!user?.telegram_id;
   const isEmailVerified = !!user?.email_verified;
 
@@ -179,7 +180,7 @@ export const UserProvider = ({ children }) => {
       value={{
         user,
         wallet,
-        soldeBKC: wallet?.balance, // ✅ Ajout ici
+        soldeBKC: wallet?.balance,
         level,
         ranking,
         tasks,
@@ -190,9 +191,8 @@ export const UserProvider = ({ children }) => {
         loading,
         isAuthenticated,
         isEmailVerified,
-        registerUser,
-        updateUser,
         fetchTelegramData,
+        updateUser,
         fetchUserProfile,
         fetchWallet,
         fetchBalance,
@@ -204,8 +204,8 @@ export const UserProvider = ({ children }) => {
         fetchStatus,
         fetchAvailableActions,
         fetchUserActions,
-        fetchDailyStreak, // ✅ Ajout ici
-        claimDailyReward, // ✅ Ajout ici
+        fetchDailyStreak,
+        claimDailyReward,
         logout,
       }}
     >
