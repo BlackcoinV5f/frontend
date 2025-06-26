@@ -3,52 +3,42 @@ import { useUser } from "../contexts/UserContext";
 
 export default function useTelegram() {
   const [user, setUser] = useState(null);
-  const { fetchBalance, updateUser } = useUser();
+  const { fetchBalance, updateUser, fetchTelegramData } = useUser(); // Assure-toi d'ajouter fetchTelegramData ici
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp;
-    const telegramUser = tg?.initDataUnsafe?.user;
+    const initData = tg?.initDataUnsafe;
 
-    const saveAndAuthUser = async (userData) => {
-      try {
-        setUser(userData);
-        localStorage.setItem("telegramUser", JSON.stringify(userData));
-        updateUser?.(userData.telegram_id, userData);
+    if (initData?.user) {
+      const { id, first_name, last_name, username, photo_url } = initData.user;
 
-        // 🔁 Appel backend pour créer/synchroniser l'utilisateur + bonus
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/telegram`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-        });
-
-        if (!response.ok) throw new Error("Erreur lors de l'authentification via backend");
-
-        const result = await response.json();
-        console.log("Utilisateur authentifié ou créé avec succès :", result);
-
-        // ✅ BONUS canal : rediriger vers le canal s’il est nouveau
-        const isNew = !localStorage.getItem("joinedTelegramChannel");
-        if (isNew) {
-          localStorage.setItem("joinedTelegramChannel", "true");
-          window.open("https://t.me/blackcoin202", "_blank"); // ✅ Ouvre le canal Telegram
-        }
-
-      } catch (err) {
-        console.error("Erreur lors de l'envoi vers /auth/telegram :", err);
-      }
-    };
-
-    if (telegramUser) {
-      const { id, first_name, last_name, username, photo_url } = telegramUser;
       const userData = {
-        telegram_id: String(id),
+        id,
         first_name,
         last_name,
         username,
         photo_url,
+        auth_date: initData.auth_date,
+        hash: initData.hash,
       };
-      saveAndAuthUser(userData);
+
+      // ✅ Appel backend via UserContext
+      fetchTelegramData(userData)
+        .then((res) => {
+          setUser(res);
+          localStorage.setItem("telegramUser", JSON.stringify(res));
+          updateUser?.(String(id), res);
+
+          // ✅ BONUS canal : rediriger vers le canal s’il est nouveau
+          const isNew = res?.isNew && !localStorage.getItem("joinedTelegramChannel");
+          if (isNew) {
+            localStorage.setItem("joinedTelegramChannel", "true");
+            window.open("https://t.me/blackcoin202", "_blank");
+          }
+        })
+        .catch((err) => {
+          console.error("Erreur auth Telegram :", err);
+        });
     } else {
       const storedUser = localStorage.getItem("telegramUser");
       if (storedUser) {
@@ -57,8 +47,9 @@ export default function useTelegram() {
         updateUser?.(parsed.telegram_id, parsed);
       }
     }
-  }, [updateUser]);
+  }, [updateUser, fetchTelegramData]);
 
+  // 🔄 Balance utilisateur
   useEffect(() => {
     if (user?.telegram_id) {
       fetchBalance(user.telegram_id)
