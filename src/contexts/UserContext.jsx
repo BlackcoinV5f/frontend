@@ -6,12 +6,12 @@ import { useNavigate } from 'react-router-dom';
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
 
-// ✅ Axios avec baseURL dynamique
+// ✅ Axios instance avec baseURL dynamique
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://backend-7nzi.onrender.com',
 });
 
-// 🔐 Ajoute token si présent (optionnel ici, pour futur)
+// 🔐 Ajouter token si nécessaire (future sécurité)
 api.interceptors.request.use((config) => {
   const user = JSON.parse(localStorage.getItem('telegramUser'));
   if (user?.token) {
@@ -20,7 +20,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ❗ Gestion des erreurs
+// ❗ Gestion globale des erreurs
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -34,7 +34,7 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Init depuis localStorage (au cas où)
+  // ✅ Chargement initial depuis localStorage
   useEffect(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("telegramUser"));
@@ -44,12 +44,12 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ Synchro localStorage à chaque changement utilisateur
+  // ✅ Sauvegarde automatique dans localStorage
   useEffect(() => {
     if (user) localStorage.setItem("telegramUser", JSON.stringify(user));
   }, [user]);
 
-  // 🧠 Wrapper loading
+  // 🧠 Utilitaire de chargement
   const withLoading = async (callback) => {
     setLoading(true);
     try {
@@ -59,18 +59,25 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // ✅ Auth via Telegram (appel au backend)
+  // ✅ Authentification Telegram
   const fetchTelegramData = async (telegramData) =>
     withLoading(async () => {
       const res = await api.post('/auth/telegram', telegramData);
-      const { isNew, ...userData } = res.data;
-      setUser(userData);
+      setUser(res.data); // ← on garde `isNew` inclus
 
-      // 🚀 Rediriger si nouvel utilisateur
-      if (isNew) {
+      // 🚀 Redirection si nouvel utilisateur
+      if (res.data?.isNew) {
         navigate("/welcome");
       }
 
+      return res.data;
+    });
+
+  // ✅ Récupération des infos complètes d’un utilisateur (depuis son ID)
+  const fetchUserProfile = async (telegramId) =>
+    withLoading(async () => {
+      const res = await api.get(`/auth/profile/${telegramId}`);
+      setUser(res.data);
       return res.data;
     });
 
@@ -87,6 +94,7 @@ export const UserProvider = ({ children }) => {
         loading,
         isAuthenticated: !!user?.telegram_id,
         fetchTelegramData,
+        fetchUserProfile, // 👈 ajouté ici
         logout,
       }}
     >
