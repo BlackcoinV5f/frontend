@@ -13,13 +13,13 @@ export default function useTelegram() {
       const { id, first_name, last_name, username, photo_url } = initData.user;
 
       const userData = {
-        id,
+        id: Number(id), // <-- forcer le type
         first_name,
         last_name,
         username,
         photo_url,
-        auth_date: initData.auth_date,
-        hash: initData.hash,
+        auth_date: Number(initData.auth_date), // <-- forcer le type
+        hash: String(initData.hash), // <-- forcer le type
       };
 
       // ✅ Appel backend via UserContext
