@@ -47,19 +47,19 @@ function AppContent() {
   const [showSplash, setShowSplash] = useState(true);
   const [splashFinished, setSplashFinished] = useState(false);
 
-  // Récupération des données Telegram + auth
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
+  const tg = window.Telegram?.WebApp;
+  const initData = tg?.initDataUnsafe;
 
-    if (!tg?.initDataUnsafe) {
-      alert("❌ Données Telegram introuvables !");
-      return;
-    }
+  if (!initData) {
+    alert("❌ Données Telegram introuvables !");
+    return;
+  }
 
-    fetchTelegramData(tg.initDataUnsafe).catch((err) => {
-      console.error("Erreur Auth Telegram :", err);
-    });
-  }, [fetchTelegramData]);
+  fetchTelegramData(initData).catch((err) => {
+    console.error("Erreur Auth Telegram :", err);
+  });
+}, [fetchTelegramData]);
 
   // Splash screen
   if (showSplash || !splashFinished) {

@@ -59,19 +59,19 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // ✅ Authentification Telegram
-  const fetchTelegramData = async (telegramData) =>
-    withLoading(async () => {
-      const res = await api.post('/auth/telegram', telegramData);
-      setUser(res.data); // ← on garde `isNew` inclus
-
-      // 🚀 Redirection si nouvel utilisateur
-      if (res.data?.isNew) {
-        navigate("/welcome");
-      }
-
-      return res.data;
-    });
+  // UserContext.jsx (extrait modifié)
+const fetchTelegramData = async (initData) =>
+  withLoading(async () => {
+    const res = await api.post('/auth/telegram/init', initData);
+    // res.data = { isNew: bool, user: {...} }
+    setUser(res.data.user); // on stocke juste l'objet user
+    if (res.data.isNew) {
+      navigate("/welcome");
+    } else {
+      navigate("/"); // page principale, adapte si besoin
+    }
+    return res.data.user;
+  });
 
   // ✅ Récupération des infos complètes d’un utilisateur (depuis son ID)
   const fetchUserProfile = async (telegramId) =>
