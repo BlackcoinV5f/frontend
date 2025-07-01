@@ -9,15 +9,25 @@ export default function useTelegram() {
     const tg = window.Telegram?.WebApp;
     const initData = tg?.initDataUnsafe;
 
-    if (initData) {
-      // Envoie l'objet complet initDataUnsafe au backend
-      fetchTelegramData(initData)
+    if (initData && initData.id) {
+      const payload = {
+        auth_date: initData.auth_date,
+        hash: initData.hash,
+        user: {
+          id: initData.id,
+          first_name: initData.first_name,
+          last_name: initData.last_name,
+          username: initData.username,
+          photo_url: initData.photo_url,
+        },
+      };
+
+      fetchTelegramData(payload)
         .then((res) => {
           setUser(res);
           localStorage.setItem("telegramUser", JSON.stringify(res));
           updateUser?.(String(res.telegram_id), res);
 
-          // Bonus : redirection vers canal si nouvel utilisateur
           const isNew = res?.isNew && !localStorage.getItem("joinedTelegramChannel");
           if (isNew) {
             localStorage.setItem("joinedTelegramChannel", "true");
@@ -37,7 +47,6 @@ export default function useTelegram() {
     }
   }, [updateUser, fetchTelegramData]);
 
-  // Récupération du solde utilisateur quand on a l'user
   useEffect(() => {
     if (user?.telegram_id) {
       fetchBalance(user.telegram_id)
