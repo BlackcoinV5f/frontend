@@ -6,23 +6,10 @@ export default function useTelegram() {
   const { fetchBalance, updateUser, fetchTelegramData } = useUser();
 
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    const initData = tg?.initDataUnsafe;
+    const initDataRaw = window.Telegram?.WebApp?.initData;
 
-    if (initData && initData.id) {
-      const payload = {
-        auth_date: initData.auth_date,
-        hash: initData.hash,
-        user: {
-          id: initData.id,
-          first_name: initData.first_name,
-          last_name: initData.last_name,
-          username: initData.username,
-          photo_url: initData.photo_url,
-        },
-      };
-
-      fetchTelegramData(payload)
+    if (initDataRaw) {
+      fetchTelegramData({ initData: initDataRaw })
         .then((res) => {
           setUser(res);
           localStorage.setItem("telegramUser", JSON.stringify(res));

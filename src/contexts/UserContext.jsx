@@ -6,12 +6,10 @@ import { useNavigate } from 'react-router-dom';
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
 
-// ✅ Axios instance avec baseURL dynamique
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://backend-7nzi.onrender.com',
 });
 
-// 🔐 Ajouter token si nécessaire (future sécurité)
 api.interceptors.request.use((config) => {
   const user = JSON.parse(localStorage.getItem('telegramUser'));
   if (user?.token) {
@@ -20,7 +18,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// ❗ Gestion globale des erreurs
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -34,7 +31,6 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Chargement initial depuis localStorage
   useEffect(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("telegramUser"));
@@ -44,12 +40,10 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ Sauvegarde automatique dans localStorage
   useEffect(() => {
     if (user) localStorage.setItem("telegramUser", JSON.stringify(user));
   }, [user]);
 
-  // 🧠 Utilitaire de chargement
   const withLoading = async (callback) => {
     setLoading(true);
     try {
@@ -59,21 +53,18 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // UserContext.jsx (extrait modifié)
-const fetchTelegramData = async (initData) =>
-  withLoading(async () => {
-    const res = await api.post('/auth/telegram/init', initData);
-    // res.data = { isNew: bool, user: {...} }
-    setUser(res.data.user); // on stocke juste l'objet user
-    if (res.data.isNew) {
-      navigate("/welcome");
-    } else {
-      navigate("/"); // page principale, adapte si besoin
-    }
-    return res.data.user;
-  });
+  const fetchTelegramData = async (initData) =>
+    withLoading(async () => {
+      const res = await api.post('/auth/telegram/init', initData);
+      setUser(res.data.user);
+      if (res.data.isNew) {
+        navigate("/welcome");
+      } else {
+        navigate("/");
+      }
+      return res.data.user;
+    });
 
-  // ✅ Récupération des infos complètes d’un utilisateur (depuis son ID)
   const fetchUserProfile = async (telegramId) =>
     withLoading(async () => {
       const res = await api.get(`/auth/profile/${telegramId}`);
@@ -81,7 +72,6 @@ const fetchTelegramData = async (initData) =>
       return res.data;
     });
 
-  // 🔓 Déconnexion
   const logout = () => {
     setUser(null);
     localStorage.removeItem("telegramUser");
@@ -94,7 +84,7 @@ const fetchTelegramData = async (initData) =>
         loading,
         isAuthenticated: !!user?.telegram_id,
         fetchTelegramData,
-        fetchUserProfile, // 👈 ajouté ici
+        fetchUserProfile,
         logout,
       }}
     >
