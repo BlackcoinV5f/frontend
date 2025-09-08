@@ -1,137 +1,130 @@
+// src/pages/Tasks.jsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import "./Tasks.css";
-import youtubeIcon from "../assets/youtube.png";
-import facebookIcon from "../assets/facebook.png";
-import tiktokIcon from "../assets/tiktok.png";
-import twitterIcon from "../assets/twitter.png";
-import telegramIcon from "../assets/telegram.png";
+import { FaCheck, FaTrophy, FaExternalLinkAlt, FaClock } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
-import { FaCheck, FaTrophy, FaExternalLinkAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Tasks.css";
 
-const tasksList = [
-  {
-    id: 0,
-    platform: "Rejoindre le canal Telegram",
-    points: 1000,
-    link: "https://t.me/blackcoin202",
-    icon: telegramIcon,
-    validationCode: null,
-    color: "#0088cc",
-  },
-  {
-    id: 1,
-    platform: "YouTube",
-    points: 500,
-    link: "https://youtube.com",
-    icon: youtubeIcon,
-    validationCode: "YT123",
-    color: "#FF0000",
-  },
-  {
-    id: 2,
-    platform: "Facebook",
-    points: 300,
-    link: "https://facebook.com",
-    icon: facebookIcon,
-    validationCode: "FB456",
-    color: "#1877F2",
-  },
-  {
-    id: 3,
-    platform: "TikTok",
-    points: 700,
-    link: "https://tiktok.com",
-    icon: tiktokIcon,
-    validationCode: "TT789",
-    color: "#000000",
-  },
-  {
-    id: 4,
-    platform: "Twitter",
-    points: 400,
-    link: "https://twitter.com",
-    icon: twitterIcon,
-    validationCode: "TW321",
-    color: "#1DA1F2",
-  },
-];
+const API_URL = import.meta.env.VITE_BACKEND_URL + "/tasks";
 
 const Tasks = () => {
-  const navigate = useNavigate();
-  const [completedTasks, setCompletedTasks] = useState([]);
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
-  const [visibleTasks, setVisibleTasks] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [cooldowns, setCooldowns] = useState({}); 
+  const [timers, setTimers] = useState({});
+  const navigate = useNavigate();
 
+  // -----------------------------
+  // Charger les tâches
+  // -----------------------------
   useEffect(() => {
-    const loadTasks = () => {
+    const fetchTasks = async () => {
+      if (!user) return;
+      setLoading(true);
+
       try {
-        const stored = JSON.parse(localStorage.getItem("completedTasks")) || [];
-        const hasJoinedTelegram = localStorage.getItem("joinedTelegramChannel") === "true";
+        // 🔑 Utilisation du cookie HttpOnly au lieu de localStorage
+        const tasksRes = await axios.get(`${API_URL}/me`, {
+          withCredentials: true,
+        });
 
-        let updatedTasks = [...stored];
-        
-        if (hasJoinedTelegram && !stored.includes(0)) {
-          updatedTasks = [...stored, 0];
-          localStorage.setItem("completedTasks", JSON.stringify(updatedTasks));
-        }
+        const completedRes = await axios.get(`${API_URL}/me/completed-count`, {
+          withCredentials: true,
+        });
 
-        setCompletedTasks(updatedTasks);
-        setVisibleTasks(tasksList); // Assure que toutes les tâches sont visibles
-      } catch (error) {
-        console.error("Error loading tasks:", error);
-        setCompletedTasks([]);
-        setVisibleTasks(tasksList);
+        const platformStyles = {
+          youtube: { color: "#FF0000", icon: "/assets/youtube.png" },
+          facebook: { color: "#1877F2", icon: "/assets/facebook.png" },
+          tiktok: { color: "#000000", icon: "/assets/tiktok.png" },
+          twitter: { color: "#1DA1F2", icon: "/assets/twitter.png" },
+          telegram: { color: "#0088cc", icon: "/assets/telegram.png" },
+        };
+
+        const styledTasks = tasksRes.data.map((t) => {
+          const key = t.platform ? t.platform.toLowerCase() : "";
+          return {
+            ...t,
+            color: platformStyles[key]?.color || "#ccc",
+            icon: platformStyles[key]?.icon || "/assets/default.png",
+          };
+        });
+
+        setTasks(styledTasks);
+        setCompletedCount(completedRes.data.completed_tasks || 0);
+      } catch (err) {
+        console.error("Erreur chargement des tâches :", err);
       } finally {
         setLoading(false);
       }
     };
 
-    loadTasks();
-  }, []);
+    fetchTasks();
+  }, [user]);
+
+  // -----------------------------
+  // Gestion des timers
+  // -----------------------------
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      const now = Date.now();
+      const updatedTimers = {};
+      
+      Object.keys(cooldowns).forEach(taskId => {
+        const endTime = cooldowns[taskId];
+        if (endTime > now) {
+          updatedTimers[taskId] = Math.ceil((endTime - now) / 1000);
+        } else {
+          updatedTimers[taskId] = 0;
+        }
+      });
+      
+      setTimers(updatedTimers);
+    }, 1000);
+    
+    return () => clearInterval(timerInterval);
+  }, [cooldowns]);
 
   const handleTaskClick = (task) => {
-    if (isCompleted(task.id)) return;
-
-    // Pour les tâches nécessitant une validation
-    if (task.validationCode) {
-      localStorage.setItem("pendingTask", JSON.stringify({
-        id: task.id,
-        timestamp: Date.now()
-      }));
-    }
-
     window.open(task.link, "_blank");
+
+    const endTime = Date.now() + 2 * 60 * 1000;
+    setCooldowns((prev) => ({
+      ...prev,
+      [task.id]: endTime,
+    }));
+    
+    setTimers((prev) => ({
+      ...prev,
+      [task.id]: 2 * 60,
+    }));
   };
 
-  // Vérifie les tâches en attente au retour dans l'app
-  useEffect(() => {
-  const handleAppVisibilityChange = () => {
-    if (document.visibilityState === 'visible') {
-      const pendingTask = JSON.parse(localStorage.getItem("pendingTask"));
-
-      if (pendingTask && (Date.now() - pendingTask.timestamp < 300000)) {
-        navigate(`/validate-task/${parseInt(pendingTask.id)}`); // ✅ Correction ici
-        localStorage.removeItem("pendingTask"); // ou déplacer dans ValidateTask.jsx
-      } else if (pendingTask) {
-        localStorage.removeItem("pendingTask");
-      }
-    }
+  const isTaskReady = (taskId) => {
+    const endTime = cooldowns[taskId];
+    if (!endTime) return false;
+    return Date.now() >= endTime;
   };
 
-  document.addEventListener('visibilitychange', handleAppVisibilityChange);
-
-  return () => {
-    document.removeEventListener('visibilitychange', handleAppVisibilityChange);
+  const formatTime = (seconds) => {
+    if (!seconds || seconds <= 0) return "00:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
-}, [navigate]);
 
-  const isCompleted = (id) => completedTasks.includes(id);
+  const handleValidateClick = (task) => {
+    navigate(`/tasks/${task.id}/validate`);
+  };
+
+  const totalTasks = tasks.length + completedCount;
+  const progress = totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
   return (
-    <motion.div 
+    <motion.div
       className="tasks-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -149,13 +142,11 @@ const Tasks = () => {
             <motion.div
               className="progress-fill"
               initial={{ width: 0 }}
-              animate={{ width: `${(completedTasks.length / tasksList.length) * 100}%` }}
+              animate={{ width: `${progress}%` }}
               transition={{ delay: 0.4, duration: 1, type: "spring" }}
             />
           </div>
-          <span className="progress-text">
-            <span className="tasks-count">{completedTasks.length}</span>
-          </span>
+          <span className="progress-text">{completedCount}</span>
         </div>
       </motion.div>
 
@@ -168,56 +159,84 @@ const Tasks = () => {
           <p>Chargement des tâches...</p>
         </div>
       ) : (
-        <motion.div 
+        <motion.div
           className="tasks-list"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
           <AnimatePresence>
-            {visibleTasks.map((task, index) => (
-              <motion.div
-                key={task.id}
-                className={`task-item ${isCompleted(task.id) ? "task-completed" : ""}`}
-                style={{ borderLeft: `4px solid ${task.color}` }}
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.1 * index, type: "spring" }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="task-content">
-                  <div className="task-info">
-                    <div className="task-platform">
-                      <img src={task.icon} alt={task.platform} className="platform-icon" />
-                      <span>{task.platform}</span>
-                    </div>
-                    <div className="task-points">
-                      <FaTrophy className="trophy-icon" />
-                      <span>{task.points} pts</span>
-                    </div>
-                  </div>
-                  <motion.button
-                    onClick={() => handleTaskClick(task)}
-                    className="task-button"
-                    disabled={isCompleted(task.id)}
-                    whileHover={!isCompleted(task.id) ? { scale: 1.05 } : {}}
-                    whileTap={!isCompleted(task.id) ? { scale: 0.95 } : {}}
-                  >
-                    {isCompleted(task.id) ? (
-                      <div className="completed-badge">
-                        <FaCheck /> Complété
+            {tasks.map((task, index) => {
+              const ready = isTaskReady(task.id);
+              const timeRemaining = timers[task.id] || 0;
+              const isCooldownActive = timeRemaining > 0 && !ready;
+              
+              return (
+                <motion.div
+                  key={task.id}
+                  className="task-item"
+                  style={{ borderLeft: `4px solid ${task.color}` }}
+                  initial={{ x: -50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 * index, type: "spring" }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className="task-content">
+                    <div className="task-info">
+                      <div className="task-platform">
+                        <img src={task.icon} alt={task.platform} className="platform-icon" />
+                        <span>{task.title}</span>
                       </div>
-                    ) : (
-                      <>
+                      <div className="task-points">
+                        <FaTrophy className="trophy-icon" />
+                        <span>{task.reward_points} pts</span>
+                      </div>
+                    </div>
+
+                    {!cooldowns[task.id] ? (
+                      <motion.button
+                        onClick={() => handleTaskClick(task)}
+                        className="task-button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
                         <FaExternalLinkAlt /> Commencer
-                      </>
+                      </motion.button>
+                    ) : isCooldownActive ? (
+                      <motion.div 
+                        className="cooldown-container"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <div className="cooldown-timer">
+                          <FaClock className="clock-icon" />
+                          <span>{formatTime(timeRemaining)}</span>
+                        </div>
+                        <button className="validate-button disabled" disabled>
+                          <FaCheck /> Valider
+                        </button>
+                      </motion.div>
+                    ) : (
+                      <motion.button
+                        onClick={() => handleValidateClick(task)}
+                        className="validate-button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <FaCheck /> Valider
+                      </motion.button>
                     )}
-                  </motion.button>
-                </div>
-              </motion.div>
-            ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
+          {tasks.length === 0 && !loading && (
+            <div className="no-tasks">🎉 Vous avez terminé toutes les tâches !</div>
+          )}
         </motion.div>
       )}
     </motion.div>

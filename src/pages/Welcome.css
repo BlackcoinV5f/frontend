@@ -1,11 +1,46 @@
 .welcome-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   padding: 2rem;
   background: linear-gradient(135deg, #1a1a2e, #16213e);
   font-family: 'Segoe UI', sans-serif;
+  overflow-y: auto; /* Permet le scroll global */
+}
+
+.scrollable-tasks {
+  max-height: 75vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #00ff99 #1a1a2e;
+}
+
+/* Welcome.css */
+
+.welcome-container {
+  height: 100vh;
+  overflow-y: auto; /* Permet le défilement vertical */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+
+/* Chrome / Edge */
+.scrollable-tasks::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-tasks::-webkit-scrollbar-thumb {
+  background-color: #00ff99;
+  border-radius: 3px;
+}
+
+.welcome-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .welcome-step {
@@ -79,8 +114,27 @@ p {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.tasks-list {
+.scrollable-container {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
   margin: 2rem 0;
+}
+
+.scrollable-container::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollable-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+.scrollable-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #00ff99, #00cc77);
+  border-radius: 10px;
+}
+
+.tasks-list {
+  margin: 0;
 }
 
 .task-item {
@@ -118,7 +172,6 @@ p {
   display: block;
   margin-bottom: 0.2rem;
 }
-
 .task-link:hover {
   text-decoration: underline;
 }
@@ -137,7 +190,6 @@ p {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .task-button:hover {
   background: rgba(255, 255, 255, 0.2);
 }
@@ -153,7 +205,7 @@ p {
   border-radius: 50%;
 }
 
-/* Animations */
+/* Animation */
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -169,22 +221,26 @@ p {
   .welcome-container {
     padding: 1rem;
   }
-  
+
   .welcome-card, .tasks-container {
     padding: 1.5rem;
   }
-  
+
+  .scrollable-container {
+    max-height: 400px;
+  }
+
   .task-item {
     flex-direction: column;
     text-align: center;
     padding: 1.5rem;
   }
-  
+
   .task-icon {
     margin-right: 0;
     margin-bottom: 1rem;
   }
-  
+
   .task-content {
     text-align: center;
     margin-bottom: 1rem;

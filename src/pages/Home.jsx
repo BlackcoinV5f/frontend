@@ -1,32 +1,48 @@
 // src/pages/Home.jsx
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaRegCalendarCheck } from "react-icons/fa";
 
-import "./Home.css";
-import "../styles/DinoLauncher.css";
-
+import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
-import CryptoList from "../components/CryptoList";
-import dinoIcon from "../assets/DinoGame/dino-icon.png";
+import UserProfile from "../components/UserProfile.jsx";
+
+import "./Home.css";
 
 const Home = ({ points, setPoints, level, setLevel }) => {
+  const navigate = useNavigate();
+  const { user, loading, isAuthenticated } = useUser();
+  const [showProfile, setShowProfile] = useState(false);
+
+  useEffect(() => {
+    console.log("État utilisateur :", {
+      loading,
+      isAuthenticated,
+      userData: user,
+    });
+  }, [user, loading, isAuthenticated]);
+
+  // ⚡ Attendre la fin du chargement avant de rediriger
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate("/auth-choice", { replace: true });
+    }
+  }, [loading, isAuthenticated, navigate]);
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <p>Chargement en cours...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="home">
-      {/* 🎮 Dino Game */}
-      <div className="dino-launcher">
-        <Link to="/dino">
-          <img src={dinoIcon} alt="Play Dino Game" />
-        </Link>
-      </div>
-
-      {/* 📅 Bouton calendrier en haut à gauche */}
+      {/* 📅 Récompense quotidienne */}
       <Link to="/daily" className="calendar-button" title="Récompense quotidienne">
         <FaRegCalendarCheck />
       </Link>
-
-      {/* 💰 Liste des cryptos */}
-      <CryptoList />
 
       {/* ⛏️ Cercle de minage */}
       <MiningCircle
@@ -35,6 +51,26 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         level={level}
         setLevel={setLevel}
       />
+
+      {/* 👤 Bouton profil */}
+      <button
+        className="guest-button"
+        onClick={() => setShowProfile(true)}
+      >
+        {user?.username || "Guest"} (profil)
+      </button>
+
+      {/* 👤 Modal UserProfile */}
+      {showProfile && (
+        <div className="modal-overlay" onClick={() => setShowProfile(false)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <UserProfile onClose={() => setShowProfile(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

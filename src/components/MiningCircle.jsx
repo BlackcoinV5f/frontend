@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+// src/components/MiningCircle.jsx
+import React, { useState, useEffect, useRef } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import "./MiningCircle.css";
 import { useUser } from "../contexts/UserContext";
 
-// Images des niveaux
 import level1 from "../assets/level1.png";
 import level2 from "../assets/level2.png";
 import level3 from "../assets/level3.png";
@@ -15,108 +15,168 @@ import level7 from "../assets/level7.png";
 import level8 from "../assets/level8.png";
 import level9 from "../assets/level9.png";
 
-const levelThresholds = [0, 5000, 14000, 32000, 65000, 100000, 160000, 230000, 310000];
-const levelImages = { 1: level1, 2: level2, 3: level3, 4: level4, 5: level5, 6: level6, 7: level7, 8: level8, 9: level9 };
-const MINING_DURATION = 12 * 60 * 60 * 1000;
+const levelImages = {
+  1: level1,
+  2: level2,
+  3: level3,
+  4: level4,
+  5: level5,
+  6: level6,
+  7: level7,
+  8: level8,
+  9: level9,
+};
 
-const MiningCircle = ({ points, setPoints, level, setLevel }) => {
+// Seuils de points pour chaque niveau
+const levelThresholds = {
+  1: 0,
+  2: 3500,
+  3: 6000,
+  4: 11000,
+  5: 18000,
+  6: 29000,
+  7: 50000,
+  8: 100000,
+  9: 160000,
+};
+
+const MiningCircle = () => {
+  const { user } = useUser();
   const [progress, setProgress] = useState(0);
   const [isMining, setIsMining] = useState(false);
   const [buttonText, setButtonText] = useState("START");
-  const { user, fetchBalance } = useUser();
+  const [level, setLevel] = useState(1);
+  const [points, setPoints] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [totalCycleMs, setTotalCycleMs] = useState(0);
 
-  useEffect(() => {
-    const savedStartTime = localStorage.getItem("miningStartTime");
-    const savedProgress = parseFloat(localStorage.getItem("miningProgress")) || 0;
-    const savedMiningState = localStorage.getItem("isMining") === "true";
+  const intervalRef = useRef(null);
 
-    if (savedStartTime && savedMiningState) {
-      const elapsedTime = Date.now() - parseInt(savedStartTime, 10);
-      const newProgress = Math.min((elapsedTime / MINING_DURATION) * 100, 100);
+  const formatTime = (ms) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  };
 
-      if (newProgress >= 100) {
-        setProgress(100);
-        setIsMining(false);
-        setButtonText("CLAIM");
-      } else {
-        setProgress(newProgress);
+  const calculateLevel = (totalPoints) => {
+    let currentLevel = 1;
+    for (let lvl = 1; lvl <= 9; lvl++) {
+      if (totalPoints >= levelThresholds[lvl]) currentLevel = lvl;
+      else break;
+    }
+    return currentLevel;
+  };
+
+  const fetchMiningHistory = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/history/${user.id}`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      const totalPoints = data.history.reduce((acc, entry) => acc + entry.points, 0);
+      setPoints(totalPoints);
+      setLevel(calculateLevel(totalPoints));
+    } catch (err) {
+      console.error("❌ Erreur récupération historique minage :", err);
+    }
+  };
+
+  const fetchMiningStatus = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/status/${user.id}`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      clearInterval(intervalRef.current);
+
+      if (data.status === "running") {
         setIsMining(true);
-        setButtonText("En cours...");
+        setTimeLeft(data.remaining_time_ms);
+        setTotalCycleMs(data.total_cycle_ms);
+        setButtonText(formatTime(data.remaining_time_ms));
+
+        intervalRef.current = setInterval(() => {
+          setTimeLeft((prev) => {
+            if (prev <= 1000) {
+              clearInterval(intervalRef.current);
+              setIsMining(false);
+              setProgress(100);
+              setButtonText("CLAIM");
+              fetchMiningHistory();
+              return 0;
+            }
+            const newVal = prev - 1000;
+            setProgress(((data.total_cycle_ms - newVal) / data.total_cycle_ms) * 100);
+            setButtonText(formatTime(newVal));
+            return newVal;
+          });
+        }, 1000);
+      } else if (data.status === "ready_to_claim") {
+        setProgress(100);
+        setButtonText("CLAIM");
+        setIsMining(false);
+      } else {
+        setProgress(0);
+        setButtonText("START");
+        setIsMining(false);
       }
-    } else {
-      setProgress(savedProgress);
+    } catch (err) {
+      console.error("❌ Erreur récupération statut minage :", err);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    localStorage.setItem("miningProgress", progress);
-    localStorage.setItem("isMining", isMining);
-  }, [progress, isMining]);
-
-  useEffect(() => {
-    const newLevel = levelThresholds.findIndex((threshold) => points >= threshold) + 1;
-    if (newLevel !== level) {
-      setLevel(newLevel);
-    }
-  }, [points, level, setLevel]);
-
-  const startMining = () => {
-    if (!isMining) {
-      const startTime = Date.now();
-      localStorage.setItem("miningStartTime", startTime);
-      setIsMining(true);
-      setButtonText("En cours...");
-
-      const progressInterval = setInterval(() => {
-        const elapsed = Date.now() - startTime;
-        const newProgress = Math.min((elapsed / MINING_DURATION) * 100, 100);
-        setProgress(newProgress);
-
-        if (newProgress >= 100) {
-          clearInterval(progressInterval);
-          setIsMining(false);
-          setButtonText("CLAIM");
-        }
-      }, 60000);
+  const startMining = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/start/${user.id}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.status === "authorized") {
+        setTotalCycleMs(data.total_cycle_ms);
+        fetchMiningStatus();
+      } else {
+        alert(data.detail || "Impossible de démarrer le minage.");
+      }
+    } catch (err) {
+      console.error("❌ Impossible de démarrer le minage :", err);
     }
   };
 
   const claimPoints = async () => {
-    if (!user?.telegram_id) {
-      alert("Utilisateur non authentifié.");
-      return;
-    }
-
+    if (!user?.id) return;
     try {
-      // Envoi des 1000 points au backend pour mise à jour de la balance
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/balance/update/${user.telegram_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ points: 1000 }),
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/claim/${user.id}`, {
+        method: "POST",
+        credentials: "include",
       });
+      const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error("Erreur lors de la mise à jour de la balance.");
+      if (data.status === "success") {
+        setPoints((prev) => prev + data.points_earned); // ✅ basé sur backend
+        setLevel(calculateLevel(points + data.points_earned));
+        setProgress(0);
+        setButtonText("START");
+        setIsMining(false);
+      } else {
+        alert(data.detail || "Impossible de réclamer les points.");
       }
-
-      // Recharge la balance réelle après la récompense
-      await fetchBalance(user.telegram_id);
-      setPoints((prev) => prev + 1000);
-
-      // Réinitialisation
-      setProgress(0);
-      setButtonText("START");
-      localStorage.removeItem("miningStartTime");
-      localStorage.setItem("miningProgress", "0");
-      localStorage.setItem("isMining", "false");
-
-    } catch (error) {
-      console.error("Erreur lors de la récolte des points :", error);
-      alert("Impossible de récolter les points. Réessaie plus tard.");
+    } catch (err) {
+      console.error("❌ Impossible de réclamer les points :", err);
     }
   };
+
+  useEffect(() => {
+    fetchMiningStatus();
+    fetchMiningHistory();
+    return () => clearInterval(intervalRef.current);
+  }, [user]);
 
   return (
     <div className="mining-container">
@@ -137,7 +197,7 @@ const MiningCircle = ({ points, setPoints, level, setLevel }) => {
       <button
         className="mining-button"
         onClick={buttonText === "START" ? startMining : claimPoints}
-        disabled={isMining}
+        disabled={isMining && buttonText !== "CLAIM"}
       >
         {buttonText}
       </button>

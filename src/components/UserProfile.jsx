@@ -1,91 +1,114 @@
 // src/components/UserProfile.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext";
-import { FiLogOut } from "react-icons/fi";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import {
+  FiLogOut,
+  FiEdit,
+  FiX,
+  FiCheck,
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiGlobe,
+  FiAward,
+} from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import "./UserProfile.css";
 
 const UserProfile = ({ onClose }) => {
-  const { user, fetchUserProfile, loading, logoutUser } = useUser();
-  const [profile, setProfile] = useState(null);
+  const { user, logoutUser, isAuthenticated, setUser } = useUser(); // ⚡ setUser pour maj après update
   const [isExiting, setIsExiting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState({ ...user });
 
-  useEffect(() => {
-    if (user?.telegram_id) {
-      fetchUserProfile(user.telegram_id)
-        .then(setProfile)
-        .catch((err) => console.error("Erreur chargement profil :", err));
-    }
-  }, [user]);
+  if (!user) return null;
 
-  const formatLabel = (key) => {
-    const labels = {
-      first_name: "Prénom",
-      last_name: "Nom",
-      username: "Nom d'utilisateur",
-      email: "Email",
-      email_verified: "Email vérifié",
-      phone: "Téléphone",
-      country: "Pays",
-    };
-    return labels[key] || key;
-  };
-
-  const handleLogout = () => {
+  const closeWithAnimation = (callback) => {
     setIsExiting(true);
     setTimeout(() => {
-      logoutUser();
-      onClose();
-    }, 500);
+      callback?.();
+      onClose?.();
+    }, 300);
   };
 
-  const handleClose = () => {
-    setIsExiting(true);
-    setTimeout(onClose, 500);
+  const handleLogout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
+        method: "POST",
+        credentials: "include", // ✅ le cookie HttpOnly est supprimé côté backend
+      });
+      logoutUser(); // vide le contexte
+      closeWithAnimation();
+    } catch (err) {
+      console.error("Erreur lors de la déconnexion:", err);
+    }
   };
 
-  const renderProfile = () => {
-    if (!profile) return null;
+  const handleClose = () => closeWithAnimation();
 
-    return (
-      <>
-        {profile.photo_url && (
-          <motion.img
-            src={profile.photo_url}
-            alt="Photo de profil"
-            className="profile-picture"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          />
-        )}
-        <ul className="profile-info">
-          {Object.entries(profile)
-            .filter(([key, value]) => value !== null && value !== "" && typeof value !== "object")
-            .map(([key, value], i) => (
-              <motion.li
-                key={key}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <strong>{formatLabel(key)} :</strong>{" "}
-                {key === "email_verified" ? (
-                  value ? (
-                    <span className="verified"><FaCheck /> Oui</span>
-                  ) : (
-                    <span className="not-verified"><FaTimes /> Non</span>
-                  )
-                ) : (
-                  value
-                )}
-              </motion.li>
-            ))}
-        </ul>
-      </>
-    );
+  const handleEditToggle = async () => {
+    if (isEditing) {
+      // Sauvegarde quand on clique sur "Save"
+      try {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/update`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // ✅ Auth via cookie
+          body: JSON.stringify(editedUser),
+        });
+
+        if (!res.ok) throw new Error("Erreur API update profil");
+
+        const updatedUser = await res.json();
+        console.log("Profil mis à jour:", updatedUser);
+        setUser(updatedUser); // ⚡️ maj du contexte UserContext
+      } catch (err) {
+        console.error("Erreur mise à jour profil:", err);
+      }
+    }
+    setIsEditing(!isEditing);
   };
+
+  const handleInputChange = (field, value) => {
+    setEditedUser((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const isProfileComplete = (data) => {
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "username",
+      "email",
+      "phone",
+      "country",
+      "avatar_url",
+      "has_completed_welcome_tasks",
+    ];
+    return requiredFields.every((key) => !!data?.[key]);
+  };
+
+  const completionPercentage = () => {
+    const requiredFields = [
+      "first_name",
+      "last_name",
+      "username",
+      "email",
+      "phone",
+      "country",
+      "avatar_url",
+      "has_completed_welcome_tasks",
+    ];
+    const completedFields = requiredFields.filter((key) => !!user?.[key]).length;
+    return Math.round((completedFields / requiredFields.length) * 100);
+  };
+
+  const displayValue = (value) => (value ? value : "—");
+
+  const avatarSrc = user.avatar_url
+    ? user.avatar_url.startsWith("http")
+      ? user.avatar_url
+      : `${import.meta.env.VITE_BACKEND_URL}${user.avatar_url}`
+    : null;
 
   return (
     <AnimatePresence>
@@ -105,55 +128,180 @@ const UserProfile = ({ onClose }) => {
             transition={{ type: "spring", damping: 25 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <motion.h2
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              👤 Profil utilisateur
-            </motion.h2>
+            {/* ===== Header ===== */}
+            <div className="profile-header">
+              <h2>Profil Utilisateur</h2>
+              <button className="close-btn" onClick={handleClose}>
+                <FiX size={20} />
+              </button>
+            </div>
 
-            {loading && (
-              <motion.div
-                className="loading-spinner"
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              />
+            {/* ===== Avatar ===== */}
+            <div className="profile-avatar-section">
+              <div className="avatar-container">
+                {avatarSrc ? (
+                  <img
+                    src={avatarSrc}
+                    alt="Photo de profil"
+                    className="profile-picture"
+                  />
+                ) : (
+                  <div className="default-avatar">
+                    <FiUser size={32} />
+                  </div>
+                )}
+                <div
+                  className={`status-badge ${
+                    user.is_verified ? "verified" : "pending"
+                  }`}
+                >
+                  {user.is_verified ? "Vérifié" : "En attente"}
+                </div>
+              </div>
+
+              <div className="user-names">
+                <h3>
+                  {displayValue(user.first_name)} {displayValue(user.last_name)}
+                </h3>
+                <p>@{displayValue(user.username)}</p>
+              </div>
+            </div>
+
+            {/* ===== Progression Profil ===== */}
+            <div className="completion-section">
+              <div className="completion-header">
+                <span>Complétion du profil</span>
+                <span>{completionPercentage()}%</span>
+              </div>
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{ width: `${completionPercentage()}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* ===== Infos Profil ===== */}
+            <div className="profile-details">
+              <h4>Informations Personnelles</h4>
+
+              {/* Email */}
+              <div className="detail-row">
+                <div className="detail-icon">
+                  <FiMail />
+                </div>
+                <div className="detail-content">
+                  <label>Email</label>
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      value={editedUser.email || ""}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                    />
+                  ) : (
+                    <p>{displayValue(user.email)}</p>
+                  )}
+                </div>
+                <div className="verification-status">
+                  {user.is_verified ? (
+                    <FiCheck className="verified" />
+                  ) : (
+                    <FiX className="not-verified" />
+                  )}
+                </div>
+              </div>
+
+              {/* Téléphone */}
+              <div className="detail-row">
+                <div className="detail-icon">
+                  <FiPhone />
+                </div>
+                <div className="detail-content">
+                  <label>Téléphone</label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      value={editedUser.phone || ""}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
+                    />
+                  ) : (
+                    <p>{displayValue(user.phone)}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Pays */}
+              <div className="detail-row">
+                <div className="detail-icon">
+                  <FiGlobe />
+                </div>
+                <div className="detail-content">
+                  <label>Pays</label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedUser.country || ""}
+                      onChange={(e) =>
+                        handleInputChange("country", e.target.value)
+                      }
+                    />
+                  ) : (
+                    <p>{displayValue(user.country)}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Tâches d'initiation */}
+              <div className="detail-row">
+                <div className="detail-icon">
+                  <FiAward />
+                </div>
+                <div className="detail-content">
+                  <label>Tâches d'initiation</label>
+                  <p>
+                    {user.has_completed_welcome_tasks
+                      ? "Complétées"
+                      : "En cours"}
+                  </p>
+                </div>
+                <div className="verification-status">
+                  {user.has_completed_welcome_tasks ? (
+                    <FiCheck className="verified" />
+                  ) : (
+                    <FiX className="not-verified" />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {!isProfileComplete(user) && (
+              <div className="warning-message">
+                <p>
+                  ⚠️ Complétez votre profil pour accéder à toutes les
+                  fonctionnalités
+                </p>
+              </div>
             )}
 
-            {!user && !loading && (
-              <motion.div
-                className="error-message"
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
+            {/* ===== Actions ===== */}
+            <div className="profile-actions">
+              <button
+                className={`edit-button ${isEditing ? "save" : ""}`}
+                onClick={handleEditToggle}
               >
-                <p>Aucune donnée utilisateur disponible.</p>
-              </motion.div>
-            )}
+                {isEditing ? <FiCheck size={16} /> : <FiEdit size={16} />}
+                {isEditing ? "Sauvegarder" : "Modifier le profil"}
+              </button>
 
-            {profile && !loading && (
-              <>
-                {renderProfile()}
-              </>
-            )}
-
-            <div className="profile-buttons">
-              <motion.button
-                className="logout-button"
-                onClick={handleLogout}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FiLogOut /> Déconnexion
-              </motion.button>
-              <motion.button
-                className="close-button"
-                onClick={handleClose}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Fermer
-              </motion.button>
+              {isAuthenticated && (
+                <button className="logout-button" onClick={handleLogout}>
+                  <FiLogOut size={16} /> Déconnexion
+                </button>
+              )}
             </div>
           </motion.div>
         </motion.div>

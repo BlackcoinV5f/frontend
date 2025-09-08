@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
-import { useUser } from '../contexts/UserContext';
-import './RegisterForm.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import { useUser } from "../contexts/UserContext";
+import "./RegisterForm.css";
 
 const RegisterForm = () => {
   const { t, i18n } = useTranslation();
@@ -12,17 +12,19 @@ const RegisterForm = () => {
   const { registerUser } = useUser();
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    birthDate: '',
-    phoneNumber: '',
-    email: '',
-    telegramUsername: '',
-    password: '',
-    confirmPassword: '',
+    firstName: "",
+    lastName: "",
+    birthDate: "",
+    phoneNumber: "",
+    email: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    avatar: null,
+    promoCode: "", 
   });
 
-  const [feedback, setFeedback] = useState({ error: '', success: '' });
+  const [feedback, setFeedback] = useState({ error: "", success: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [passwordCriteria, setPasswordCriteria] = useState({
     length: false,
@@ -48,115 +50,82 @@ const RegisterForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value.trimStart() }));
-
-    if (name === 'confirmPassword' && value !== formData.password) {
-      setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
-    } else {
-      setFeedback({ error: '', success: '' });
-    }
+    setFeedback({ error: "", success: "" });
   };
 
   const handlePhoneChange = (value) => {
     setFormData((prev) => ({ ...prev, phoneNumber: value }));
   };
 
-  const isFormValid = () => {
-    const {
-      firstName, lastName, birthDate, phoneNumber,
-      email, telegramUsername, password, confirmPassword,
-    } = formData;
+  const handleAvatarChange = (e) => {
+    setFormData((prev) => ({ ...prev, avatar: e.target.files[0] }));
+  };
 
-    if (
-      [firstName, lastName, birthDate, phoneNumber, email, telegramUsername, password, confirmPassword].some(v => !v.trim())
-    ) {
-      setFeedback({ error: t('register.errors.missingFields'), success: '' });
-      return false;
+  const validateForm = () => {
+    const { firstName, lastName, birthDate, phoneNumber, email, username, password, confirmPassword } = formData;
+
+    if ([firstName, lastName, birthDate, phoneNumber, email, username, password, confirmPassword].some(v => !v.trim())) {
+      return t("register.errors.missingFields");
     }
+    if (!/\S+@\S+\.\S+/.test(email)) return t("register.errors.invalidEmail");
+    if (!isValidPhoneNumber(phoneNumber || "")) return t("register.errors.invalidPhoneNumber");
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]{4,31}$/.test(username)) return t("register.errors.invalidUsername");
+    if (password !== confirmPassword) return t("register.errors.passwordMismatch");
+    if (!Object.values(passwordCriteria).every(Boolean)) return t("register.errors.passwordWeak");
+    if (new Date(birthDate) > new Date()) return t("register.errors.invalidBirthDate");
 
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setFeedback({ error: t('register.errors.invalidEmail'), success: '' });
-      return false;
-    }
-
-    if (!isValidPhoneNumber(phoneNumber || '')) {
-      setFeedback({ error: t('register.errors.invalidPhoneNumber'), success: '' });
-      return false;
-    }
-
-    if (!/^[a-zA-Z_][a-zA-Z0-9_]{4,31}$/.test(telegramUsername)) {
-      setFeedback({ error: t('register.errors.invalidTelegramUsername'), success: '' });
-      return false;
-    }
-
-    if (password !== confirmPassword) {
-      setFeedback({ error: t('register.errors.passwordMismatch'), success: '' });
-      return false;
-    }
-
-    if (!Object.values(passwordCriteria).every(Boolean)) {
-      setFeedback({ error: t('register.errors.passwordWeak'), success: '' });
-      return false;
-    }
-
-    const birthDateObj = new Date(birthDate);
-    const now = new Date();
-    if (birthDateObj > now) {
-      setFeedback({ error: t('register.errors.invalidBirthDate'), success: '' });
-      return false;
-    }
-
-    return true;
+    return null;
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  // ... (vérifications existantes)
+    e.preventDefault();
+    const error = validateForm();
+    if (error) {
+      setFeedback({ error, success: "" });
+      return;
+    }
 
-  const userPayload = {
-    firstName: formData.firstName.trim(),
-    lastName: formData.lastName.trim(),
-    birth_date: formData.birthDate,  // ✅ Nom corrigé et format direct (YYYY-MM-DD)
-    phone: formData.phoneNumber,     // ✅ Nom corrigé
-    email: formData.email.trim(),
-    telegram_username: formData.telegramUsername.replace(/^@/, "").trim(),
-    password: formData.password,
-    confirm_password: formData.confirmPassword,  // ✅ Nom corrigé
-  };
+    setIsLoading(true);
+    setFeedback({ error: "", success: "" });
 
-  try {
-    await registerUser(userPayload, navigate);
-    // ...
-  } catch (err) {
-    // ...
-  }
+    const payload = new FormData();
+    Object.entries({
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      birth_date: formData.birthDate,
+      phone: formData.phoneNumber,
+      email: formData.email,
+      username: formData.username,
+      password: formData.password,
+      confirm_password: formData.confirmPassword,
+      promo_code: formData.promoCode || "",
+    }).forEach(([key, value]) => payload.append(key, value));
+
+    if (formData.avatar) payload.append("avatar", formData.avatar);
 
     try {
-      await registerUser(userPayload, navigate);
-      setFeedback({ error: '', success: t('register.success') });
+      const response = await registerUser(payload);
+
+      if (response?.status === "verification_sent") {
+        localStorage.setItem("pendingUser", JSON.stringify({ email: formData.email }));
+        setFeedback({ error: "", success: t("register.successEmailSent") });
+        navigate("/verify-email");
+      } else {
+        throw new Error(response?.detail || t("register.errors.generic"));
+      }
     } catch (err) {
-      console.error(err);
-      setFeedback({ error: err?.message || t('register.errors.generic'), success: '' });
+      console.error("Registration error:", err);
+      setFeedback({ error: err?.message || t("register.errors.generic"), success: "" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (feedback.success) {
-      const timer = setTimeout(() => navigate('/validation'), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [feedback.success, navigate]);
-
   return (
     <div className="form-container">
       <form className="register-form" onSubmit={handleSubmit} noValidate>
         <div className="language-switcher">
-          <select
-            value={i18n.language}
-            onChange={(e) => i18n.changeLanguage(e.target.value)}
-            aria-label="Language"
-          >
+          <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)} aria-label="Language">
             <option value="fr">🇫🇷 Français</option>
             <option value="en">🇬🇧 English</option>
             <option value="es">🇪🇸 Español</option>
@@ -164,114 +133,57 @@ const RegisterForm = () => {
           </select>
         </div>
 
-        <h2>{t('register.title')}</h2>
+        <h2>{t("register.title")}</h2>
 
-        {feedback.error && <div className="error-message" role="alert">⚠️ {feedback.error}</div>}
-        {feedback.success && <div className="success-message" role="status">✅ {feedback.success}</div>}
+        {feedback.error && <div className="error-message">⚠️ {feedback.error}</div>}
+        {feedback.success && <div className="success-message">✅ {feedback.success}</div>}
 
+        {/* Personal Info */}
         <div className="form-section">
-          <p className="section-title">{t('register.personalInfo')}</p>
+          <p className="section-title">{t("register.personalInfo")}</p>
           <div className="input-group">
-            <input
-              type="text"
-              name="firstName"
-              placeholder={t('register.firstName')}
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-              aria-label={t('register.firstName')}
-            />
-            <input
-              type="text"
-              name="lastName"
-              placeholder={t('register.lastName')}
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-              aria-label={t('register.lastName')}
-            />
+            <input type="text" name="firstName" placeholder={t("register.firstName")} value={formData.firstName} onChange={handleChange} required />
+            <input type="text" name="lastName" placeholder={t("register.lastName")} value={formData.lastName} onChange={handleChange} required />
           </div>
-          <input
-            type="date"
-            name="birthDate"
-            value={formData.birthDate}
-            onChange={handleChange}
-            required
-            aria-label={t('register.birthDate')}
+          <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required />
+        </div>
+
+        {/* Contact Info */}
+        <div className="form-section">
+          <p className="section-title">{t("register.contactInfo")}</p>
+          <PhoneInput international defaultCountry="BJ" value={formData.phoneNumber} onChange={handlePhoneChange} placeholder={t("register.phoneNumber")} required />
+          <input type="email" name="email" placeholder={t("register.email")} value={formData.email} onChange={handleChange} required />
+          <input type="text" name="username" placeholder={t("register.username")} value={formData.username} onChange={handleChange} required />
+          <input type="file" accept="image/*" name="avatar" onChange={handleAvatarChange} />
+        </div>
+
+        {/* Promo Code */}
+        <div className="form-section">
+          <p className="section-title">Code promo (facultatif)</p>
+          <input 
+            type="text" 
+            name="promoCode" 
+            placeholder="Entrez le nom d'utilisateur de votre parrain" 
+            value={formData.promoCode} 
+            onChange={handleChange} 
           />
         </div>
 
+        {/* Security */}
         <div className="form-section">
-          <p className="section-title">{t('register.contactInfo')}</p>
-          <PhoneInput
-            international
-            defaultCountry="BJ"
-            value={formData.phoneNumber}
-            onChange={handlePhoneChange}
-            placeholder={t('register.phoneNumber')}
-            required
-            aria-label={t('register.phoneNumber')}
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder={t('register.email')}
-            value={formData.email}
-            onChange={handleChange}
-            required
-            aria-label={t('register.email')}
-          />
-          <input
-            type="text"
-            name="telegramUsername"
-            placeholder={t('register.telegramUsername')}
-            value={formData.telegramUsername}
-            onChange={handleChange}
-            required
-            aria-label={t('register.telegramUsername')}
-          />
-        </div>
-
-        <div className="form-section">
-          <p className="section-title">{t('register.security')}</p>
-          <input
-            type="password"
-            name="password"
-            placeholder={t('register.password')}
-            value={formData.password}
-            onChange={handleChange}
-            autoComplete="new-password"
-            required
-            aria-label={t('register.password')}
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder={t('register.confirmPassword')}
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            autoComplete="new-password"
-            required
-            aria-label={t('register.confirmPassword')}
-          />
+          <p className="section-title">{t("register.security")}</p>
+          <input type="password" name="password" placeholder={t("register.password")} value={formData.password} onChange={handleChange} required />
+          <input type="password" name="confirmPassword" placeholder={t("register.confirmPassword")} value={formData.confirmPassword} onChange={handleChange} required />
           <ul className="password-criteria">
-            <li className={passwordCriteria.length ? 'valid' : 'invalid'}>
-              {t('register.criteria.length')}
-            </li>
-            <li className={passwordCriteria.uppercase ? 'valid' : 'invalid'}>
-              {t('register.criteria.uppercase')}
-            </li>
-            <li className={passwordCriteria.number ? 'valid' : 'invalid'}>
-              {t('register.criteria.number')}
-            </li>
-            <li className={passwordCriteria.specialChar ? 'valid' : 'invalid'}>
-              {t('register.criteria.specialChar')}
-            </li>
+            <li className={passwordCriteria.length ? "valid" : "invalid"}>{t("register.criteria.length")}</li>
+            <li className={passwordCriteria.uppercase ? "valid" : "invalid"}>{t("register.criteria.uppercase")}</li>
+            <li className={passwordCriteria.number ? "valid" : "invalid"}>{t("register.criteria.number")}</li>
+            <li className={passwordCriteria.specialChar ? "valid" : "invalid"}>{t("register.criteria.specialChar")}</li>
           </ul>
         </div>
 
-        <button type="submit" disabled={isLoading} className={isLoading ? 'loading' : ''}>
-          {isLoading ? t('register.loading') : t('register.submit')}
+        <button type="submit" disabled={isLoading} className={isLoading ? "loading" : ""}>
+          {isLoading ? t("register.loading") : t("register.submit")}
         </button>
       </form>
     </div>

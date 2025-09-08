@@ -1,3 +1,4 @@
+// src/components/AuthChoice.jsx
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -9,11 +10,22 @@ const AuthChoice = () => {
   const { user, loading } = useUser();
 
   useEffect(() => {
-    // Redirige vers la page d'accueil si l'utilisateur est déjà connecté
+    console.log("✅ AuthChoice monté");
     if (!loading && user) {
-      navigate("/"); // Redirige vers l'accueil
+      console.log("🔁 Utilisateur connecté, redirection vers /");
+      navigate("/");
     }
   }, [user, loading, navigate]);
+
+  const handleRegister = () => {
+    console.log("➡️ Redirection vers /register");
+    navigate("/register");
+  };
+
+  const handleLogin = () => {
+    console.log("➡️ Redirection vers /login");
+    navigate("/login");
+  };
 
   return (
     <motion.div
@@ -26,23 +38,22 @@ const AuthChoice = () => {
       <p>Que souhaites-tu faire ?</p>
 
       {loading ? (
-        // Affiche un indicateur de chargement pendant que les données se chargent
         <div className="loading-indicator">
           <p>Chargement...</p>
         </div>
       ) : (
         <div className="auth-buttons">
           <button
-            onClick={() => navigate("/register")}
-            title="Créer un compte"
-            aria-label="S’inscrire"
+            type="button"
+            onClick={handleRegister}
+            className="auth-btn"
           >
             S’inscrire
           </button>
           <button
-            onClick={() => navigate("/login")}
-            title="Se connecter"
-            aria-label="Se connecter"
+            type="button"
+            onClick={handleLogin}
+            className="auth-btn"
           >
             Se connecter
           </button>

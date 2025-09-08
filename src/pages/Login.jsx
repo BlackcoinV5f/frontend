@@ -1,66 +1,47 @@
+// src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 import "./Login.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [telegramUsername, setTelegramUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_BASE_URL;
+  const navigate = useNavigate();
+  const { loginUser } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    if (!telegramUsername.startsWith("@")) {
-      setError("Ton nom d'utilisateur Telegram doit commencer par @");
-      setLoading(false);
-      return;
-    }
-
-    // Supprimer le @ pour envoyer au backend
-    const cleanedTelegramUsername = telegramUsername.slice(1);
-
     try {
-      const isAdmin =
-        email === "admin@example.com" &&
-        password === "motdepasse" &&
-        telegramUsername === "@admin";
-
-      if (isAdmin) {
-        const res = await fetch(`${API_URL}/admin/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, telegramUsername: cleanedTelegramUsername }),
-        });
-
-        if (!res.ok) throw new Error("Erreur d'accès administrateur");
-
-        localStorage.setItem("adminEmail", email);
-        navigate("/admin-verify-code");
-        return;
+      if (!emailOrUsername) {
+        throw new Error("Veuillez saisir votre email ou votre nom d’utilisateur.");
       }
 
-      const res = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, telegramUsername: cleanedTelegramUsername }),
+      // Déterminer si c’est un email ou un username
+      const isEmail = emailOrUsername.includes("@");
+
+      // Login → backend (le cookie est posé, UserContext hydrate déjà user)
+      await loginUser({
+        email: isEmail ? emailOrUsername : undefined,
+        username: !isEmail ? emailOrUsername : undefined,
+        password,
       });
 
-      if (!res.ok) throw new Error("Identifiants incorrects ou utilisateur inconnu");
-
-      const userData = await res.json();
-      localStorage.setItem("telegramUser", JSON.stringify(userData));
-      localStorage.setItem("isRegistered", "true");
-
-      navigate("/");
+      // Redirection vers "/home"
+      navigate("/home", { replace: true });
     } catch (err) {
-      setError("Erreur : " + err.message);
+      console.error("Erreur login :", err);
+      setError(
+        err.response?.data?.detail ||
+        err.message ||
+        "Échec de la connexion."
+      );
     } finally {
       setLoading(false);
     }
@@ -71,13 +52,13 @@ const Login = () => {
       <form className="login-form" onSubmit={handleLogin}>
         <h2>Connexion</h2>
 
-        <label htmlFor="email">Adresse e-mail</label>
+        <label htmlFor="emailOrUsername">Email ou Nom d’utilisateur</label>
         <input
-          id="email"
-          type="email"
-          placeholder="email@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          id="emailOrUsername"
+          type="text"
+          placeholder="email@example.com ou nom_utilisateur"
+          value={emailOrUsername}
+          onChange={(e) => setEmailOrUsername(e.target.value)}
           required
         />
 
@@ -88,16 +69,6 @@ const Login = () => {
           placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <label htmlFor="telegram">Nom d’utilisateur Telegram</label>
-        <input
-          id="telegram"
-          type="text"
-          placeholder="@tonusername"
-          value={telegramUsername}
-          onChange={(e) => setTelegramUsername(e.target.value)}
           required
         />
 
