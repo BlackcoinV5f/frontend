@@ -1,52 +1,27 @@
 // src/components/AutoAuth.jsx
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
-import SplashScreen from "./SplashScreen";
+import SplashScreen from "./SplashScreen"; // réutilisation cohérente
 
 export default function AutoAuth({ children }) {
   const { fetchUserProfile, logoutUser } = useUser();
   const [checking, setChecking] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  // ✅ Identifie la source de la requête
-  const getAccessSource = () => {
-    if (window?.Telegram?.WebApp) return "telegram";
-    return "my_app"; // sinon c’est ton app officielle
-  };
 
   useEffect(() => {
     const controller = new AbortController();
 
-    const safeRedirect = () => {
-      if (location.pathname !== "/auth-choice") {
-        navigate("/auth-choice", { replace: true });
-      }
-    };
-
     const init = async () => {
       try {
-        const initData = window?.Telegram?.WebApp?.initData || "";
-        const source = getAccessSource();
-
-        // Timeout de sécurité
+        // ✅ Timeout de sécurité
         const timeout = setTimeout(() => controller.abort(), 8000);
 
-        // ✅ On envoie automatiquement les headers requis
-        const profile = await fetchUserProfile({
-          signal: controller.signal,
-          headers: {
-            "X-Access-Source": source,
-            "X-Telegram-InitData": initData,
-          },
-        });
+        const profile = await fetchUserProfile({ signal: controller.signal });
 
         clearTimeout(timeout);
 
+        // ✅ Vérification stricte de l’objet utilisateur
         if (!profile || !profile.id) {
-          await logoutUser(false);
-          safeRedirect();
+          await logoutUser();
         }
       } catch (err) {
         if (err.name === "AbortError") {
@@ -54,18 +29,19 @@ export default function AutoAuth({ children }) {
         } else {
           console.warn("❌ Session invalide ou erreur réseau");
         }
-        await logoutUser(false);
-        safeRedirect();
+        await logoutUser();
       } finally {
         setChecking(false);
       }
     };
 
     init();
-    return () => controller.abort();
-  }, [fetchUserProfile, logoutUser, navigate, location.pathname]);
+
+    return () => controller.abort(); // cleanup en cas d’unmount
+  }, [fetchUserProfile, logoutUser]);
 
   if (checking) {
+    // 🎨 Tu peux afficher un vrai splash screen animé ici
     return <SplashScreen message="Vérification de la session..." />;
   }
 
