@@ -3,7 +3,6 @@ import {
   createContext,
   useState,
   useContext,
-  useEffect,
   useMemo,
   useCallback,
 } from "react";
@@ -60,21 +59,28 @@ export const UserProvider = ({ children }) => {
   /** ========================
    * LOGOUT
    * ======================== */
-  const logoutUser = useCallback(async () => {
-    try {
-      await axiosInstance.post("/auth/logout");
-    } catch (err) {
-      console.warn(
-        "⚠ Erreur logout backend:",
-        err.response?.data || err.message
-      );
-    }
-    setUser(null);
-    setError(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("pendingUser");
-    navigate("/login", { replace: true });
-  }, [axiosInstance, navigate]);
+  const logoutUser = useCallback(
+    async (redirect = true) => {
+      try {
+        await axiosInstance.post("/auth/logout");
+      } catch (err) {
+        console.warn(
+          "⚠ Erreur logout backend:",
+          err.response?.data || err.message
+        );
+      }
+
+      setUser(null);
+      setError(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("pendingUser");
+
+      if (redirect) {
+        navigate("/login", { replace: true });
+      }
+    },
+    [axiosInstance, navigate]
+  );
 
   /** ========================
    * AUTH STATE MEMOIZED
@@ -99,37 +105,43 @@ export const UserProvider = ({ children }) => {
   /** ========================
    * API CALLS
    * ======================== */
-  const fetchUserProfile = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data } = await axiosInstance.get("/auth/me");
-      if (!data?.user?.id) {
-        console.error("❌ Profil utilisateur non trouvé dans la réponse");
+  const fetchUserProfile = useCallback(
+    async (options = {}) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const { data } = await axiosInstance.get("/auth/me", {
+          ...options, // ✅ permet d’ajouter { signal, headers, etc. }
+        });
+
+        if (!data?.user?.id) {
+          console.error("❌ Profil utilisateur non trouvé dans la réponse");
+          return null;
+        }
+
+        persistUserData(data.user);
+        return data.user;
+      } catch (err) {
+        const msg =
+          err.response?.data?.detail || "Impossible de récupérer le profil";
+        console.error(
+          "❌ Erreur fetchUserProfile :",
+          err.response?.data || err.message
+        );
+        setError(msg);
         return null;
+      } finally {
+        setLoading(false);
       }
-      persistUserData(data.user);
-      return data.user;
-    } catch (err) {
-      const msg =
-        err.response?.data?.detail || "Impossible de récupérer le profil";
-      console.error(
-        "❌ Erreur fetchUserProfile :",
-        err.response?.data || err.message
-      );
-      setError(msg);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [axiosInstance, persistUserData]);
+    },
+    [axiosInstance, persistUserData]
+  );
 
   const loginUser = useCallback(
     async (credentials) => {
       setLoading(true);
       setError(null);
       try {
-        // ✅ Pas besoin de récupérer le token → le cookie est défini par le backend
         await axiosInstance.post("/auth/login", credentials);
         return await fetchUserProfile();
       } catch (err) {
