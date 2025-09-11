@@ -29,13 +29,11 @@ const Wallet = () => {
         if (!res.ok) throw new Error("Erreur réseau");
 
         const data = await res.json();
-        console.log("💰 Wallet API response:", data);
 
         setWalletPoints(data.amount || 0); // correspond à ce que renvoie le backend
         setAnimateWallet(true);
         setTimeout(() => setAnimateWallet(false), 1000);
       } catch (err) {
-        console.error("❌ Erreur Wallet:", err);
         setWalletPoints(0);
       } finally {
         setIsLoading(false);

@@ -1,35 +1,42 @@
 // src/components/AutoAuth.jsx
 import { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
-import SplashScreen from "./SplashScreen"; // réutilisation cohérente
+import SplashScreen from "./SplashScreen";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function AutoAuth({ children }) {
-  const { fetchUserProfile, logoutUser } = useUser();
+  const { fetchUserProfile } = useUser();
   const [checking, setChecking] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const controller = new AbortController();
 
+    // 🚨 Routes publiques qui ne nécessitent pas de check token
+    const publicRoutes = ["/auth-choice", "/login", "/register"];
+
+    // 👉 Si on est déjà sur une route publique → pas de vérification
+    if (publicRoutes.includes(location.pathname)) {
+      setChecking(false);
+      return;
+    }
+
     const init = async () => {
       try {
-        // ✅ Timeout de sécurité
         const timeout = setTimeout(() => controller.abort(), 8000);
 
         const profile = await fetchUserProfile({ signal: controller.signal });
 
         clearTimeout(timeout);
 
-        // ✅ Vérification stricte de l’objet utilisateur
+        // ❌ Pas de profil → redirection vers AuthChoice
         if (!profile || !profile.id) {
-          await logoutUser();
+          navigate("/auth-choice", { replace: true });
         }
       } catch (err) {
-        if (err.name === "AbortError") {
-          console.warn("⏳ Vérification de session expirée");
-        } else {
-          console.warn("❌ Session invalide ou erreur réseau");
-        }
-        await logoutUser();
+        console.warn("❌ Session invalide ou erreur réseau");
+        navigate("/auth-choice", { replace: true });
       } finally {
         setChecking(false);
       }
@@ -37,11 +44,10 @@ export default function AutoAuth({ children }) {
 
     init();
 
-    return () => controller.abort(); // cleanup en cas d’unmount
-  }, [fetchUserProfile, logoutUser]);
+    return () => controller.abort();
+  }, [fetchUserProfile, navigate, location]);
 
   if (checking) {
-    // 🎨 Tu peux afficher un vrai splash screen animé ici
     return <SplashScreen message="Vérification de la session..." />;
   }
 

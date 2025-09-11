@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
 import {
@@ -17,53 +17,46 @@ const Friends = () => {
   const [referrals, setReferrals] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [codeGenerated, setCodeGenerated] = useState(false);
   const { user } = useUser();
 
-  // Chargement des données (code promo et liste des filleuls)
+  const hasFetched = useRef(false);
+
+  // Fetch des données (code promo + filleuls)
   useEffect(() => {
+    if (!user?.id || hasFetched.current) return;
+
     async function fetchFriendsData() {
       try {
-        // 🔑 Utilisation du cookie HttpOnly au lieu de localStorage
-        const res = await fetch("/api/friends/me", {
-          credentials: "include",
-        });
-
+        const res = await fetch("/api/friends/me", { credentials: "include" });
         if (!res.ok) throw new Error("Erreur API");
-        const data = await res.json();
 
+        const data = await res.json();
         setPromoCode(data.promo_code || "");
-        setReferrals([...(new Set(data.friends || []))]);
-        setCodeGenerated(!!data.promo_code);
+        setReferrals([...new Set(data.friends || [])]);
+        hasFetched.current = true;
       } catch (err) {
         console.error("Erreur lors du chargement des données:", err);
       }
     }
 
-    if (user) {
-      fetchFriendsData();
-    }
-  }, [user]);
+    fetchFriendsData();
+  }, [user?.id]);
 
-  // Génération du code promo via bouton
+  // Génération du code promo
   const handleGenerateCode = async () => {
-    if (!user || codeGenerated) return;
+    if (!user?.id) return;
 
     setIsGenerating(true);
     try {
       const res = await fetch("/api/friends/generate-code", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // 🔑 Envoie le cookie HttpOnly
-        body: JSON.stringify({ user_id: user.id }),
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
-
       if (!res.ok) throw new Error("Erreur API");
+
       const data = await res.json();
-      setPromoCode(data.code);
-      setCodeGenerated(true);
+      setPromoCode(data.code || "");
     } catch (err) {
       console.error("Erreur lors de la génération du code:", err);
     } finally {
@@ -71,6 +64,7 @@ const Friends = () => {
     }
   };
 
+  // Copier le code promo
   const handleCopyCode = () => {
     if (!promoCode) return;
 
@@ -80,9 +74,7 @@ const Friends = () => {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
       })
-      .catch(() => {
-        alert("Erreur lors de la copie du code promo.");
-      });
+      .catch(() => alert("Erreur lors de la copie du code promo."));
   };
 
   return (
@@ -126,27 +118,26 @@ const Friends = () => {
           Votre code promo
         </h3>
 
-        {!promoCode && !codeGenerated ? (
-          <motion.button
-            className="generate-code-button"
-            onClick={handleGenerateCode}
-            disabled={isGenerating || codeGenerated}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FaMagic className="button-icon" />
-            {isGenerating ? "Génération..." : "Générer mon code promo"}
-          </motion.button>
-        ) : (
+        <motion.button
+          className="generate-code-button"
+          onClick={handleGenerateCode}
+          disabled={isGenerating}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FaMagic className="button-icon" />
+          {isGenerating ? "Génération..." : "Générer mon code promo"}
+        </motion.button>
+
+        {promoCode && (
           <div className="referral-link-container">
             <input
               type="text"
-              value={promoCode || "Chargement..."}
+              value={promoCode}
               readOnly
               className="referral-link-input"
               onClick={(e) => e.target.select()}
             />
-
             <motion.button
               className={`copy-button ${isCopied ? "copied" : ""}`}
               onClick={handleCopyCode}
@@ -156,13 +147,11 @@ const Friends = () => {
             >
               {isCopied ? (
                 <>
-                  <FaCheck className="button-icon" />
-                  Copié !
+                  <FaCheck className="button-icon" /> Copié !
                 </>
               ) : (
                 <>
-                  <FaCopy className="button-icon" />
-                  Copier
+                  <FaCopy className="button-icon" /> Copier
                 </>
               )}
             </motion.button>
@@ -178,8 +167,7 @@ const Friends = () => {
         transition={{ delay: 0.5 }}
       >
         <h3>
-          <FaClipboardList className="section-icon" />
-          Vos filleuls
+          <FaClipboardList className="section-icon" /> Vos filleuls
         </h3>
 
         {referrals.length > 0 ? (
@@ -211,9 +199,7 @@ const Friends = () => {
               alt="No friends"
             />
             <p>Vous n'avez pas encore invité d'amis</p>
-            <p>
-              Partagez votre code promo pour commencer à gagner des récompenses !
-            </p>
+            <p>Partagez votre code promo pour commencer à gagner des récompenses !</p>
           </motion.div>
         )}
       </motion.div>
