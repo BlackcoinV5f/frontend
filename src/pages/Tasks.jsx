@@ -18,23 +18,13 @@ const Tasks = () => {
   const [timers, setTimers] = useState({});
   const navigate = useNavigate();
 
-  // -----------------------------
-  // Charger les tâches
-  // -----------------------------
   useEffect(() => {
     const fetchTasks = async () => {
       if (!user) return;
       setLoading(true);
-
       try {
-        // 🔑 Utilisation du cookie HttpOnly au lieu de localStorage
-        const tasksRes = await axios.get(`${API_URL}/me`, {
-          withCredentials: true,
-        });
-
-        const completedRes = await axios.get(`${API_URL}/me/completed-count`, {
-          withCredentials: true,
-        });
+        const tasksRes = await axios.get(`${API_URL}/me`, { withCredentials: true });
+        const completedRes = await axios.get(`${API_URL}/me/completed-count`, { withCredentials: true });
 
         const platformStyles = {
           youtube: { color: "#FF0000", icon: "/assets/youtube.png" },
@@ -65,55 +55,36 @@ const Tasks = () => {
     fetchTasks();
   }, [user]);
 
-  // -----------------------------
-  // Gestion des timers
-  // -----------------------------
   useEffect(() => {
     const timerInterval = setInterval(() => {
       const now = Date.now();
       const updatedTimers = {};
-      
       Object.keys(cooldowns).forEach(taskId => {
         const endTime = cooldowns[taskId];
-        if (endTime > now) {
-          updatedTimers[taskId] = Math.ceil((endTime - now) / 1000);
-        } else {
-          updatedTimers[taskId] = 0;
-        }
+        updatedTimers[taskId] = endTime > now ? Math.ceil((endTime - now) / 1000) : 0;
       });
-      
       setTimers(updatedTimers);
     }, 1000);
-    
     return () => clearInterval(timerInterval);
   }, [cooldowns]);
 
   const handleTaskClick = (task) => {
     window.open(task.link, "_blank");
-
     const endTime = Date.now() + 2 * 60 * 1000;
-    setCooldowns((prev) => ({
-      ...prev,
-      [task.id]: endTime,
-    }));
-    
-    setTimers((prev) => ({
-      ...prev,
-      [task.id]: 2 * 60,
-    }));
+    setCooldowns((prev) => ({ ...prev, [task.id]: endTime }));
+    setTimers((prev) => ({ ...prev, [task.id]: 2 * 60 }));
   };
 
   const isTaskReady = (taskId) => {
     const endTime = cooldowns[taskId];
-    if (!endTime) return false;
-    return Date.now() >= endTime;
+    return endTime ? Date.now() >= endTime : false;
   };
 
   const formatTime = (seconds) => {
     if (!seconds || seconds <= 0) return "00:00";
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleValidateClick = (task) => {
@@ -126,9 +97,9 @@ const Tasks = () => {
   return (
     <motion.div
       className="tasks-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
     >
       <motion.div
         className="tasks-header"
@@ -170,7 +141,6 @@ const Tasks = () => {
               const ready = isTaskReady(task.id);
               const timeRemaining = timers[task.id] || 0;
               const isCooldownActive = timeRemaining > 0 && !ready;
-              
               return (
                 <motion.div
                   key={task.id}
