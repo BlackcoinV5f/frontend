@@ -17,15 +17,44 @@ export const UserProvider = ({ children }) => {
   const API_URL = import.meta.env.VITE_BACKEND_URL;
 
   /** ========================
-   * AXIOS CONFIG
-   * ======================== */
-  const axiosInstance = useMemo(() => {
-    return axios.create({
-      baseURL: API_URL,
-      withCredentials: true, // 🔑 cookies envoyés automatiquement
-      timeout: 10000,
-    });
-  }, [API_URL]);
+ * AXIOS CONFIG
+ * ======================== */
+const axiosInstance = useMemo(() => {
+  const instance = axios.create({
+    baseURL: API_URL,
+    withCredentials: true, // 🔑 cookies envoyés automatiquement
+    timeout: 10000,
+  });
+
+  // Intercepteur des réponses
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      // Si token expiré → tentative refresh
+      if (
+        error.response?.status === 401 &&
+        !originalRequest._retry // évite boucle infinie
+      ) {
+        originalRequest._retry = true;
+        try {
+          await instance.post("/auth/refresh"); // backend renvoie nouveaux cookies
+          return instance(originalRequest); // rejoue la requête originale
+        } catch (refreshError) {
+          console.error("⛔ Refresh échoué:", refreshError.response?.data || refreshError.message);
+          // Déconnecte l’utilisateur si refresh impossible
+          localStorage.removeItem("user");
+          navigate("/login", { replace: true });
+        }
+      }
+
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
+}, [API_URL, navigate]);
 
   /** ========================
    * STATES

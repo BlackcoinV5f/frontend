@@ -6,6 +6,7 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
 import UserProfile from "../components/UserProfile.jsx";
+import LuckyGameLogo from "../components/LuckyGameLogo"; // ✅ nouveau composant
 
 import "./Home.css";
 
@@ -22,7 +23,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
     });
   }, [user, loading, isAuthenticated]);
 
-  // ⚡ Attendre la fin du chargement avant de rediriger
+  // ⚡ Redirection si non authentifié
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate("/auth-choice", { replace: true });
@@ -51,6 +52,9 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         level={level}
         setLevel={setLevel}
       />
+
+      {/* 🎰 Logo Lucky Game */}
+      <LuckyGameLogo />
 
       {/* 👤 Bouton profil */}
       <button

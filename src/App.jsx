@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import { UserProvider, useUser } from "./contexts/UserContext";
+import LuckyDistributorGame from "./pages/LuckyDistributorGame";
 import backgroundImage from "./assets/background.png";
 import logo from "./assets/actif-logo.png";
 import "./App.css";
@@ -16,7 +17,6 @@ const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const UserProfile = lazy(() => import("./components/UserProfile"));
-import AutoAuth from "./components/AutoAuth";
 
 // 🧭 Pages publiques
 const AuthChoice = lazy(() => import("./pages/AuthChoice"));
@@ -115,6 +115,7 @@ function AppContent() {
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
               <Route path="/daily" element={<ProtectedRoute><Quotidien /></ProtectedRoute>} />
+              <Route path="/lucky-game" element={<LuckyDistributorGame />} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
@@ -132,13 +133,11 @@ function AppContent() {
   );
 }
 
-// 🚀 App avec AutoAuth global
+// 🚀 App sans AutoAuth
 export default function App() {
   return (
     <UserProvider>
-      <AutoAuth>
-        <AppContent />
-      </AutoAuth>
+      <AppContent />
     </UserProvider>
   );
 }

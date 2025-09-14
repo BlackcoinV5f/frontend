@@ -1,0 +1,218 @@
+/* ====== Layout global ====== */
+.lucky-game {
+  display: flex;
+  height: 100vh;
+  background: linear-gradient(180deg, #2b1b69, #1a0f3c);
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* ====== Barre verticale niveaux ====== */
+.levels-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* recentrage vertical */
+  padding: 10px 6px;
+  gap: 8px;
+  background: transparent;
+}
+
+.level-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #611d91;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: default;
+  transition: all 0.3s ease;
+}
+
+.level-circle.active {
+  background: #ff007b;
+  transform: scale(1.15);
+}
+
+/* ====== Zone de jeu principale ====== */
+.game-board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+/* ====== Section mise (avant partie) ====== */
+.bet-section {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bet-section input {
+  width: 100px;
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  text-align: center;
+}
+
+.bet-section button {
+  background: #2196f3;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bet-section button:hover {
+  background: #1976d2;
+}
+
+/* ====== Grille des cartes ====== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 120px);
+  grid-template-rows: repeat(2, 150px);
+  gap: 14px;
+}
+
+.card {
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  border-radius: 10px;
+}
+
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 10px;
+}
+
+/* Face avant (icône blanche sur fond bleu) */
+.card-front {
+  background: #2496f2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-front::before {
+  content: "⬤";
+  font-size: 36px;
+  color: white;
+  opacity: 0.9;
+}
+
+/* Face arrière (multiplicateur révélé) */
+.card-back {
+  background: white;
+  color: #000;
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* ====== Section loot + bouton ====== */
+.loot-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.loot-box {
+  width: 240px;
+  padding: 8px 12px;
+  background: linear-gradient(90deg, #2b83f6, #5a21b9);
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.cashout-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.cashout-btn:hover {
+  background: #d32f2f;
+  transform: scale(1.05);
+}
+
+.cashout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ====== User info ====== */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.balance {
+  font-size: 13px;
+  opacity: 0.8;
+}
