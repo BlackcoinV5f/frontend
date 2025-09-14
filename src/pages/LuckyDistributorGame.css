@@ -1,218 +1,344 @@
-/* ====== Layout global ====== */
+/*
+  =========================================
+  == Styles Généraux & Layout (Ajustements) ==
+  =========================================
+*/
+
+/* Le conteneur principal `lucky-game` occupe toute la largeur et la hauteur pour une bonne disposition. */
 .lucky-game {
-  display: flex;
-  height: 100vh;
-  background: linear-gradient(180deg, #2b1b69, #1a0f3c);
-  color: white;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
+    display: flex;
+    flex-direction: column; /* Organise les éléments en colonne */
+    align-items: center;
+    justify-content: center; /* Centre le contenu verticalement */
+    min-height: 100vh;
+    width: 100%; /* Prend toute la largeur de l'écran */
+    background: linear-gradient(180deg, #2b1b69, #1a0f3c);
+    color: white;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box; /* S'assure que le padding n'ajoute pas de largeur */
 }
 
-/* ====== Barre verticale niveaux ====== */
+/*
+  ================================
+  == Barre verticale des niveaux ==
+  ================================
+*/
+/* La barre de niveaux n'était pas affichée. J'ai ajusté son positionnement pour qu'elle soit visible sur le côté. */
 .levels-bar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; /* recentrage vertical */
-  padding: 10px 6px;
-  gap: 8px;
-  background: transparent;
+    position: absolute;
+    left: 20px; /* Positionnement à gauche de l'écran */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Augmentation de l'espacement pour la visibilité */
+    padding: 10px 0;
+    z-index: 10;
 }
 
 .level-circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #611d91;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: default;
-  transition: all 0.3s ease;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(97, 29, 145, 0.7); /* Transparence pour le style */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    cursor: default;
+    transition: all 0.3s ease;
 }
 
 .level-circle.active {
-  background: #ff007b;
-  transform: scale(1.15);
+    background: #ff007b;
+    transform: scale(1.15);
+    box-shadow: 0 0 15px #ff007b; /* Ajout d'une ombre active */
 }
 
-/* ====== Zone de jeu principale ====== */
+/*
+  ===========================
+  == Zone de jeu principale ==
+  ===========================
+*/
+/* `game-board` a été ajusté pour occuper le centre de la page et être réactif. */
 .game-board {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 20px;
-  padding: 16px;
-  overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px; /* Augmentation de l'espacement entre les sections */
+    padding: 20px;
+    width: 100%; /* Prend toute la largeur disponible */
+    max-width: 600px; /* Limite la largeur sur les grands écrans pour un aspect professionnel */
 }
 
-/* ====== Section mise (avant partie) ====== */
-.bet-section {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 16px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.bet-section input {
-  width: 100px;
-  padding: 6px;
-  border-radius: 6px;
-  border: none;
-  text-align: center;
-}
-
-.bet-section button {
-  background: #2196f3;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.bet-section button:hover {
-  background: #1976d2;
-}
-
-/* ====== Grille des cartes ====== */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 120px);
-  grid-template-rows: repeat(2, 150px);
-  gap: 14px;
-}
-
-.card {
-  perspective: 1000px;
-  cursor: pointer;
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-  border-radius: 10px;
-}
-
-.card.flipped .card-inner {
-  transform: rotateY(180deg);
-}
-
-.card-front,
-.card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 10px;
-}
-
-/* Face avant (icône blanche sur fond bleu) */
-.card-front {
-  background: #2496f2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card-front::before {
-  content: "⬤";
-  font-size: 36px;
-  color: white;
-  opacity: 0.9;
-}
-
-/* Face arrière (multiplicateur révélé) */
-.card-back {
-  background: white;
-  color: #000;
-  transform: rotateY(180deg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-/* ====== Section loot + bouton ====== */
-.loot-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.loot-box {
-  width: 240px;
-  padding: 8px 12px;
-  background: linear-gradient(90deg, #2b83f6, #5a21b9);
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-.cashout-btn {
-  background: #f44336;
-  color: white;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.cashout-btn:hover {
-  background: #d32f2f;
-  transform: scale(1.05);
-}
-
-.cashout-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ====== User info ====== */
+/*
+  ======================
+  == Section utilisateur ==
+  ======================
+*/
+/* Cette section a été entièrement repensée pour correspondre aux captures d'écran. */
 .user-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 .user-avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f6b500;
+    box-shadow: 0 0 15px rgba(246, 181, 0, 0.6);
 }
 
 .user-meta {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px 25px;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .username {
-  font-weight: bold;
-  font-size: 15px;
+    font-weight: bold;
+    font-size: 20px;
+    color: #f6b500;
 }
 
 .balance {
-  font-size: 13px;
-  opacity: 0.8;
+    font-size: 16px;
+    font-weight: 600;
+    color: #4CAF50;
+}
+
+/*
+  ========================
+  == Section Mise ==
+  ========================
+*/
+.bet-section {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%; /* S'étale sur toute la largeur */
+    justify-content: center; /* Centre les éléments */
+}
+
+.bet-section label {
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.bet-section input {
+    width: 120px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    text-align: center;
+    font-size: 1.1em;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+
+.bet-section button {
+    background: #ff007b;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(255, 0, 123, 0.5);
+}
+
+.bet-section button:hover {
+    background: #d40068;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 0, 123, 0.7);
+}
+
+.bet-section button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/*
+  ======================
+  == Grille des cartes ==
+  ======================
+*/
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 colonnes égales et fluides */
+    gap: 20px;
+    width: 100%; /* S'étale sur toute la largeur */
+    justify-content: center; /* Centre les cartes */
+    max-width: 400px;
+}
+
+/* Ajustements pour les cartes */
+.card {
+    perspective: 1000px;
+    cursor: pointer;
+    height: 150px; /* Hauteur fixe pour un meilleur alignement */
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.card-front {
+    background: #2496f2;
+    background-image: linear-gradient(135deg, #2496f2 0%, #00d2ff 100%);
+    color: white;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Symbole sur la face avant */
+.card-front::before {
+    content: "🃏"; /* Utilisation d'un emoji carte plus visible */
+    font-size: 48px;
+    color: white;
+    opacity: 0.9;
+}
+
+.card-back {
+    background: #fff;
+    color: #000;
+    transform: rotateY(180deg);
+}
+
+/*
+  ============================
+  == Loot et Bouton Encaisser ==
+  ============================
+*/
+.loot-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.loot-box {
+    flex: 1;
+    padding: 12px 18px;
+    background: linear-gradient(90deg, #2b83f6, #5a21b9);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    text-align: left;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.loot-box span:first-child {
+    font-weight: bold;
+}
+
+.cashout-btn {
+    padding: 12px 28px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+}
+
+.cashout-btn:hover {
+    background: #43a047;
+    transform: scale(1.05);
+}
+
+.cashout-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/*
+  ==================
+  == Mobile Adjustments ==
+  ==================
+*/
+@media (max-width: 600px) {
+    .lucky-game {
+        padding: 10px;
+    }
+
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .username {
+        font-size: 18px;
+    }
+
+    .balance {
+        font-size: 14px;
+    }
+
+    .bet-section {
+        flex-direction: column;
+    }
+
+    .levels-bar {
+        display: none; /* Masquer la barre sur les petits écrans pour plus d'espace */
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 300px;
+    }
 }
