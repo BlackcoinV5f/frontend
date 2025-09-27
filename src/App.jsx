@@ -39,6 +39,7 @@ const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
 const Quotidien = lazy(() => import("./pages/Quotidien"));
 const Settings = lazy(() => import("./pages/Settings")); // ✅ Ajout Settings
+const TradeGame = lazy(() => import("./pages/TradeGame")); // <-- importer ta page TradeGame
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
