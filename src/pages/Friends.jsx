@@ -1,3 +1,4 @@
+// src/components/Friends.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
@@ -17,54 +18,43 @@ const Friends = () => {
   const [referrals, setReferrals] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const { user } = useUser();
-
+  const { user, axiosInstance } = useUser(); // ✅ utilise axiosInstance
   const hasFetched = useRef(false);
 
-  // Fetch des données (code promo + filleuls)
+  // 🔄 Récupère les données (code promo + filleuls)
   useEffect(() => {
     if (!user?.id || hasFetched.current) return;
 
     async function fetchFriendsData() {
       try {
-        const res = await fetch("/api/friends/me", { credentials: "include" });
-        if (!res.ok) throw new Error("Erreur API");
-
-        const data = await res.json();
-        setPromoCode(data.promo_code || "");
-        setReferrals([...new Set(data.friends || [])]);
+        const res = await axiosInstance.get("/friends/me");
+        setPromoCode(res.data.promo_code || "");
+        setReferrals([...new Set(res.data.friends || [])]);
         hasFetched.current = true;
       } catch (err) {
-        console.error("Erreur lors du chargement des données:", err);
+        console.error("❌ Erreur lors du chargement des données:", err);
       }
     }
 
     fetchFriendsData();
-  }, [user?.id]);
+  }, [user?.id, axiosInstance]);
 
-  // Génération du code promo
+  // ⚡ Génération du code promo
   const handleGenerateCode = async () => {
     if (!user?.id) return;
 
     setIsGenerating(true);
     try {
-      const res = await fetch("/api/friends/generate-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Erreur API");
-
-      const data = await res.json();
-      setPromoCode(data.code || "");
+      const res = await axiosInstance.post("/friends/generate-code");
+      setPromoCode(res.data.code || "");
     } catch (err) {
-      console.error("Erreur lors de la génération du code:", err);
+      console.error("❌ Erreur lors de la génération du code:", err);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // Copier le code promo
+  // 📋 Copier le code promo
   const handleCopyCode = () => {
     if (!promoCode) return;
 
@@ -84,7 +74,7 @@ const Friends = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Header */}
+      {/* ===== HEADER ===== */}
       <motion.div
         className="friends-header"
         initial={{ y: -20 }}
@@ -96,7 +86,7 @@ const Friends = () => {
         <GiPartyPopper className="header-icon" />
       </motion.div>
 
-      {/* Description */}
+      {/* ===== DESCRIPTION ===== */}
       <motion.p
         className="friends-description"
         initial={{ opacity: 0 }}
@@ -106,7 +96,7 @@ const Friends = () => {
         Invitez vos amis et gagnez des récompenses ensemble !
       </motion.p>
 
-      {/* Code Promo */}
+      {/* ===== CODE PROMO ===== */}
       <motion.div
         className="referral-section"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -159,7 +149,7 @@ const Friends = () => {
         )}
       </motion.div>
 
-      {/* Liste des filleuls */}
+      {/* ===== LISTE DES FILLEULS ===== */}
       <motion.div
         className="invited-section"
         initial={{ opacity: 0 }}

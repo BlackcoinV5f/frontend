@@ -38,6 +38,8 @@ const SidebarPage = lazy(() => import("./pages/SidebarPage"));
 const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
 const Quotidien = lazy(() => import("./pages/Quotidien"));
+const Settings = lazy(() => import("./pages/Settings")); // ✅ Ajout Settings
+const TradeGame = lazy(() => import("./pages/TradeGame")); // <-- importer ta page TradeGame
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -115,7 +117,9 @@ function AppContent() {
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
               <Route path="/daily" element={<ProtectedRoute><Quotidien /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} /> {/* ✅ Route ajoutée */}
               <Route path="/lucky-game" element={<LuckyDistributorGame />} />
+              <Route path="/tradegame" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

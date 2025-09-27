@@ -8,32 +8,25 @@ import { RiCoinsFill } from "react-icons/ri";
 import "./Wallet.css";
 
 const Wallet = () => {
-  const { user } = useUser();
+  const { user, axiosInstance } = useUser(); // ✅ récupère axiosInstance du contexte
   const [walletPoints, setWalletPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [animateWallet, setAnimateWallet] = useState(false);
   const controls = useAnimation();
 
-  /** 🔄 Charge le solde du wallet via backend avec cookie HttpOnly */
+  /** 🔄 Charge le solde du wallet via axiosInstance (refresh auto inclus) */
   useEffect(() => {
     const loadWallet = async () => {
       if (!user?.id) return;
 
       setIsLoading(true);
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/wallet/`, {
-          method: "GET",
-          credentials: "include", // 🔑 Envoie le cookie HttpOnly automatiquement
-        });
-
-        if (!res.ok) throw new Error("Erreur réseau");
-
-        const data = await res.json();
-
-        setWalletPoints(data.amount || 0); // correspond à ce que renvoie le backend
+        const res = await axiosInstance.get("/wallet/"); // ✅ axiosInstance gère tout
+        setWalletPoints(res.data.amount || 0);
         setAnimateWallet(true);
         setTimeout(() => setAnimateWallet(false), 1000);
       } catch (err) {
+        console.error("❌ Erreur récupération wallet:", err);
         setWalletPoints(0);
       } finally {
         setIsLoading(false);
@@ -41,7 +34,7 @@ const Wallet = () => {
     };
 
     loadWallet();
-  }, [user]);
+  }, [user, axiosInstance]);
 
   /** ⚡ Animation du solde */
   useEffect(() => {
@@ -79,10 +72,16 @@ const Wallet = () => {
         onClick={() => setAnimateWallet(true)}
       >
         <div className="coins-animation">
-          <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}>
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          >
             <RiCoinsFill className="rotating-coin rotating-coin-1" />
           </motion.div>
-          <motion.div animate={{ rotate: [360, 0] }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }}>
+          <motion.div
+            animate={{ rotate: [360, 0] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          >
             <RiCoinsFill className="rotating-coin rotating-coin-2" />
           </motion.div>
         </div>
@@ -101,7 +100,12 @@ const Wallet = () => {
       </motion.div>
 
       {/* ====== INFOS ====== */}
-      <motion.div className="wallet-info" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+      <motion.div
+        className="wallet-info"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
         <motion.div className="info-item" whileHover={{ scale: 1.03 }}>
           <FaPercentage className="info-icon" />
           <p><span className="highlight">20%</span> des points gagnés via les tâches <GiReceiveMoney /></p>
@@ -117,8 +121,17 @@ const Wallet = () => {
       </motion.div>
 
       {/* ====== FOOTER ====== */}
-      <motion.div className="wallet-footer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
-        <motion.button className="transfer-button" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+      <motion.div
+        className="wallet-footer"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+      >
+        <motion.button
+          className="transfer-button"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
           <GiPayMoney className="transfer-icon" />
           Transférer des points
         </motion.button>

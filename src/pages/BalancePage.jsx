@@ -8,39 +8,32 @@ import { useUser } from "../contexts/UserContext";
 import "./BalancePage.css";
 
 const BalancePage = () => {
-  const { user } = useUser();
+  const { user, fetchBalance } = useUser(); // ✅ utilise la fonction du contexte
   const [points, setPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [animateBalance, setAnimateBalance] = useState(false);
   const controls = useAnimation();
 
-  // ✅ Fetch la balance depuis le backend via cookie HttpOnly
+  // ✅ Fetch balance via UserContext (axiosInstance + refresh auto)
   useEffect(() => {
     const loadBalance = async () => {
       if (!user?.id) return;
 
       setIsLoading(true);
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/balance/`, {
-          method: "GET",
-          credentials: "include", // 🔑 Envoie automatiquement le cookie HttpOnly
-        });
-
-        if (!res.ok) throw new Error("Erreur réseau");
-
-        const data = await res.json();
-        setPoints(data.points || 0);
+        const balance = await fetchBalance(); // ✅ via axiosInstance
+        setPoints(balance || 0);
         setAnimateBalance(true);
         setTimeout(() => setAnimateBalance(false), 1000);
       } catch (err) {
-        console.error("Erreur balance:", err);
+        console.error("❌ Erreur récupération balance:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadBalance();
-  }, [user]);
+  }, [user, fetchBalance]);
 
   useEffect(() => {
     if (animateBalance) {

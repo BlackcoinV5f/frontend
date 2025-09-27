@@ -4,13 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTrophy, FaExternalLinkAlt, FaClock } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./Tasks.css";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL + "/tasks";
-
 const Tasks = () => {
-  const { user } = useUser();
+  const { user, axiosInstance } = useUser(); // ✅ récup axiosInstance du contexte
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [completedCount, setCompletedCount] = useState(0);
@@ -24,15 +21,15 @@ const Tasks = () => {
     telegram: { color: "#0088cc", icon: "/assets/telegram.png" },
   };
 
-  // Fonction pour charger les tâches
+  // Charger les tâches depuis l’API
   const fetchTasks = async () => {
     if (!user) return;
     setLoading(true);
 
     try {
       const [tasksRes, completedRes] = await Promise.all([
-        axios.get(`${API_URL}/me/pending`, { withCredentials: true }),
-        axios.get(`${API_URL}/me/completed-count`, { withCredentials: true }),
+        axiosInstance.get("/tasks/me/pending"),
+        axiosInstance.get("/tasks/me/completed-count"),
       ]);
 
       const styledTasks = tasksRes.data.map((t) => {
@@ -48,7 +45,7 @@ const Tasks = () => {
       setTasks(styledTasks);
       setCompletedCount(completedRes.data.completed_tasks || 0);
     } catch (err) {
-      console.error("Erreur chargement des tâches :", err);
+      console.error("❌ Erreur chargement des tâches :", err);
       setTasks([]);
       setCompletedCount(0);
     } finally {
@@ -56,7 +53,7 @@ const Tasks = () => {
     }
   };
 
-  // Charger les tâches au montage et à chaque changement d’utilisateur
+  // Charger les tâches au montage et quand l’utilisateur change
   useEffect(() => {
     fetchTasks();
   }, [user?.id]);
@@ -75,11 +72,11 @@ const Tasks = () => {
 
   const handleTaskClick = async (task) => {
     try {
-      await axios.post(`${API_URL}/${task.id}/start`, {}, { withCredentials: true });
+      await axiosInstance.post(`/tasks/${task.id}/start`);
       window.open(task.link, "_blank");
       fetchTasks();
     } catch (err) {
-      console.error("Erreur démarrage tâche :", err);
+      console.error("❌ Erreur démarrage tâche :", err);
     }
   };
 
@@ -91,7 +88,9 @@ const Tasks = () => {
     if (!seconds || seconds <= 0) return "00:00";
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const totalTasks = tasks.length + completedCount;
@@ -167,7 +166,7 @@ const Tasks = () => {
                     </div>
                   </div>
 
-                  {/* --- Logique corrigée --- */}
+                  {/* --- Logique d'état des tâches --- */}
                   {task.completed ? (
                     <motion.div
                       className="completed-badge"
@@ -216,7 +215,9 @@ const Tasks = () => {
             ))}
           </AnimatePresence>
           {tasks.length === 0 && !loading && (
-            <div className="no-tasks">🎉 Vous avez terminé toutes les tâches !</div>
+            <div className="no-tasks">
+              🎉 Vous avez terminé toutes les tâches !
+            </div>
           )}
         </motion.div>
       )}

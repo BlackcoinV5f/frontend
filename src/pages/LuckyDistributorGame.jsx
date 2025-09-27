@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./LuckyDistributorGame.css";
 import { useUser } from "../contexts/UserContext";
-import axios from "axios";
 
 export default function LuckyDistributorGame() {
-  const { user } = useUser();
-  const API_URL = import.meta.env.VITE_BACKEND_URL;
+  const { user, axiosInstance } = useUser(); // ✅ axiosInstance depuis le contexte
 
   const [gameId, setGameId] = useState(null);
   const [cards, setCards] = useState([]);
@@ -21,12 +19,10 @@ export default function LuckyDistributorGame() {
   // =========================
   const fetchBalance = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/balance/`, {
-        withCredentials: true,
-      });
+      const { data } = await axiosInstance.get("/balance/");
       setBalance(data.points);
     } catch (err) {
-      console.error("Erreur fetchBalance:", err);
+      console.error("❌ Erreur fetchBalance:", err);
     }
   };
 
@@ -39,11 +35,10 @@ export default function LuckyDistributorGame() {
       if (bet > balance) return alert("Solde insuffisant !");
       setBusy(true);
 
-      const { data } = await axios.post(
-        `${API_URL}/luckygame/start`,
-        { user_id: user.id, bet },
-        { withCredentials: true }
-      );
+      const { data } = await axiosInstance.post("/luckygame/start", {
+        user_id: user.id,
+        bet,
+      });
 
       setGameId(data.game_id);
       setLevel(data.current_level);
@@ -59,7 +54,7 @@ export default function LuckyDistributorGame() {
 
       await fetchBalance();
     } catch (err) {
-      console.error("Erreur startGame:", err);
+      console.error("❌ Erreur startGame:", err);
     } finally {
       setBusy(false);
     }
@@ -72,11 +67,10 @@ export default function LuckyDistributorGame() {
     if (busy || !gameId) return;
     setBusy(true);
     try {
-      const { data } = await axios.post(
-        `${API_URL}/luckygame/play`,
-        { game_id: gameId, choice_index: index },
-        { withCredentials: true }
-      );
+      const { data } = await axiosInstance.post("/luckygame/play", {
+        game_id: gameId,
+        choice_index: index,
+      });
 
       // Étape 1 : révéler toutes les cartes
       setCards((prev) =>
@@ -119,7 +113,7 @@ export default function LuckyDistributorGame() {
         }, 2000);
       }
     } catch (err) {
-      console.error("Erreur playCard:", err);
+      console.error("❌ Erreur playCard:", err);
     } finally {
       setBusy(false);
     }
@@ -131,11 +125,9 @@ export default function LuckyDistributorGame() {
   const cashout = async () => {
     if (!gameId) return;
     try {
-      const { data } = await axios.post(
-        `${API_URL}/luckygame/cashout`,
-        { game_id: gameId },
-        { withCredentials: true }
-      );
+      const { data } = await axiosInstance.post("/luckygame/cashout", {
+        game_id: gameId,
+      });
 
       alert(`Encaissement réussi : ${data.reward} pts`);
       setGameId(null);
@@ -146,7 +138,7 @@ export default function LuckyDistributorGame() {
 
       await fetchBalance();
     } catch (err) {
-      console.error("Erreur cashout:", err);
+      console.error("❌ Erreur cashout:", err);
     }
   };
 
@@ -188,7 +180,10 @@ export default function LuckyDistributorGame() {
               src={
                 user.avatar.startsWith("http")
                   ? user.avatar
-                  : `${API_URL}/${user.avatar.replace(/^\/+/, "")}`
+                  : `${axiosInstance.defaults.baseURL}/${user.avatar.replace(
+                      /^\/+/,
+                      ""
+                    )}`
               }
               alt="avatar"
               className="user-avatar"

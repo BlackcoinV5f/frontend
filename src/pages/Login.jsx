@@ -19,29 +19,34 @@ const Login = () => {
     setError("");
 
     try {
-      if (!emailOrUsername) {
-        throw new Error("Veuillez saisir votre email ou votre nom d’utilisateur.");
+      if (!emailOrUsername.trim()) {
+        throw new Error("Veuillez saisir votre email ou nom d’utilisateur.");
+      }
+      if (!password) {
+        throw new Error("Veuillez saisir votre mot de passe.");
       }
 
-      // Déterminer si c’est un email ou un username
+      // Déterminer si c'est un email ou un username
       const isEmail = emailOrUsername.includes("@");
 
-      // Login → backend (le cookie est posé, UserContext hydrate déjà user)
+      // Appel login via UserContext (les cookies sont gérés par le backend)
       await loginUser({
-        email: isEmail ? emailOrUsername : undefined,
-        username: !isEmail ? emailOrUsername : undefined,
+        email: isEmail ? emailOrUsername.trim() : undefined,
+        username: !isEmail ? emailOrUsername.trim() : undefined,
         password,
       });
 
-      // Redirection vers "/home"
+      // Redirection après succès
       navigate("/home", { replace: true });
     } catch (err) {
       console.error("Erreur login :", err);
-      setError(
+
+      // Gestion rigoureuse des messages d'erreur
+      const msg =
         err.response?.data?.detail ||
         err.message ||
-        "Échec de la connexion."
-      );
+        "Échec de la connexion. Vérifiez vos identifiants.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

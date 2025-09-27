@@ -7,6 +7,7 @@ import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
 import UserProfile from "../components/UserProfile.jsx";
 import LuckyGameLogo from "../components/LuckyGameLogo"; // ✅ nouveau composant
+import TradeGameLogo from "../components/TradeGameLogo"; // ✅ nouveau composant
 
 import "./Home.css";
 
@@ -55,6 +56,9 @@ const Home = ({ points, setPoints, level, setLevel }) => {
 
       {/* 🎰 Logo Lucky Game */}
       <LuckyGameLogo />
+
+      {/* 💹 Logo Trade Game */}
+      <TradeGameLogo />
 
       {/* 👤 Bouton profil */}
       <button

@@ -1,4 +1,3 @@
-// src/contexts/UserContext.jsx
 import {
   createContext,
   useState,
@@ -17,44 +16,41 @@ export const UserProvider = ({ children }) => {
   const API_URL = import.meta.env.VITE_BACKEND_URL;
 
   /** ========================
- * AXIOS CONFIG
- * ======================== */
-const axiosInstance = useMemo(() => {
-  const instance = axios.create({
-    baseURL: API_URL,
-    withCredentials: true, // 🔑 cookies envoyés automatiquement
-    timeout: 10000,
-  });
+   * AXIOS CONFIGURATION
+   * ======================== */
+  const axiosInstance = useMemo(() => {
+    const instance = axios.create({
+      baseURL: API_URL,
+      withCredentials: true, // 🔑 cookies envoyés automatiquement
+      timeout: 10000,
+    });
 
-  // Intercepteur des réponses
-  instance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const originalRequest = error.config;
+    // Intercepteur pour gérer le refresh token
+    instance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
 
-      // Si token expiré → tentative refresh
-      if (
-        error.response?.status === 401 &&
-        !originalRequest._retry // évite boucle infinie
-      ) {
-        originalRequest._retry = true;
-        try {
-          await instance.post("/auth/refresh"); // backend renvoie nouveaux cookies
-          return instance(originalRequest); // rejoue la requête originale
-        } catch (refreshError) {
-          console.error("⛔ Refresh échoué:", refreshError.response?.data || refreshError.message);
-          // Déconnecte l’utilisateur si refresh impossible
-          localStorage.removeItem("user");
-          navigate("/login", { replace: true });
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          try {
+            await instance.post("/auth/refresh"); // renvoie nouveaux cookies
+            return instance(originalRequest); // rejoue la requête originale
+          } catch (refreshError) {
+            console.error(
+              "⛔ Refresh échoué:",
+              refreshError.response?.data || refreshError.message
+            );
+            logoutUser();
+          }
         }
+
+        return Promise.reject(error);
       }
+    );
 
-      return Promise.reject(error);
-    }
-  );
-
-  return instance;
-}, [API_URL, navigate]);
+    return instance;
+  }, [API_URL]);
 
   /** ========================
    * STATES
@@ -77,9 +73,7 @@ const axiosInstance = useMemo(() => {
     const normalizedUser = {
       ...userData,
       is_verified: Boolean(userData.is_verified),
-      has_completed_welcome_tasks: Boolean(
-        userData.has_completed_welcome_tasks
-      ),
+      has_completed_welcome_tasks: Boolean(userData.has_completed_welcome_tasks),
       id: Number(userData.id),
     };
     setUser(normalizedUser);
@@ -142,10 +136,7 @@ const axiosInstance = useMemo(() => {
     } catch (err) {
       const msg =
         err.response?.data?.detail || "Impossible de récupérer le profil";
-      console.error(
-        "❌ Erreur fetchUserProfile :",
-        err.response?.data || err.message
-      );
+      console.error("❌ Erreur fetchUserProfile :", err.response?.data || err.message);
       setError(msg);
       return null;
     } finally {
@@ -154,19 +145,14 @@ const axiosInstance = useMemo(() => {
   }, [axiosInstance, persistUserData]);
 
   const loginUser = useCallback(
-    async (credentials) => {
+    async ({ email, username, password }) => {
       setLoading(true);
       setError(null);
       try {
-        // ✅ Pas besoin de récupérer le token → le cookie est défini par le backend
-        await axiosInstance.post("/auth/login", credentials);
+        await axiosInstance.post("/auth/login", { email, username, password });
         return await fetchUserProfile();
       } catch (err) {
         const msg = err.response?.data?.detail || "Échec de la connexion";
-        console.error(
-          "❌ Erreur loginUser :",
-          err.response?.data || err.message
-        );
         setError(msg);
         throw new Error(msg);
       } finally {
@@ -203,11 +189,8 @@ const axiosInstance = useMemo(() => {
       setLoading(true);
       setError(null);
       try {
-        const pendingUser = JSON.parse(
-          localStorage.getItem("pendingUser") || "{}"
-        );
-        if (!pendingUser.email)
-          throw new Error("Aucune vérification en attente");
+        const pendingUser = JSON.parse(localStorage.getItem("pendingUser") || "{}");
+        if (!pendingUser.email) throw new Error("Aucune vérification en attente");
 
         await axiosInstance.post("/auth/verify-email", {
           email: pendingUser.email,
@@ -218,12 +201,7 @@ const axiosInstance = useMemo(() => {
         return await fetchUserProfile();
       } catch (err) {
         const msg =
-          err.response?.data?.detail ||
-          "Échec de la vérification de l'email";
-        console.error(
-          "❌ Erreur verifyEmailCode :",
-          err.response?.data || err.message
-        );
+          err.response?.data?.detail || "Échec de la vérification de l'email";
         setError(msg);
         throw new Error(msg);
       } finally {
@@ -232,6 +210,21 @@ const axiosInstance = useMemo(() => {
     },
     [axiosInstance, fetchUserProfile]
   );
+
+  /** ========================
+   * INIT AUTH
+   * ======================== */
+  useEffect(() => {
+    const initAuth = async () => {
+      if (!user) return;
+      try {
+        await fetchUserProfile();
+      } catch (err) {
+        console.warn("⚠ Impossible d'initialiser la session:", err.message);
+      }
+    };
+    initAuth();
+  }, []); // exécuté 1 seule fois au démarrage
 
   /** ========================
    * AUTRES ENDPOINTS (wallet, mining, balance)
@@ -243,10 +236,7 @@ const axiosInstance = useMemo(() => {
         const { data } = await axiosInstance.get(`/wallet/${userId}`);
         return data?.balance || 0;
       } catch (err) {
-        console.error(
-          "❌ Erreur fetchWallet:",
-          err.response?.data || err.message
-        );
+        console.error("❌ Erreur fetchWallet:", err.response?.data || err.message);
         return 0;
       }
     },
@@ -258,10 +248,7 @@ const axiosInstance = useMemo(() => {
       const { data } = await axiosInstance.get("/balance/");
       return data?.points || 0;
     } catch (err) {
-      console.error(
-        "❌ Erreur fetchBalance:",
-        err.response?.data || err.message
-      );
+      console.error("❌ Erreur fetchBalance:", err.response?.data || err.message);
       return 0;
     }
   }, [axiosInstance]);
@@ -270,13 +257,10 @@ const axiosInstance = useMemo(() => {
     async (userId) => {
       if (!userId) return false;
       try {
-        await axiosInstance.post(`/mining/start/${userId}`, {});
+        await axiosInstance.post(`/mining/start/${userId}`);
         return true;
       } catch (err) {
-        console.error(
-          "❌ Erreur startMining:",
-          err.response?.data || err.message
-        );
+        console.error("❌ Erreur startMining:", err.response?.data || err.message);
         return false;
       }
     },
@@ -290,10 +274,7 @@ const axiosInstance = useMemo(() => {
         await axiosInstance.post(`/mining/claim/${userId}`, { points });
         return true;
       } catch (err) {
-        console.error(
-          "❌ Erreur claimMining:",
-          err.response?.data || err.message
-        );
+        console.error("❌ Erreur claimMining:", err.response?.data || err.message);
         return false;
       }
     },
@@ -330,6 +311,7 @@ const axiosInstance = useMemo(() => {
       ...authState,
       updateUser,
       registerUser,
+      axiosInstance,
       verifyEmailCode,
       loginUser,
       logoutUser,
@@ -360,11 +342,7 @@ const axiosInstance = useMemo(() => {
     ]
   );
 
-  return (
-    <UserContext.Provider value={contextValue}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
 };
 
 /** Hook personnalisé */

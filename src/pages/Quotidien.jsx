@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+// src/pages/Quotidien.jsx
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaGift, FaFire, FaCheck, FaTimes, FaCoins } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
+import confetti from "canvas-confetti";
 import "./Quotidien.css";
 
 const Quotidien = () => {
@@ -11,10 +13,10 @@ const Quotidien = () => {
   const [streak, setStreak] = useState(0);
   const [claimedToday, setClaimedToday] = useState(false);
   const [message, setMessage] = useState("");
-  const [showConfetti, setShowConfetti] = useState(false);
   const [toasts, setToasts] = useState([]);
+  const canvasRef = useRef(null);
 
-  // Récupérer les données utilisateur au montage
+  // Charger profil
   useEffect(() => {
     if (user?.telegram_id) {
       fetchUserProfile(user.telegram_id)
@@ -22,18 +24,33 @@ const Quotidien = () => {
           setStreak(data.streak || 0);
           setClaimedToday(data.claimed_today || false);
         })
-        .catch((err) => {
-          console.error("Erreur lors de la récupération des données utilisateur :", err);
-        });
+        .catch((err) => console.error("Erreur récupération profil :", err));
     }
   }, [user?.telegram_id, fetchUserProfile]);
 
   const addToast = (text) => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, text }]);
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 3000);
+
+    return () => clearTimeout(timeout);
+  };
+
+  const fireConfetti = () => {
+    if (!canvasRef.current) return;
+
+    const myConfetti = confetti.create(canvasRef.current, {
+      resize: true,
+      useWorker: true, // performance boost
+    });
+
+    myConfetti({
+      particleCount: 150,
+      spread: 90,
+      origin: { y: 0.6 }, // position sur l’écran
+    });
   };
 
   const handleClaim = async () => {
@@ -43,13 +60,16 @@ const Quotidien = () => {
     }
 
     try {
-      const updatedUser = await updateUser(user.telegram_id, { action: "claim_daily_reward" });
+      const updatedUser = await updateUser(user.telegram_id, {
+        action: "claim_daily_reward",
+      });
       setStreak(updatedUser.streak || 0);
       setClaimedToday(true);
-      setMessage(`🎉 +${updatedUser.reward_points} points ! Streak : ${updatedUser.streak} jours`);
-      setShowConfetti(true);
+      setMessage(
+        `🎉 +${updatedUser.reward_points} points ! Streak : ${updatedUser.streak} jours`
+      );
       addToast(`+${updatedUser.reward_points} points`);
-      setTimeout(() => setShowConfetti(false), 5000);
+      fireConfetti(); // 🎊 ici on lance le confetti
     } catch (err) {
       console.error("Erreur lors de la réclamation :", err);
       setMessage("❌ Une erreur est survenue.");
@@ -64,32 +84,20 @@ const Quotidien = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {showConfetti && (
-        <div className="confetti-container">
-          {[...Array(100)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="confetti"
-              initial={{ y: -100, x: Math.random() * 100 - 50, opacity: 1 }}
-              animate={{
-                y: window.innerHeight,
-                x: Math.random() * 200 - 100,
-                rotate: Math.random() * 360,
-                opacity: 0,
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                ease: "linear",
-              }}
-              style={{
-                background: `hsl(${Math.random() * 360}, 100%, 50%)`,
-                width: `${Math.random() * 10 + 5}px`,
-                height: `${Math.random() * 10 + 5}px`,
-              }}
-            />
-          ))}
-        </div>
-      )}
+      {/* 🎊 Canvas confetti en arrière-plan */}
+      <canvas
+        ref={canvasRef}
+        className="confetti-canvas"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          zIndex: 9999,
+        }}
+      />
 
       <motion.div
         className="reward-card"

@@ -1,0 +1,101 @@
+/* Settings.css */
+
+/* Container principal */
+.settings-container {
+  display: flex;
+  flex-direction: column; /* empile verticalement le contenu */
+  align-items: flex-start; /* aligne tout à gauche */
+  min-height: 100vh;
+  background: #121212;
+  color: #fff;
+  font-family: "Arial", sans-serif;
+  font-size: 0.75rem;
+  padding-left: 1rem; /* légère marge gauche */
+  padding-right: 1rem;
+}
+
+/* Contenu principal */
+.settings-content {
+  margin-top: 2rem;   
+  margin-left: 0;      /* suppression de toute marge gauche */
+  padding: 1rem 0.5rem;
+  text-align: left;
+  width: 100%;
+  max-width: none;
+}
+
+/* Titres principaux */
+.settings-content h1 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #00ffcc;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Sections */
+.settings-section {
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: left;
+}
+
+/* Sous-titres de section */
+.settings-section h2 {
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  color: #00d4ff;
+  font-weight: 500;
+  text-align: left;
+}
+
+/* Select pour la langue */
+.settings-section select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #222;
+  color: #fff;
+  font-size: 0.75rem;
+  cursor: pointer;
+  width: 140px;
+  margin-top: 0.3rem;
+  margin-left: 0; /* aligné à gauche */
+}
+
+/* Icônes réseaux sociaux */
+.social-icons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-start; /* aligné à gauche */
+  margin-top: 0.5rem;
+}
+
+.social-icons a {
+  font-size: 1.2rem;
+  color: #00d4ff;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #ffcc00;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+  .settings-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .settings-content {
+    padding: 0.8rem;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .social-icons {
+    justify-content: flex-start;
+  }
+}
