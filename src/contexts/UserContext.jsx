@@ -27,27 +27,36 @@ export const UserProvider = ({ children }) => {
 
     // Intercepteur pour gérer le refresh token
     instance.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          try {
-            await instance.post("/auth/refresh"); // renvoie nouveaux cookies
-            return instance(originalRequest); // rejoue la requête originale
-          } catch (refreshError) {
-            console.error(
-              "⛔ Refresh échoué:",
-              refreshError.response?.data || refreshError.message
-            );
-            logoutUser();
-          }
-        }
-
-        return Promise.reject(error);
+    // Si 401 et pas déjà tenté
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/refresh") // ⛔ éviter boucle infinie
+    ) {
+      // Vérifier qu'on a bien un user stocké
+      const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+      if (!storedUser) {
+        console.warn("Pas d'utilisateur → pas de refresh");
+        return Promise.reject(error); // on arrête là
       }
-    );
+
+      originalRequest._retry = true;
+      try {
+        await instance.post("/auth/refresh"); // renvoie nouveaux cookies
+        return instance(originalRequest);     // rejoue la requête originale
+      } catch (refreshError) {
+        console.error("⛔ Refresh échoué:", refreshError.response?.data || refreshError.message);
+        logoutUser();
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
     return instance;
   }, [API_URL]);
