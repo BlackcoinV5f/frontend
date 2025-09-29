@@ -27,36 +27,37 @@ export const UserProvider = ({ children }) => {
 
     // Intercepteur pour gérer le refresh token
     instance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
 
-    // Si 401 et pas déjà tenté
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/refresh") // ⛔ éviter boucle infinie
-    ) {
-      // Vérifier qu'on a bien un user stocké
-      const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-      if (!storedUser) {
-        console.warn("Pas d'utilisateur → pas de refresh");
-        return Promise.reject(error); // on arrête là
+        if (
+          error.response?.status === 401 &&
+          !originalRequest._retry &&
+          !originalRequest.url.includes("/auth/refresh")
+        ) {
+          const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+          if (!storedUser) {
+            console.warn("Pas d'utilisateur → pas de refresh");
+            return Promise.reject(error);
+          }
+
+          originalRequest._retry = true;
+          try {
+            await instance.post("/auth/refresh"); // nouveaux cookies
+            return instance(originalRequest);
+          } catch (refreshError) {
+            console.error(
+              "⛔ Refresh échoué:",
+              refreshError.response?.data || refreshError.message
+            );
+            logoutUser();
+          }
+        }
+
+        return Promise.reject(error);
       }
-
-      originalRequest._retry = true;
-      try {
-        await instance.post("/auth/refresh"); // renvoie nouveaux cookies
-        return instance(originalRequest);     // rejoue la requête originale
-      } catch (refreshError) {
-        console.error("⛔ Refresh échoué:", refreshError.response?.data || refreshError.message);
-        logoutUser();
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
+    );
 
     return instance;
   }, [API_URL]);
@@ -145,7 +146,10 @@ export const UserProvider = ({ children }) => {
     } catch (err) {
       const msg =
         err.response?.data?.detail || "Impossible de récupérer le profil";
-      console.error("❌ Erreur fetchUserProfile :", err.response?.data || err.message);
+      console.error(
+        "❌ Erreur fetchUserProfile :",
+        err.response?.data || err.message
+      );
       setError(msg);
       return null;
     } finally {
@@ -180,7 +184,13 @@ export const UserProvider = ({ children }) => {
           headers: { "Content-Type": "multipart/form-data" },
           timeout: 15000,
         });
-        localStorage.setItem("pendingUser", JSON.stringify(formData));
+
+        // ✅ On sauve uniquement l'email
+        const email = formData.get("email");
+        if (email) {
+          localStorage.setItem("pendingUser", JSON.stringify({ email }));
+        }
+
         return data;
       } catch (err) {
         const msg = err.response?.data?.detail || "Échec de l'inscription";
@@ -198,8 +208,12 @@ export const UserProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       try {
-        const pendingUser = JSON.parse(localStorage.getItem("pendingUser") || "{}");
-        if (!pendingUser.email) throw new Error("Aucune vérification en attente");
+        const pendingUser = JSON.parse(
+          localStorage.getItem("pendingUser") || "{}"
+        );
+        if (!pendingUser.email) {
+          throw new Error("Aucune vérification en attente (email manquant)");
+        }
 
         await axiosInstance.post("/auth/verify-email", {
           email: pendingUser.email,
@@ -207,6 +221,7 @@ export const UserProvider = ({ children }) => {
         });
 
         localStorage.removeItem("pendingUser");
+
         return await fetchUserProfile();
       } catch (err) {
         const msg =
@@ -236,7 +251,7 @@ export const UserProvider = ({ children }) => {
   }, []); // exécuté 1 seule fois au démarrage
 
   /** ========================
-   * AUTRES ENDPOINTS (wallet, mining, balance)
+   * AUTRES ENDPOINTS
    * ======================== */
   const fetchWallet = useCallback(
     async (userId) => {
@@ -245,7 +260,10 @@ export const UserProvider = ({ children }) => {
         const { data } = await axiosInstance.get(`/wallet/${userId}`);
         return data?.balance || 0;
       } catch (err) {
-        console.error("❌ Erreur fetchWallet:", err.response?.data || err.message);
+        console.error(
+          "❌ Erreur fetchWallet:",
+          err.response?.data || err.message
+        );
         return 0;
       }
     },
@@ -257,7 +275,10 @@ export const UserProvider = ({ children }) => {
       const { data } = await axiosInstance.get("/balance/");
       return data?.points || 0;
     } catch (err) {
-      console.error("❌ Erreur fetchBalance:", err.response?.data || err.message);
+      console.error(
+        "❌ Erreur fetchBalance:",
+        err.response?.data || err.message
+      );
       return 0;
     }
   }, [axiosInstance]);
@@ -269,7 +290,10 @@ export const UserProvider = ({ children }) => {
         await axiosInstance.post(`/mining/start/${userId}`);
         return true;
       } catch (err) {
-        console.error("❌ Erreur startMining:", err.response?.data || err.message);
+        console.error(
+          "❌ Erreur startMining:",
+          err.response?.data || err.message
+        );
         return false;
       }
     },
@@ -283,7 +307,10 @@ export const UserProvider = ({ children }) => {
         await axiosInstance.post(`/mining/claim/${userId}`, { points });
         return true;
       } catch (err) {
-        console.error("❌ Erreur claimMining:", err.response?.data || err.message);
+        console.error(
+          "❌ Erreur claimMining:",
+          err.response?.data || err.message
+        );
         return false;
       }
     },
@@ -351,7 +378,9 @@ export const UserProvider = ({ children }) => {
     ]
   );
 
-  return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
+  );
 };
 
 /** Hook personnalisé */

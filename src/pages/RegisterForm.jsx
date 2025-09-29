@@ -104,21 +104,21 @@ const RegisterForm = () => {
     if (formData.avatar) payload.append("avatar", formData.avatar);
 
     try {
-      const response = await registerUser(payload);
+  const response = await registerUser(payload);
 
-      if (response?.status === "verification_sent") {
-        localStorage.setItem("pendingUser", JSON.stringify({ email: formData.email }));
-        setFeedback({ error: "", success: t("register.successEmailSent") });
-        navigate("/verify-email");
-      } else {
-        throw new Error(response?.detail || t("register.errors.generic"));
-      }
-    } catch (err) {
-      console.error("Registration error:", err);
-      setFeedback({ error: err?.message || t("register.errors.generic"), success: "" });
-    } finally {
-      setIsLoading(false);
-    }
+  if (response?.status === "verification_sent" && response?.next === "verify_email") {
+    localStorage.setItem("pendingUser", JSON.stringify({ email: response.email }));
+    setFeedback({ error: "", success: t("register.successEmailSent") });
+    navigate("/verify-email", { state: { email: response.email } });
+  } else {
+    throw new Error(response?.detail || t("register.errors.generic"));
+  }
+} catch (err) {
+  console.error("Registration error:", err);
+  setFeedback({ error: err?.message || t("register.errors.generic"), success: "" });
+} finally {
+  setIsLoading(false);
+}
   };
 
   return (

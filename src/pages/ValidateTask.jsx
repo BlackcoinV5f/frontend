@@ -18,6 +18,8 @@ const platformIcons = {
   Twitter: <span style={{ color: "#1DA1F2" }}>🐦</span>,
 };
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 const ValidateTask = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
@@ -31,13 +33,28 @@ const ValidateTask = () => {
 
   // Charger la tâche depuis l’API
   useEffect(() => {
-    axios
-      .get(`http://127.0.0.1:8000/tasks/`)
-      .then((res) => {
-        const foundTask = res.data.find((x) => x.id === parseInt(taskId));
+    const fetchTask = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(`${API_URL}/tasks/`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+
+        console.log("✅ Réponse API tasks:", res.data);
+
+        const foundTask = res.data.find(
+          (x) => String(x.id) === String(taskId)
+        );
+
         setTask(foundTask || null);
-      })
-      .catch(() => setTask(null));
+      } catch (err) {
+        console.error("❌ Erreur fetch tasks:", err);
+        setTask(null);
+      }
+    };
+
+    fetchTask();
   }, [taskId]);
 
   // Redirection après validation réussie
@@ -62,19 +79,18 @@ const ValidateTask = () => {
     try {
       const token = localStorage.getItem("token");
 
-      // On envoie le code au backend
       const res = await axios.post(
-        `http://127.0.0.1:8000/tasks/${taskId}/validate`,
+        `${API_URL}/tasks/${taskId}/validate`,
         { code },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // ✅ Le backend doit renvoyer { mainReward, walletReward, total }
+      console.log("✅ Réponse validation:", res.data);
+
       setRewardDetails(res.data);
       setIsSuccess(true);
-
     } catch (err) {
-      console.error(err);
+      console.error("❌ Erreur validation:", err);
       if (err.response?.status === 400) {
         setError("❌ Code invalide");
       } else if (err.response?.status === 401) {
@@ -162,7 +178,7 @@ const ValidateTask = () => {
             </motion.div>
 
             <p>Entrez le code de validation fourni après avoir complété la tâche</p>
-            
+
             <div className="input-container">
               <input
                 type="text"
