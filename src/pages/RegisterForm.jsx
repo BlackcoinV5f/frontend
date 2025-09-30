@@ -104,21 +104,30 @@ const RegisterForm = () => {
     if (formData.avatar) payload.append("avatar", formData.avatar);
 
     try {
-  const response = await registerUser(payload);
+      const response = await registerUser(payload);
 
-  if (response?.status === "verification_sent" && response?.next === "verify_email") {
-    localStorage.setItem("pendingUser", JSON.stringify({ email: response.email }));
-    setFeedback({ error: "", success: t("register.successEmailSent") });
-    navigate("/verify-email", { state: { email: response.email } });
-  } else {
-    throw new Error(response?.detail || t("register.errors.generic"));
-  }
-} catch (err) {
-  console.error("Registration error:", err);
-  setFeedback({ error: err?.message || t("register.errors.generic"), success: "" });
-} finally {
-  setIsLoading(false);
-}
+      if (response?.status === "verification_sent" && response?.next === "verify_email") {
+        // 🔹 Stocker email + code + expiration pour la page de vérification
+        localStorage.setItem(
+          "pendingUser",
+          JSON.stringify({
+            email: response.email,
+            verification_code: response.verification_code,
+            expires_in: response.expires_in,
+          })
+        );
+
+        setFeedback({ error: "", success: t("register.successEmailSent") });
+        navigate("/verify-email", { state: { email: response.email } });
+      } else {
+        throw new Error(response?.detail || t("register.errors.generic"));
+      }
+    } catch (err) {
+      console.error("Registration error:", err);
+      setFeedback({ error: err?.message || t("register.errors.generic"), success: "" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

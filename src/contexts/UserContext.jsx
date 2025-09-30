@@ -21,11 +21,11 @@ export const UserProvider = ({ children }) => {
   const axiosInstance = useMemo(() => {
     const instance = axios.create({
       baseURL: API_URL,
-      withCredentials: true, // 🔑 cookies envoyés automatiquement
+      withCredentials: true,
       timeout: 10000,
     });
 
-    // Intercepteur pour gérer le refresh token
+    // Intercepteur pour refresh
     instance.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -44,7 +44,7 @@ export const UserProvider = ({ children }) => {
 
           originalRequest._retry = true;
           try {
-            await instance.post("/auth/refresh"); // nouveaux cookies
+            await instance.post("/auth/refresh");
             return instance(originalRequest);
           } catch (refreshError) {
             console.error(
@@ -185,10 +185,17 @@ export const UserProvider = ({ children }) => {
           timeout: 15000,
         });
 
-        // ✅ On sauve uniquement l'email
+        // ✅ On sauve l’email + code + expiration (si dispo)
         const email = formData.get("email");
         if (email) {
-          localStorage.setItem("pendingUser", JSON.stringify({ email }));
+          localStorage.setItem(
+            "pendingUser",
+            JSON.stringify({
+              email,
+              verification_code: data?.verification_code || null,
+              expires_in: data?.expires_in || 300, // 5 min par défaut
+            })
+          );
         }
 
         return data;
