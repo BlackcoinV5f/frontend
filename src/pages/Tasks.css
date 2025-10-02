@@ -11,10 +11,6 @@
   max-height: 80vh;
 }
 
-.tasks-container:hover {
-  animation: pulse 3s infinite;
-}
-
 .tasks-header {
   display: flex;
   justify-content: space-between;
@@ -75,8 +71,12 @@
 }
 
 .platform-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;      /* taille uniforme pour tous les logos */
+  height: 32px;     /* taille uniforme pour tous les logos */
+  object-fit: contain; /* garde les proportions originales */
+  border-radius: 4px;  /* optionnel : coins légèrement arrondis */
+  background: rgba(255, 255, 255, 0.05); /* léger fond si logo transparent */
+  padding: 2px;
 }
 
 .task-points {

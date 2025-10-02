@@ -8,6 +8,7 @@ import {
   FaTwitter,
   FaInstagram,
 } from "react-icons/fa";
+import { FaTiktok } from "react-icons/fa6"; // ✅ import TikTok
 
 import "./Settings.css";
 
@@ -28,8 +29,6 @@ const Settings = () => {
   return (
     <div className="settings-container">
       <main className="settings-content">
-        {/* ✅ supprimé le h1 avec ⚙️ Settings */}
-
         {/* 🌍 Langue */}
         <section className="settings-section">
           <h2>Language</h2>
@@ -101,6 +100,13 @@ const Settings = () => {
               rel="noopener noreferrer"
             >
               <FaInstagram />
+            </a>
+            <a
+              href="https://tiktok.com/@blackcoin"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaTiktok /> {/* ✅ ajout TikTok */}
             </a>
           </div>
         </section>

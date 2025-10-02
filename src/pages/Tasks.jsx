@@ -7,19 +7,11 @@ import { useNavigate } from "react-router-dom";
 import "./Tasks.css";
 
 const Tasks = () => {
-  const { user, axiosInstance } = useUser(); // ✅ récup axiosInstance du contexte
+  const { user, axiosInstance } = useUser();
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [completedCount, setCompletedCount] = useState(0);
   const navigate = useNavigate();
-
-  const platformStyles = {
-    youtube: { color: "#FF0000", icon: "/assets/youtube.png" },
-    facebook: { color: "#1877F2", icon: "/assets/facebook.png" },
-    tiktok: { color: "#000000", icon: "/assets/tiktok.png" },
-    twitter: { color: "#1DA1F2", icon: "/assets/twitter.png" },
-    telegram: { color: "#0088cc", icon: "/assets/telegram.png" },
-  };
 
   // Charger les tâches depuis l’API
   const fetchTasks = async () => {
@@ -32,15 +24,12 @@ const Tasks = () => {
         axiosInstance.get("/tasks/me/completed-count"),
       ]);
 
-      const styledTasks = tasksRes.data.map((t) => {
-        const key = t.platform ? t.platform.toLowerCase() : "";
-        return {
-          ...t,
-          color: platformStyles[key]?.color || "#ccc",
-          icon: platformStyles[key]?.icon || "/assets/default.png",
-          time_left: t.time_left || 0,
-        };
-      });
+      const styledTasks = tasksRes.data.map((t) => ({
+  ...t,
+  icon: t.logo ? `/${t.logo}` : "/default.png", // ✅ chemin public
+  color: "#ccc",
+  time_left: t.time_left || 0,
+}));
 
       setTasks(styledTasks);
       setCompletedCount(completedRes.data.completed_tasks || 0);
@@ -155,7 +144,7 @@ const Tasks = () => {
                     <div className="task-platform">
                       <img
                         src={task.icon}
-                        alt={task.platform}
+                        alt={task.title}
                         className="platform-icon"
                       />
                       <span>{task.title}</span>
