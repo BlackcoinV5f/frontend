@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import "./UserProfile.css";
 
 const UserProfile = ({ onClose }) => {
-  const { user, logoutUser, isAuthenticated, setUser } = useUser(); // ⚡ setUser pour maj après update
+  const { user, logoutUser, isAuthenticated, setUser } = useUser();
   const [isExiting, setIsExiting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
@@ -35,9 +35,9 @@ const UserProfile = ({ onClose }) => {
     try {
       await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
         method: "POST",
-        credentials: "include", // ✅ le cookie HttpOnly est supprimé côté backend
+        credentials: "include",
       });
-      logoutUser(); // vide le contexte
+      logoutUser();
       closeWithAnimation();
     } catch (err) {
       console.error("Erreur lors de la déconnexion:", err);
@@ -48,20 +48,32 @@ const UserProfile = ({ onClose }) => {
 
   const handleEditToggle = async () => {
     if (isEditing) {
-      // Sauvegarde quand on clique sur "Save"
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/update`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include", // ✅ Auth via cookie
-          body: JSON.stringify(editedUser),
-        });
+        const formData = new FormData();
+        if (editedUser.first_name) formData.append("first_name", editedUser.first_name);
+        if (editedUser.last_name) formData.append("last_name", editedUser.last_name);
+        if (editedUser.phone) formData.append("phone", editedUser.phone);
+        if (editedUser.country) formData.append("country", editedUser.country);
+        if (editedUser.email) formData.append("email", editedUser.email);
+        if (editedUser.birth_date) formData.append("birth_date", editedUser.birth_date);
+        if (editedUser.avatar instanceof File) {
+          formData.append("avatar", editedUser.avatar);
+        }
+
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/user/update-profile`,
+          {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+          }
+        );
 
         if (!res.ok) throw new Error("Erreur API update profil");
 
         const updatedUser = await res.json();
         console.log("Profil mis à jour:", updatedUser);
-        setUser(updatedUser); // ⚡️ maj du contexte UserContext
+        setUser(updatedUser);
       } catch (err) {
         console.error("Erreur mise à jour profil:", err);
       }
@@ -104,11 +116,8 @@ const UserProfile = ({ onClose }) => {
 
   const displayValue = (value) => (value ? value : "—");
 
-  const avatarSrc = user.avatar_url
-    ? user.avatar_url.startsWith("http")
-      ? user.avatar_url
-      : `${import.meta.env.VITE_BACKEND_URL}${user.avatar_url}`
-    : null;
+  // ✅ Avatar simplifié (le backend renvoie une URL complète)
+  const avatarSrc = user.avatar_url || null;
 
   return (
     <AnimatePresence>

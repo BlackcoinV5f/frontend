@@ -73,7 +73,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 40px; /* Augmentation de l'espacement entre les sections */
+    gap: 35px; /* Augmentation de l'espacement entre les sections */
     padding: 20px;
     width: 100%; /* Prend toute la largeur disponible */
     max-width: 600px; /* Limite la largeur sur les grands écrans pour un aspect professionnel */
@@ -339,7 +339,41 @@
 
 
     .cards-grid {
-    gap: 15px; /* réduit un peu l’espace entre les cartes */
-    max-width: 320px; /* réduit la largeur max pour que tout s’aligne mieux */
+    gap: 8px; /* réduit un peu l’espace entre les cartes */
+    max-width: 250px; /* réduit la largeur max pour que tout s’aligne mieux */
 }
 }
+
+.game-message {
+  position: fixed;
+  top: 100px;
+  right: 90px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #fff;
+  animation: fadeIn 0.5s ease;
+  z-index: 1000;
+}
+.game-message.win {
+  background: linear-gradient(135deg, #28a745, #3ddc97);
+}
+.game-message.lose {
+  background: linear-gradient(135deg, #dc3545, #ff6b6b);
+}
+.game-message.error {
+  background: linear-gradient(135deg, #ff9800, #ff5722);
+}
+.game-message button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+

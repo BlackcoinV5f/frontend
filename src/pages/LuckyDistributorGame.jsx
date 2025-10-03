@@ -3,7 +3,7 @@ import "./LuckyDistributorGame.css";
 import { useUser } from "../contexts/UserContext";
 
 export default function LuckyDistributorGame() {
-  const { user, axiosInstance } = useUser(); // ✅ axiosInstance depuis le contexte
+  const { user, axiosInstance } = useUser();
 
   const [gameId, setGameId] = useState(null);
   const [cards, setCards] = useState([]);
@@ -13,6 +13,9 @@ export default function LuckyDistributorGame() {
   const [busy, setBusy] = useState(false);
   const [balance, setBalance] = useState(0);
   const [bet, setBet] = useState(100);
+
+  // ✅ Nouveau : message de fin de partie
+  const [message, setMessage] = useState(null);
 
   // =========================
   // API balance utilisateur
@@ -31,8 +34,8 @@ export default function LuckyDistributorGame() {
   // =========================
   const startGame = async () => {
     try {
-      if (bet <= 0) return alert("Mise invalide !");
-      if (bet > balance) return alert("Solde insuffisant !");
+      if (bet <= 0) return setMessage({ type: "error", text: "Mise invalide !" });
+      if (bet > balance) return setMessage({ type: "error", text: "Solde insuffisant !" });
       setBusy(true);
 
       const { data } = await axiosInstance.post("/luckygame/start", {
@@ -72,7 +75,6 @@ export default function LuckyDistributorGame() {
         choice_index: index,
       });
 
-      // Étape 1 : révéler toutes les cartes
       setCards((prev) =>
         prev.map((c, i) => ({
           ...c,
@@ -81,7 +83,6 @@ export default function LuckyDistributorGame() {
         }))
       );
 
-      // Étape 2 : loot choisi
       setLoot((prev) => [
         ...prev,
         { label: `${data.chosen_multiplier}x`, value: data.chosen_multiplier },
@@ -89,7 +90,6 @@ export default function LuckyDistributorGame() {
 
       setReward(data.reward);
 
-      // Étape 3 : continuer ou perdu
       if (data.result === "continue") {
         setTimeout(() => {
           setLevel(data.level);
@@ -101,15 +101,15 @@ export default function LuckyDistributorGame() {
             })) || []
           );
         }, 2000);
-      } else {
+      } else if (data.result === "lose") {
         setTimeout(() => {
-          alert("Perdu ! 😢");
-          setGameId(null);
-          setCards([]);
-          setLoot([]);
-          setReward(0);
-          setLevel(1);
-          fetchBalance();
+          setMessage({ type: "lose", text: "Dommage 😢 Tu as perdu ta mise !" });
+          resetGame();
+        }, 2000);
+      } else if (data.result === "win") {
+        setTimeout(() => {
+          setMessage({ type: "win", text: `🎉 Bravo ! Tu as gagné ${data.reward} pts !` });
+          resetGame();
         }, 2000);
       }
     } catch (err) {
@@ -129,12 +129,8 @@ export default function LuckyDistributorGame() {
         game_id: gameId,
       });
 
-      alert(`Encaissement réussi : ${data.reward} pts`);
-      setGameId(null);
-      setCards([]);
-      setLoot([]);
-      setReward(0);
-      setLevel(1);
+      setMessage({ type: "win", text: `💰 Encaissement réussi : ${data.reward} pts` });
+      resetGame();
 
       await fetchBalance();
     } catch (err) {
@@ -142,13 +138,22 @@ export default function LuckyDistributorGame() {
     }
   };
 
+  // =========================
+  // RESET GAME
+  // =========================
+  const resetGame = () => {
+    setGameId(null);
+    setCards([]);
+    setLoot([]);
+    setReward(0);
+    setLevel(1);
+    fetchBalance();
+  };
+
   useEffect(() => {
     if (user) fetchBalance();
   }, [user]);
 
-  // =========================
-  // VISIBLE LEVELS (max 5)
-  // =========================
   const getVisibleLevels = () => {
     const start = Math.max(1, level - 2);
     const end = Math.min(25, start + 4);
@@ -157,7 +162,14 @@ export default function LuckyDistributorGame() {
 
   return (
     <div className="lucky-game">
-      {/* Barre verticale niveaux - uniquement pendant une partie */}
+      {/* ✅ Popup message */}
+      {message && (
+        <div className={`game-message ${message.type}`}>
+          {message.text}
+          <button onClick={() => setMessage(null)}>✖</button>
+        </div>
+      )}
+
       {gameId && (
         <div className="levels-bar">
           {getVisibleLevels().map((lvl) => (
@@ -171,19 +183,14 @@ export default function LuckyDistributorGame() {
         </div>
       )}
 
-      {/* Zone principale */}
       <div className="game-board">
-        {/* Header utilisateur */}
         <div className="user-info">
           {user?.avatar && (
             <img
               src={
                 user.avatar.startsWith("http")
                   ? user.avatar
-                  : `${axiosInstance.defaults.baseURL}/${user.avatar.replace(
-                      /^\/+/,
-                      ""
-                    )}`
+                  : `${axiosInstance.defaults.baseURL}/${user.avatar.replace(/^\/+/, "")}`
               }
               alt="avatar"
               className="user-avatar"
@@ -195,7 +202,6 @@ export default function LuckyDistributorGame() {
           </div>
         </div>
 
-        {/* Si pas de partie → zone de mise */}
         {!gameId && (
           <div className="bet-section">
             <label>Mise : </label>
@@ -211,10 +217,8 @@ export default function LuckyDistributorGame() {
           </div>
         )}
 
-        {/* Si partie en cours */}
         {gameId && (
           <>
-            {/* Grille des cartes */}
             <div className="cards-grid">
               {cards.map((card) => (
                 <div
@@ -230,17 +234,12 @@ export default function LuckyDistributorGame() {
               ))}
             </div>
 
-            {/* Zone loot + bouton encaisser */}
             <div className="loot-section">
               <div className="loot-box">
                 <span>BUTIN OBTENU</span>
                 <span>{loot.length} objets</span>
               </div>
-              <button
-                className="cashout-btn"
-                onClick={cashout}
-                disabled={busy}
-              >
+              <button className="cashout-btn" onClick={cashout} disabled={busy}>
                 ENCAISSER
               </button>
             </div>
