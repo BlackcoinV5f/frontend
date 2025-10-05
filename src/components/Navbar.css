@@ -11,6 +11,7 @@
   width: 100%;
   max-width: 520px;
   margin: 0 auto;
+  transform: translateX(-10px); /* décale vers la gauche de 20px */
 }
 
 /* 📌 Éléments de navigation (agrandis) */

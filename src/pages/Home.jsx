@@ -6,8 +6,9 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
 import UserProfile from "../components/UserProfile.jsx";
-import LuckyGameLogo from "../components/LuckyGameLogo"; // ✅ nouveau composant
-import TradeGameLogo from "../components/TradeGameLogo"; // ✅ nouveau composant
+import LuckyGameLogo from "../components/LuckyGameLogo"; 
+import TradeGameLogo from "../components/TradeGameLogo"; 
+import ActionsLogo from "../components/ActionsLogo"; // ✅ Nouveau logo d’investissement
 
 import "./Home.css";
 
@@ -59,6 +60,9 @@ const Home = ({ points, setPoints, level, setLevel }) => {
 
       {/* 💹 Logo Trade Game */}
       <TradeGameLogo />
+
+      {/* 📈 Nouveau : Logo Actions (investissement personnel) */}
+      <ActionsLogo />
 
       {/* 👤 Bouton profil */}
       <button

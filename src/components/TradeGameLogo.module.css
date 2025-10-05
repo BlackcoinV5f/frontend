@@ -1,12 +1,14 @@
 /* src/components/TradeGameLogo.module.css */
 
 .tradeLogoContainer {
-  position: fixed;       /* fixe le logo sur l'écran */
-  top: 170px;            /* descend le logo d'environ 3cm depuis le haut */
-  right: 10px;           /* distance depuis la droite */
-  width: 150px;     
-  height: 120px;    
-  z-index: 1000;         /* pour qu'il soit au-dessus des autres éléments */
+ display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+  transform: translate(145px, -490px);
 }
 
 .tradeCoin {

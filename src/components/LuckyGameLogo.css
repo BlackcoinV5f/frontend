@@ -1,9 +1,13 @@
 /* src/components/LuckyGameLogo.css */
 .lucky-game-logo {
-  position: fixed;
-  top: 5rem;
-  right: 2rem;
-  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+  transform: translate(140px, -520px);
 }
 
 .logo-container {

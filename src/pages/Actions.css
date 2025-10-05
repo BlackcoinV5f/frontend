@@ -1,108 +1,86 @@
-.actions-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 10px;
-  max-height: 500px; /* Ajuste selon ton besoin */
-  overflow-y: auto;
-  padding: 10px;
-}
-
-.action-icon {
-  width: 80px;
-  height: 80px;
+/* ✅ Page principale */
+.actions-page {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-}
-
-.action-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 5px;
-}
-
-.action-icon:hover {
-  transform: scale(1.1);
-}
-
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: black;
+  flex-direction: column;
+  height: 100vh;
+  background: radial-gradient(circle at top left, #0b0b18, #121222, #0a0a12);
   color: white;
-  padding: 20px;
-  border-radius: 10px;
-  z-index: 1000;
+  overflow: hidden;
+  font-family: "Inter", sans-serif;
+  padding-top: 120px; /* ✅ Décale le contenu vers le bas */
 }
 
-.modal img {
-  max-width: 100%;
-  border-radius: 5px;
-}
-
-.modal-content button {
-  margin-top: 10px;
-}
-
-
-
-.actions-container {
-  text-align: center;
-  padding: 20px;
-}
-
-.actions-grid {
+/* ✅ Barre horizontale (réduite et élégante) */
+.categories-bar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.action-icon {
-  cursor: pointer;
-  width: 100px;
-  transition: transform 0.2s;
-}
-
-.action-icon:hover {
-  transform: scale(1.05);
-}
-
-.action-icon img {
-  width: 100%;
-  border-radius: 8px;
-}
-
-.modal {
-  position: fixed;
+  justify-content: space-around;
+  align-items: center;
+  backdrop-filter: blur(8px);
+  background: rgba(25, 25, 30, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px 4px; /* 🔽 Réduction de la hauteur */
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  z-index: 50;
+  transition: all 0.3s ease;
+}
+
+/* ✅ Boutons de catégories */
+.category-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* 🔽 Moins d’espace entre icône et texte */
+  background: none;
+  color: #bbb;
+  font-size: 14px; /* 🔽 Texte plus petit */
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px; /* 🔽 Réduction du padding interne */
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  font-weight: 500;
+}
+
+.category-btn:hover {
+  color: #00ffb2;
+  background: rgba(0, 255, 178, 0.08);
+  transform: translateY(-1px);
+}
+
+.category-btn.active {
+  color: #00ffb2;
+  background: rgba(0, 255, 178, 0.12);
+  box-shadow: 0 0 6px rgba(0, 255, 178, 0.25);
+  border-bottom: 2px solid #00ffb2;
+}
+
+/* ✅ Icônes */
+.category-btn .icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
+  font-size: 16px; /* 🔽 Taille icône ajustée */
 }
 
-.modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  max-width: 400px;
+/* ✅ Zone principale */
+.actions-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* ✅ Grille d'affichage des actions */
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+/* ✅ Message vide */
+.no-actions {
   text-align: center;
-  position: relative;
-}
-
-.modal-buttons button {
-  margin: 10px;
+  font-size: 16px;
+  color: #888;
+  margin-top: 50px;
+  font-style: italic;
 }

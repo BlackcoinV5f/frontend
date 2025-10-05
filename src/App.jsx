@@ -6,14 +6,12 @@ import PropTypes from "prop-types";
 import { UserProvider, useUser } from "./contexts/UserContext";
 import LuckyDistributorGame from "./pages/LuckyDistributorGame";
 import backgroundImage from "./assets/background.png";
-import logo from "./assets/actif-logo.png";
 import "./App.css";
 
 // 🧩 Composants communs
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
-const SidebarToggle = lazy(() => import("./components/SidebarToggle"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const UserProfile = lazy(() => import("./components/UserProfile"));
@@ -34,12 +32,12 @@ const Info = lazy(() => import("./pages/Info"));
 const Wallet = lazy(() => import("./pages/Wallet"));
 const BalancePage = lazy(() => import("./pages/BalancePage"));
 const ValidateTask = lazy(() => import("./pages/ValidateTask"));
-const SidebarPage = lazy(() => import("./pages/SidebarPage"));
 const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
 const Quotidien = lazy(() => import("./pages/Quotidien"));
-const Settings = lazy(() => import("./pages/Settings")); // ✅ Ajout Settings
-const TradeGame = lazy(() => import("./pages/TradeGame")); // <-- importer ta page TradeGame
+const Settings = lazy(() => import("./pages/Settings"));
+const TradeGame = lazy(() => import("./pages/TradeGame"));
+const Actions = lazy(() => import("./pages/Actions")); // ✅ Nouvelle page Actions
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -55,7 +53,6 @@ ProtectedRoute.propTypes = { children: PropTypes.node.isRequired };
 // 🧠 Contenu principal
 function AppContent() {
   const { user, loading } = useUser();
-  const location = useLocation();
   const [showSplash, setShowSplash] = useState(true);
 
   if (showSplash) {
@@ -84,15 +81,6 @@ function AppContent() {
       </ErrorBoundary>
 
       <div className="content">
-        {/* ✅ SidebarToggle affiché uniquement sur /home */}
-        {location.pathname === "/home" && (
-          <ErrorBoundary>
-            <Suspense fallback={<LoadingSpinner />}>
-              <SidebarToggle logo={logo} user={user} />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
@@ -113,13 +101,13 @@ function AppContent() {
               <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
               <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
-              <Route path="/sidebar" element={<ProtectedRoute><SidebarPage /></ProtectedRoute>} />
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
               <Route path="/daily" element={<ProtectedRoute><Quotidien /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} /> {/* ✅ Route ajoutée */}
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/lucky-game" element={<LuckyDistributorGame />} />
               <Route path="/tradegame" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
+              <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} /> {/* ✅ Route Actions */}
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

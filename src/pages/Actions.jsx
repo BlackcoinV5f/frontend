@@ -1,78 +1,83 @@
+// src/pages/Actions.jsx
 import React, { useState, useEffect } from "react";
+import { useUser } from "../contexts/UserContext.jsx";
+import ActionCard from "../components/ActionCard.jsx";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import "./Actions.css";
-import { useUser } from "../contexts/UserContext";
 
-// 🔄 Import dynamique des icônes (../assets/icon1.png, icon2.png, etc.)
-const images = import.meta.glob("../assets/icon*.png", { eager: true });
+// ✅ Lucide icons
+import { DollarSign, Building2, Sparkles, User2 } from "lucide-react";
 
-// Construction d’un tableau d’actions à partir des fichiers d’icônes
-const icons = Object.entries(images).map(([path, module], index) => ({
-  id: index + 1,
-  imageUrl: module.default,
-  title: `Action ${index + 1}`,
-  description: `Participe à l'action numéro ${index + 1} pour contribuer à la communauté !`,
-}));
+const categories = [
+  { id: "finance", label: "Finance", icon: <DollarSign size={18} /> },
+  { id: "immobilier", label: "Real Estate", icon: <Building2 size={18} /> },
+  { id: "opportunite", label: "Opportunities", icon: <Sparkles size={18} /> },
+  { id: "myactif", label: "My Assets", icon: <User2 size={18} /> },
+];
 
 const Actions = () => {
-  const [selectedIcon, setSelectedIcon] = useState(null);
-  const { user, fetchBalance } = useUser();
+  const [activeTab, setActiveTab] = useState("finance");
+  const [actions, setActions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // 🔄 Rafraîchissement du solde
-  useEffect(() => {
-    if (user?.telegram_id) {
-      fetchBalance(user.telegram_id).catch((err) =>
-        console.error("Erreur lors du fetch du solde :", err)
-      );
+  const { axiosInstance, user } = useUser();
+
+  // 🔹 Fonction de récupération des actions
+  const fetchActions = async () => {
+    setLoading(true);
+    try {
+      let response;
+      if (activeTab === "myactif") {
+        // 🔹 Actions de l'utilisateur
+        response = await axiosInstance.get("/actions/me");
+      } else {
+        // 🔹 Actions par catégorie
+        response = await axiosInstance.get(`/actions/category/${activeTab}`);
+      }
+      setActions(response.data || []);
+    } catch (error) {
+      console.error("❌ Error loading actions:", error);
+      setActions([]);
+    } finally {
+      setLoading(false);
     }
-  }, [user, fetchBalance]);
-
-  // 🔐 Fermer la modal avec la touche ESC
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") setSelectedIcon(null);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  // ✨ Simulation de contribution (à remplacer par un appel backend)
-  const handleContribute = () => {
-    alert(`Merci pour ta contribution à ${selectedIcon.title} !`);
-    setSelectedIcon(null);
-    // TODO: envoyer vers backend pour enregistrer la participation
   };
 
-  return (
-    <div className="actions-container">
-      <h2>⚡ Actions communautaires</h2>
-      <p>Choisis une action pour contribuer :</p>
+  // 🔄 Récupération à chaque changement de tab ou utilisateur
+  useEffect(() => {
+    fetchActions();
+  }, [activeTab, user]);
 
-      <div className="actions-grid">
-        {icons.map((icon) => (
-          <div
-            key={icon.id}
-            className="action-icon"
-            onClick={() => setSelectedIcon(icon)}
+  if (loading) return <LoadingSpinner fullScreen />;
+
+  return (
+    <div className="actions-page">
+      {/* ✅ Barre de catégories */}
+      <div className="categories-bar">
+        {categories.map(({ id, label, icon }) => (
+          <button
+            key={id}
+            className={`category-btn ${activeTab === id ? "active" : ""}`}
+            onClick={() => setActiveTab(id)}
           >
-            <img src={icon.imageUrl} alt={icon.title} />
-            <span>{icon.title}</span>
-          </div>
+            <span className="icon">{icon}</span>
+            <span>{label}</span>
+          </button>
         ))}
       </div>
 
-      {selectedIcon && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>{selectedIcon.title}</h2>
-            <img src={selectedIcon.imageUrl} alt={selectedIcon.title} />
-            <p>{selectedIcon.description}</p>
-            <div className="modal-buttons">
-              <button onClick={handleContribute}>Contribuer</button>
-              <button onClick={() => setSelectedIcon(null)}>Fermer</button>
-            </div>
+      {/* ✅ Contenu principal */}
+      <div className="actions-content">
+        {actions.length === 0 ? (
+          <p className="no-actions">No actions available</p>
+        ) : (
+          <div className="actions-grid">
+            {actions.map((action) => (
+              <ActionCard key={action.id} action={action} />
+            ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
