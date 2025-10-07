@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState, lazy, Suspense } from "react";
+import React, { useState, lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -37,7 +37,7 @@ const Status = lazy(() => import("./pages/Status"));
 const Quotidien = lazy(() => import("./pages/Quotidien"));
 const Settings = lazy(() => import("./pages/Settings"));
 const TradeGame = lazy(() => import("./pages/TradeGame"));
-const Actions = lazy(() => import("./pages/Actions")); // ✅ Nouvelle page Actions
+const Actions = lazy(() => import("./pages/Actions")); // ✅ Page Actions
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -54,7 +54,14 @@ ProtectedRoute.propTypes = { children: PropTypes.node.isRequired };
 function AppContent() {
   const { user, loading } = useUser();
   const [showSplash, setShowSplash] = useState(true);
+  const location = useLocation();
 
+  // 📱 Forcer le scroll en haut à chaque navigation
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // 🕒 Splash Screen
   if (showSplash) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
@@ -63,6 +70,7 @@ function AppContent() {
     );
   }
 
+  // 🔄 Chargement global
   if (loading) {
     return (
       <div className="loading-container">
@@ -72,19 +80,25 @@ function AppContent() {
     );
   }
 
+  // 🧩 Structure principale
   return (
-    <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <div
+      className="app-container"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+      }}
+    >
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
           <Navbar user={user} />
         </Suspense>
       </ErrorBoundary>
 
-      <div className="content">
+      <main className="content">
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              {/* Pages publiques */}
+              {/* 🧭 Pages publiques */}
               <Route path="/" element={<LandingRedirect />} />
               <Route path="/auth-choice" element={<AuthChoice />} />
               <Route path="/register" element={<RegisterForm />} />
@@ -92,7 +106,7 @@ function AppContent() {
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/welcome" element={<Welcome />} />
 
-              {/* Pages protégées */}
+              {/* 🔐 Pages protégées */}
               <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/tasks/:taskId/validate" element={<ProtectedRoute><ValidateTask /></ProtectedRoute>} />
@@ -107,14 +121,14 @@ function AppContent() {
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/lucky-game" element={<LuckyDistributorGame />} />
               <Route path="/tradegame" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
-              <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} /> {/* ✅ Route Actions */}
+              <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
 
-              {/* Fallback */}
+              {/* 🚫 Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>
-      </div>
+      </main>
 
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
@@ -125,7 +139,7 @@ function AppContent() {
   );
 }
 
-// 🚀 App sans AutoAuth
+// 🚀 App avec contexte global utilisateur
 export default function App() {
   return (
     <UserProvider>
