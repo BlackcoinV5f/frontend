@@ -10,7 +10,7 @@
   overflow: hidden;
 
   /* ✅ Translation du logo vers la droite et le haut */
-  transform: translate(145px, -410px);
+  transform: translate(125px, -460px);
 }
 
 /* --- Logo principal --- */
