@@ -6,7 +6,7 @@
   flex-direction: column; /* empile verticalement le contenu */
   align-items: flex-start; /* aligne tout à gauche */
   min-height: 100vh;
-  background: #121212;
+  /* background: #121212;  <-- supprimé pour transparence */
   color: #fff;
   font-family: "Arial", sans-serif;
   font-size: 0.75rem;
@@ -16,12 +16,13 @@
 
 /* Contenu principal */
 .settings-content {
-  margin-top: 2rem;   
+  margin-top: 1rem;   
   margin-left: 0;      /* suppression de toute marge gauche */
-  padding: 1rem 0.5rem;
+  padding: 1cap 0.5rem;
   text-align: left;
   width: 100%;
   max-width: none;
+   transform: translate(-100px, 50px);
 }
 
 /* Titres principaux */
@@ -35,9 +36,9 @@
 
 /* Sections */
 .settings-section {
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 1.9rem;
+  padding-bottom: 0.9rem;
+
   text-align: left;
 }
 
@@ -69,7 +70,7 @@
   display: flex;
   gap: 0.8rem;
   justify-content: flex-start; /* aligné à gauche */
-  margin-top: 0.5rem;
+  margin-top: 0.9rem;
 }
 
 .social-icons a {
