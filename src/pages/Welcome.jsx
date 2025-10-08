@@ -11,8 +11,8 @@ import axios from "axios";
 import "./Welcome.css";
 
 const TASKS_CONFIG = [
-  { key: "telegram", icon: <FaTelegram size={24} />, name: "Telegram", link: "https://t.me/blackcoin202", points: 1000, color: "#0088cc" },
-  { key: "facebook", icon: <FaFacebook size={24} />, name: "Facebook", link: "https://www.facebook.com/share/1BxkwKdPZL/", points: 1000, color: "#1877F2" },
+  { key: "telegram", icon: <FaTelegram size={24} />, name: "Telegram", link: "https://t.me/+VXuf93TxzKxlMzE0", points: 1000, color: "#0088cc" },
+  { key: "facebook", icon: <FaFacebook size={24} />, name: "Facebook", link: "https://www.facebook.com/share/1CjsWSj1P3/", points: 1000, color: "#1877F2" },
   { key: "twitter", icon: <FaTwitter size={24} />, name: "Twitter", link: "https://x.com/BlackcoinON", points: 1000, color: "#1DA1F2" },
   { key: "youtube", icon: <FaYoutube size={24} />, name: "YouTube", link: "https://www.youtube.com/@Blackcoinchaine", points: 1000, color: "#FF0000" },
   { key: "tiktok", icon: <FaTiktok size={24} />, name: "TikTok", link: "https://www.tiktok.com/@blackcoinsecurity", points: 1000, color: "#000000" }
@@ -109,13 +109,59 @@ export default function Welcome() {
 
 function Step1({ user, handleNext }) {
   return (
-    <motion.div className="welcome-step" key="step1" initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 50, opacity: 0 }}>
+    <motion.div
+      className="welcome-step"
+      key="step1"
+      initial={{ x: -50, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 50, opacity: 0 }}
+    >
       <div className="welcome-card">
-        {user.avatar_url && <motion.img src={user.avatar_url} alt="Profile" className="welcome-avatar" initial={{ scale: 0 }} animate={{ scale: 1 }} />}
+        {user.avatar_url && (
+          <motion.img
+            src={user.avatar_url}
+            alt="Profile"
+            className="welcome-avatar"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+          />
+        )}
+
         <h2>🎉 Bienvenue {user.first_name} !</h2>
-        <p>Activez la <strong>double authentification</strong> sur Telegram pour sécuriser votre compte.</p>
-        <div className="security-badge"><FaLock size={32} /></div>
-        <motion.button className="next-button" onClick={handleNext} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+
+        <p>
+          Merci de choisir <strong>notre service</strong>. Vous faites désormais
+          partie de notre <strong>communauté</strong> et nous vous en remercions sincèrement.
+        </p>
+
+        <p>
+          À présent, nous vous invitons à faire preuve de <strong>vigilance</strong> et à
+          <strong> sécuriser vos informations personnelles</strong> telles que votre adresse e-mail
+          et vos mots de passe.
+        </p>
+
+        <p>
+          De notre côté, notre <strong>service de sécurité</strong> travaille chaque jour pour
+          assurer la <strong>protection de vos données</strong> et offrir une
+          garantie irréprochable.
+        </p>
+
+        <p className="warning-text">
+          ⚠️ Cependant, nous ne pourrons être tenus responsables en cas de
+          <strong> négligence</strong> ou de divulgation d’informations sensibles permettant
+          l’accès à votre compte.
+        </p>
+
+        <div className="security-badge">
+          <FaLock size={32} />
+        </div>
+
+        <motion.button
+          className="next-button"
+          onClick={handleNext}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
           Continuer <FaArrowRight />
         </motion.button>
       </div>
@@ -152,6 +198,26 @@ function Step2({ tasks, loading, error, totalPoints, allTasksCompleted, handleTa
 }
 
 function TaskItem({ task, completed, loading, onComplete, index }) {
+  const [visited, setVisited] = useState(false);
+  const [delayActive, setDelayActive] = useState(false);
+
+  const handleVisit = () => {
+    // Marque la tâche comme visitée
+    setVisited(true);
+
+    // Délai de 10 secondes avant d’activer le bouton
+    setDelayActive(false);
+    setTimeout(() => {
+      setDelayActive(true);
+    }, 10000);
+  };
+
+  const handleValidate = () => {
+    if (delayActive && !loading && !completed) {
+      onComplete(task.key);
+    }
+  };
+
   return (
     <motion.div
       className={`task-item ${completed ? "completed" : ""}`}
@@ -162,12 +228,38 @@ function TaskItem({ task, completed, loading, onComplete, index }) {
     >
       <div className="task-icon" style={{ color: task.color }}>{task.icon}</div>
       <div className="task-content">
-        <a href={task.link} target="_blank" rel="noopener noreferrer">Rejoindre {task.name}</a>
+        {/* Lien avec déclenchement du délai */}
+        <a
+          href={task.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleVisit}
+          style={{ pointerEvents: completed ? "none" : "auto" }}
+        >
+          Rejoindre {task.name}
+        </a>
         <span>+{task.points} pts</span>
       </div>
-      {completed
-        ? <div className="task-status"><FaCheck /></div>
-        : <button onClick={() => onComplete(task.key)} disabled={loading}>Valider</button>}
+
+      {completed ? (
+        <div className="task-status"><FaCheck /></div>
+      ) : (
+        <button
+          onClick={handleValidate}
+          disabled={!delayActive || loading}
+          style={{
+            opacity: !delayActive ? 0.5 : 1,
+            cursor: !delayActive ? "not-allowed" : "pointer",
+          }}
+        >
+          {!visited
+            ? "Visitez d’abord"
+            : !delayActive
+              ? "Patientez 10s..."
+              : "Valider"}
+        </button>
+      )}
     </motion.div>
   );
 }
+

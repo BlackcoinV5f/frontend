@@ -36,11 +36,12 @@
 }
 
 .welcome-avatar {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  margin: 0 auto 1rem;
+  margin: 2rem auto 1rem; /* ✅ déplace l'avatar un peu vers le bas */
   box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(0, 0, 0, 0.15);
+  transition: margin 0.3s ease; /* animation douce */
 }
 
 .welcome-step {
@@ -95,7 +96,7 @@ p {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin: 0 auto;
+  margin: 1rem auto 0; /* ✅ réduit la marge haute */
   transition: all 0.3s ease;
 }
 
@@ -233,7 +234,7 @@ p {
   .task-item {
     flex-direction: column;
     text-align: center;
-    padding: 1.5rem;
+    padding: 0.5rem;
   }
 
   .task-icon {
@@ -246,3 +247,8 @@ p {
     margin-bottom: 1rem;
   }
 }
+
+.next-button {
+  margin-bottom: 6rem; /* ✅ Laisse de l’espace au-dessus de la barre du bas */
+}
+
