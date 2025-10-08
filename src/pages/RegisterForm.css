@@ -382,3 +382,15 @@ html[dir='rtl'] .section-title::before {
 .form-container::-webkit-scrollbar-thumb:hover {
   background: var(--primary-color);
 }
+
+/* ✅ Empêche le bouton d'être caché sous la barre du bas */
+.form-container {
+  padding-bottom: 6rem; /* espace sous le dernier bouton */
+}
+
+/* ✅ Pour mobile, ajoute un peu plus d'espace */
+@media (max-width: 600px) {
+  .form-container {
+    padding-bottom: 7rem;
+  }
+}

@@ -1,75 +1,44 @@
-/* 🌍 === Variables globales === */
 :root {
-  --font-main: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --color-text: rgba(255, 255, 255, 0.92);
-  --color-bg: #242424;
-  --color-accent: #646cff;
-  --color-accent-hover: #535bf2;
-  --color-light: #ffffff;
-  --color-dark: #000000;
-
-  font-family: var(--font-main);
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+
   color-scheme: light dark;
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 🚫 Cache les iframes Telegram (WebApp) */
 iframe[src*="telegram.org"] {
-  display: none !important;
+  display: none;
 }
 
-/* 🔗 Liens */
 a {
   font-weight: 500;
-  color: var(--color-accent);
-  text-decoration: none;
-  transition: color 0.2s ease;
+  color: #646cff;
+  text-decoration: inherit;
 }
-
 a:hover {
-  color: var(--color-accent-hover);
+  color: #535bf2;
 }
 
-/* 🧍 Corps principal */
 body {
   margin: 0;
-  padding: 0;
   display: flex;
   place-items: center;
-  justify-content: center;
-  align-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-/* 🏷️ Titres */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-weight: 600;
-  color: var(--color-light);
 }
 
 h1 {
-  font-size: 2.4em;
-  line-height: 1.2;
+  font-size: 3.2em;
+  line-height: 1.1;
 }
 
-p {
-  margin: 0.5em 0;
-}
-
-/* 🔘 Boutons génériques */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -78,62 +47,26 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
-  color: white;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: border-color 0.25s;
 }
-
 button:hover {
-  border-color: var(--color-accent);
-  background-color: #2a2a2a;
+  border-color: #646cff;
 }
-
 button:focus,
 button:focus-visible {
-  outline: 3px solid var(--color-accent-hover);
-  outline-offset: 2px;
+  outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* 🌓 Thème clair automatique */
 @media (prefers-color-scheme: light) {
   :root {
-    --color-text: #213547;
-    --color-bg: #ffffff;
+    color: #213547;
+    background-color: #ffffff;
   }
-
-  body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
+  a:hover {
+    color: #747bff;
   }
-
   button {
     background-color: #f9f9f9;
-    color: #222;
-  }
-
-  button:hover {
-    background-color: #e6e6e6;
-    border-color: var(--color-accent);
-  }
-}
-
-/* 📱 === Responsive global === */
-@media (max-width: 480px) {
-  html {
-    font-size: 15px;
-  }
-
-  body {
-    flex-direction: column;
-    padding: 0;
-  }
-
-  h1 {
-    font-size: 1.8em;
-  }
-
-  button {
-    padding: 0.5em 1em;
-    font-size: 0.9em;
   }
 }

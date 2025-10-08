@@ -118,7 +118,7 @@ const Tasks = () => {
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
           />
-          <p>Chargement des tâches...</p>
+          
         </div>
       ) : (
         <motion.div
