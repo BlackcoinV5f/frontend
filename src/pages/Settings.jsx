@@ -67,28 +67,28 @@ const Settings = () => {
           <h2>Suivez-nous sur</h2>
           <div className="social-icons">
             <a
-              href="https://facebook.com/blackcoin"
+              href="https://www.facebook.com/share/1CjsWSj1P3/"
               target="_blank"
               rel="noopener noreferrer"
             >
               <FaFacebook />
             </a>
             <a
-              href="https://youtube.com/blackcoin"
+              href="https://www.youtube.com/@Blackcoinchaine"
               target="_blank"
               rel="noopener noreferrer"
             >
               <FaYoutube />
             </a>
             <a
-              href="https://t.me/blackcoin"
+              href="https://t.me/+VXuf93TxzKxlMzE0"
               target="_blank"
               rel="noopener noreferrer"
             >
               <FaTelegram />
             </a>
             <a
-              href="https://twitter.com/blackcoin"
+              href="https://x.com/BlackcoinON"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -102,7 +102,7 @@ const Settings = () => {
               <FaInstagram />
             </a>
             <a
-              href="https://tiktok.com/@blackcoin"
+              href="https://www.tiktok.com/@blackcoinsecurity"
               target="_blank"
               rel="noopener noreferrer"
             >

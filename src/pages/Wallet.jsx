@@ -2,26 +2,26 @@
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
-import { FaCoins, FaPercentage, FaUserFriends, FaWallet } from "react-icons/fa";
-import { GiCash, GiPayMoney, GiReceiveMoney } from "react-icons/gi";
+import { FaWallet } from "react-icons/fa";
+import { GiCash, GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
 import { RiCoinsFill } from "react-icons/ri";
 import "./Wallet.css";
 
 const Wallet = () => {
-  const { user, axiosInstance } = useUser(); // ✅ récupère axiosInstance du contexte
+  const { user, axiosInstance } = useUser();
   const [walletPoints, setWalletPoints] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [animateWallet, setAnimateWallet] = useState(false);
   const controls = useAnimation();
 
-  /** 🔄 Charge le solde du wallet via axiosInstance (refresh auto inclus) */
+  /** 🔄 Charge le solde du wallet via axiosInstance */
   useEffect(() => {
     const loadWallet = async () => {
       if (!user?.id) return;
 
       setIsLoading(true);
       try {
-        const res = await axiosInstance.get("/wallet/"); // ✅ axiosInstance gère tout
+        const res = await axiosInstance.get("/wallet/");
         setWalletPoints(res.data.amount || 0);
         setAnimateWallet(true);
         setTimeout(() => setAnimateWallet(false), 1000);
@@ -99,27 +99,6 @@ const Wallet = () => {
         </motion.div>
       </motion.div>
 
-      {/* ====== INFOS ====== */}
-      <motion.div
-        className="wallet-info"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <motion.div className="info-item" whileHover={{ scale: 1.03 }}>
-          <FaPercentage className="info-icon" />
-          <p><span className="highlight">20%</span> des points gagnés via les tâches <GiReceiveMoney /></p>
-        </motion.div>
-        <motion.div className="info-item" whileHover={{ scale: 1.03 }}>
-          <FaUserFriends className="info-icon" />
-          <p><span className="highlight">15%</span> des points issus du parrainage <GiReceiveMoney /></p>
-        </motion.div>
-        <motion.div className="info-item" whileHover={{ scale: 1.03 }}>
-          <FaCoins className="info-icon" />
-          <p><span className="highlight">100%</span> des récompenses spéciales <GiReceiveMoney /></p>
-        </motion.div>
-      </motion.div>
-
       {/* ====== FOOTER ====== */}
       <motion.div
         className="wallet-footer"
@@ -127,14 +106,34 @@ const Wallet = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
       >
-        <motion.button
-          className="transfer-button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <GiPayMoney className="transfer-icon" />
-          Transférer des points
-        </motion.button>
+        <div className="wallet-actions">
+          <motion.button
+            className="wallet-button deposit-button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <GiReceiveMoney className="button-icon" />
+            Dépôt
+          </motion.button>
+
+          <motion.button
+            className="wallet-button withdraw-button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <GiTakeMyMoney className="button-icon" />
+            Retrait
+          </motion.button>
+
+          <motion.button
+            className="wallet-button transfer-button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <GiPayMoney className="button-icon" />
+            Transférer
+          </motion.button>
+        </div>
       </motion.div>
     </motion.div>
   );
