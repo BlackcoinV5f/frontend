@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
-import { useNavigate } from "react-router-dom"; // ✅ pour la navigation
+import { useNavigate } from "react-router-dom";
 import { FaWallet } from "react-icons/fa";
 import { GiCash, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
 import { RiCoinsFill } from "react-icons/ri";
@@ -14,7 +14,7 @@ const Wallet = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [animateWallet, setAnimateWallet] = useState(false);
   const controls = useAnimation();
-  const navigate = useNavigate(); // ✅ Hook pour naviguer entre pages
+  const navigate = useNavigate();
 
   /** 🔄 Charge le solde du wallet via axiosInstance */
   useEffect(() => {
@@ -65,6 +65,34 @@ const Wallet = () => {
         <FaWallet className="wallet-icon" />
       </motion.div>
 
+      {/* ====== ACTIONS (remontés ici) ====== */}
+      <motion.div
+        className="wallet-actions"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <motion.button
+          className="wallet-button deposit-button"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/depots")}
+        >
+          <GiReceiveMoney className="button-icon" />
+          Dépôt
+        </motion.button>
+
+        <motion.button
+          className="wallet-button withdraw-button"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/retraits")}
+        >
+          <GiTakeMyMoney className="button-icon" />
+          Retrait
+        </motion.button>
+      </motion.div>
+
       {/* ====== BALANCE ====== */}
       <motion.div
         className="wallet-balance-card"
@@ -101,40 +129,6 @@ const Wallet = () => {
             </>
           )}
         </motion.div>
-      </motion.div>
-
-      {/* ====== FOOTER ====== */}
-      <motion.div
-        className="wallet-footer"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-      >
-        <div className="wallet-actions">
-          {/* ✅ Bouton Dépôt */}
-          <motion.button
-            className="wallet-button deposit-button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/depots")} // ouvre depots.jsx
-          >
-            <GiReceiveMoney className="button-icon" />
-            Dépôt
-          </motion.button>
-
-          {/* ✅ Bouton Retrait */}
-          <motion.button
-            className="wallet-button withdraw-button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate("/retraits")} // ouvre retraits.jsx
-          >
-            <GiTakeMyMoney className="button-icon" />
-            Retrait
-          </motion.button>
-
-          {/* ❌ Bouton Transférer supprimé */}
-        </div>
       </motion.div>
     </motion.div>
   );
