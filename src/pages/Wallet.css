@@ -289,3 +289,16 @@
   background-color: #ffc107;
   color: #000;
 }
+
+.wallet-container::before {
+  pointer-events: none; /* Empêche le calque lumineux de bloquer les clics */
+  z-index: 0; /* le met bien en dessous du contenu */
+}
+
+.wallet-balance-card,
+.wallet-footer,
+.wallet-actions,
+.wallet-button {
+  position: relative;
+  z-index: 1; /* s’assure que ces éléments sont au-dessus du calque d’arrière-plan */
+}

@@ -2,8 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom"; // ✅ pour la navigation
 import { FaWallet } from "react-icons/fa";
-import { GiCash, GiPayMoney, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
+import { GiCash, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
 import { RiCoinsFill } from "react-icons/ri";
 import "./Wallet.css";
 
@@ -13,6 +14,7 @@ const Wallet = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [animateWallet, setAnimateWallet] = useState(false);
   const controls = useAnimation();
+  const navigate = useNavigate(); // ✅ Hook pour naviguer entre pages
 
   /** 🔄 Charge le solde du wallet via axiosInstance */
   useEffect(() => {
@@ -89,7 +91,9 @@ const Wallet = () => {
         <p className="balance-label">Solde Wallet ($BKC)</p>
         <motion.div className="solde-amount" animate={controls}>
           {isLoading ? (
-            <div className="loading-dots"><span>.</span><span>.</span><span>.</span></div>
+            <div className="loading-dots">
+              <span>.</span><span>.</span><span>.</span>
+            </div>
           ) : (
             <>
               <GiCash className="cash-icon" />
@@ -107,32 +111,29 @@ const Wallet = () => {
         transition={{ delay: 1 }}
       >
         <div className="wallet-actions">
+          {/* ✅ Bouton Dépôt */}
           <motion.button
             className="wallet-button deposit-button"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/depots")} // ouvre depots.jsx
           >
             <GiReceiveMoney className="button-icon" />
             Dépôt
           </motion.button>
 
+          {/* ✅ Bouton Retrait */}
           <motion.button
             className="wallet-button withdraw-button"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/retraits")} // ouvre retraits.jsx
           >
             <GiTakeMyMoney className="button-icon" />
             Retrait
           </motion.button>
 
-          <motion.button
-            className="wallet-button transfer-button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <GiPayMoney className="button-icon" />
-            Transférer
-          </motion.button>
+          {/* ❌ Bouton Transférer supprimé */}
         </div>
       </motion.div>
     </motion.div>

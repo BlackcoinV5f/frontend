@@ -38,6 +38,8 @@ const Quotidien = lazy(() => import("./pages/Quotidien"));
 const Settings = lazy(() => import("./pages/Settings"));
 const TradeGame = lazy(() => import("./pages/TradeGame"));
 const Actions = lazy(() => import("./pages/Actions")); // ✅ Page Actions
+const Depots = lazy(() => import("./pages/Depots"));
+const Retraits = lazy(() => import("./pages/Retraits"));
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -114,6 +116,8 @@ function AppContent() {
               <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
+              <Route path="/depots" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
+              <Route path="/retraits" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
               <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
@@ -122,6 +126,7 @@ function AppContent() {
               <Route path="/lucky-game" element={<LuckyDistributorGame />} />
               <Route path="/tradegame" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
               <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
+
 
               {/* 🚫 Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

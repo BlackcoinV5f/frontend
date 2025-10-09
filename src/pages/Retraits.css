@@ -1,0 +1,132 @@
+                                                                                                                                                                                                                                                  /* ====== CONTAINER PRINCIPAL ====== */
+.withdraw-container {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.withdraw-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+}
+
+/* ====== HEADER ====== */
+.withdraw-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.withdraw-header h2 {
+  font-size: 1.8rem;
+  color: #ffd700;
+  letter-spacing: 1px;
+}
+
+.withdraw-icon {
+  font-size: 2.5rem;
+  color: #ffd700;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ====== FORMULAIRE ====== */
+.withdraw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.withdraw-form label {
+  text-align: left;
+  color: #e0e0e0;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.withdraw-form input {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.withdraw-form input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+/* ====== BOUTON RETRAIT ====== */
+.withdraw-button {
+  background: linear-gradient(135deg, #ffd700, #c59e00);
+  color: #0f172a;
+  font-weight: bold;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.withdraw-button:hover {
+  background: linear-gradient(135deg, #ffea70, #ffd700);
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}
+
+.withdraw-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ====== MESSAGE ====== */
+.withdraw-message {
+  background: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
+  border-left: 4px solid #ffd700;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.95rem;
+  text-align: left;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== BOUTON RETOUR ====== */
+.back-button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffd700;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: #ffd700;
+  transform: translateY(-2px);
+}

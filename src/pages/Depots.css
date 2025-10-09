@@ -1,0 +1,166 @@
+                                                                                                                                                                                                                                                  .deposit-container {
+  width: 100vw;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effet de brillance subtile */
+.deposit-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 215, 0, 0) 0%,
+    rgba(255, 215, 0, 0.07) 50%,
+    rgba(255, 215, 0, 0) 100%
+  );
+  transform: rotate(30deg);
+  animation: shine 10s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% { transform: rotate(30deg) translate(-30%, -30%); }
+  100% { transform: rotate(30deg) translate(30%, 30%); }
+}
+
+/* ===== HEADER ===== */
+.deposit-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deposit-header h2 {
+  font-size: 2rem;
+  background: linear-gradient(90deg, #ffffff, #ffd700);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.deposit-icon {
+  font-size: 3rem;
+  color: #ffd700;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+}
+
+/* ===== FORMULAIRE ===== */
+.deposit-form {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.deposit-form label {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.deposit-form input {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  background-color: #0d0d0d;
+  color: #ffd700;
+  font-size: 1rem;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.deposit-form input:focus {
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+/* ===== BOUTON VALIDER ===== */
+.deposit-button {
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #111;
+  font-weight: bold;
+  border: none;
+  padding: 0.9rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 165, 0, 0.3);
+}
+
+.deposit-button:hover {
+  box-shadow: 0 6px 20px rgba(255, 165, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.deposit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== MESSAGE ===== */
+.deposit-message {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  max-width: 400px;
+}
+
+/* ===== BOUTON RETOUR ===== */
+.back-button {
+  background: transparent;
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.back-button:hover {
+  background: rgba(255, 215, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .deposit-container {
+    padding: 1.5rem;
+  }
+
+  .deposit-form {
+    padding: 1.5rem;
+  }
+
+  .deposit-header h2 {
+    font-size: 1.6rem;
+  }
+}
