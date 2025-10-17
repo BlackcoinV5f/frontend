@@ -4,8 +4,11 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import { UserProvider, useUser } from "./contexts/UserContext";
+import { AdmProvider } from "./contexts/AdmContext"; // 🔹 Ajout du provider dépôts
+
 import LuckyDistributorGame from "./pages/LuckyDistributorGame";
 import backgroundImage from "./assets/background.png";
+import Historic from "./pages/Historic";
 import "./App.css";
 
 // 🧩 Composants communs
@@ -37,17 +40,22 @@ const Status = lazy(() => import("./pages/Status"));
 const Quotidien = lazy(() => import("./pages/Quotidien"));
 const Settings = lazy(() => import("./pages/Settings"));
 const TradeGame = lazy(() => import("./pages/TradeGame"));
-const Actions = lazy(() => import("./pages/Actions")); // ✅ Page Actions
+const Actions = lazy(() => import("./pages/Actions"));
+
+// 💰 Dépôts
+const DepositMethods = lazy(() => import("./pages/DepositMethods"));
 const Depots = lazy(() => import("./pages/Depots"));
 const Retraits = lazy(() => import("./pages/Retraits"));
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isEmailVerified, hasCompletedWelcomeTasks, loading } = useUser();
+
   if (loading) return <LoadingSpinner />;
   if (!isAuthenticated) return <Navigate to="/auth-choice" replace />;
   if (!isEmailVerified) return <Navigate to="/verify-email" replace />;
   if (!hasCompletedWelcomeTasks) return <Navigate to="/welcome" replace />;
+
   return children;
 };
 ProtectedRoute.propTypes = { children: PropTypes.node.isRequired };
@@ -58,12 +66,10 @@ function AppContent() {
   const [showSplash, setShowSplash] = useState(true);
   const location = useLocation();
 
-  // 📱 Forcer le scroll en haut à chaque navigation
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // 🕒 Splash Screen
   if (showSplash) {
     return (
       <Suspense fallback={<LoadingSpinner />}>
@@ -72,7 +78,6 @@ function AppContent() {
     );
   }
 
-  // 🔄 Chargement global
   if (loading) {
     return (
       <div className="loading-container">
@@ -82,13 +87,10 @@ function AppContent() {
     );
   }
 
-  // 🧩 Structure principale
   return (
     <div
       className="app-container"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-      }}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
@@ -100,15 +102,16 @@ function AppContent() {
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              {/* 🧭 Pages publiques */}
+              {/* Pages publiques */}
               <Route path="/" element={<LandingRedirect />} />
               <Route path="/auth-choice" element={<AuthChoice />} />
               <Route path="/register" element={<RegisterForm />} />
               <Route path="/login" element={<Login />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/welcome" element={<Welcome />} />
+              <Route path="/historic" element={<Historic />} /> {/* ✅ historique */}
 
-              {/* 🔐 Pages protégées */}
+              {/* Pages protégées */}
               <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/tasks/:taskId/validate" element={<ProtectedRoute><ValidateTask /></ProtectedRoute>} />
@@ -116,7 +119,8 @@ function AppContent() {
               <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
-              <Route path="/depots" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
+              <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
+              <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
               <Route path="/retraits" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
               <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
@@ -127,8 +131,7 @@ function AppContent() {
               <Route path="/tradegame" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
               <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
 
-
-              {/* 🚫 Fallback */}
+              {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
@@ -144,11 +147,13 @@ function AppContent() {
   );
 }
 
-// 🚀 App avec contexte global utilisateur
+// 🚀 App avec contexte utilisateur + contexte dépôt
 export default function App() {
   return (
     <UserProvider>
-      <AppContent />
+      <AdmProvider>
+        <AppContent />
+      </AdmProvider>
     </UserProvider>
   );
 }

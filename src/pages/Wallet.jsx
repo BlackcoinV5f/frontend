@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FaWallet } from "react-icons/fa";
 import { GiCash, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
 import { RiCoinsFill } from "react-icons/ri";
+import { AiOutlineHistory } from "react-icons/ai"; // icône historique
 import "./Wallet.css";
 
 const Wallet = () => {
@@ -16,11 +17,10 @@ const Wallet = () => {
   const controls = useAnimation();
   const navigate = useNavigate();
 
-  /** 🔄 Charge le solde du wallet via axiosInstance */
+  // 🔄 Charger le solde du wallet
   useEffect(() => {
     const loadWallet = async () => {
       if (!user?.id) return;
-
       setIsLoading(true);
       try {
         const res = await axiosInstance.get("/wallet/");
@@ -28,17 +28,16 @@ const Wallet = () => {
         setAnimateWallet(true);
         setTimeout(() => setAnimateWallet(false), 1000);
       } catch (err) {
-        console.error("❌ Erreur récupération wallet:", err);
+        console.error("Erreur récupération wallet:", err);
         setWalletPoints(0);
       } finally {
         setIsLoading(false);
       }
     };
-
     loadWallet();
   }, [user, axiosInstance]);
 
-  /** ⚡ Animation du solde */
+  // ⚡ Animation du solde
   useEffect(() => {
     if (animateWallet) {
       controls.start({
@@ -58,14 +57,14 @@ const Wallet = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* ====== HEADER ====== */}
+      {/* ===== HEADER ===== */}
       <motion.div className="wallet-header" whileHover={{ scale: 1.05 }}>
         <FaWallet className="wallet-icon" />
         <motion.h2>Mon Wallet</motion.h2>
         <FaWallet className="wallet-icon" />
       </motion.div>
 
-      {/* ====== ACTIONS (remontés ici) ====== */}
+      {/* ===== ACTIONS ===== */}
       <motion.div
         className="wallet-actions"
         initial={{ opacity: 0, y: -10 }}
@@ -91,9 +90,19 @@ const Wallet = () => {
           <GiTakeMyMoney className="button-icon" />
           Retrait
         </motion.button>
+
+        <motion.button
+          className="wallet-button history-button"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate("/historic")}
+        >
+          <AiOutlineHistory className="button-icon" />
+          Historique
+        </motion.button>
       </motion.div>
 
-      {/* ====== BALANCE ====== */}
+      {/* ===== BALANCE ===== */}
       <motion.div
         className="wallet-balance-card"
         initial={{ scale: 0.9 }}
@@ -101,6 +110,7 @@ const Wallet = () => {
         transition={{ type: "spring", stiffness: 300 }}
         onClick={() => setAnimateWallet(true)}
       >
+        {/* Animation des pièces */}
         <div className="coins-animation">
           <motion.div
             animate={{ rotate: [0, 360] }}

@@ -1,0 +1,219 @@
+/* 🔝 Conteneur principal (page) */
+.historic-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0;              /* Supprime tout l’espace en haut */
+  padding-top: 0;             /* Aucun padding haut */
+  justify-content: flex-start; /* Aligne le contenu tout en haut */
+  min-height: 100vh;          /* Occupe toute la hauteur de l’écran */
+}
+
+/* 🏷️ Titre principal */
+.historic-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 5px 0 6px 0;  /* Réduit encore plus l’espace autour du titre */
+  text-align: center;
+}
+
+/* 🧾 Conteneur du tableau */
+.historic-container {
+  padding: 5px 10px;
+  text-align: center;
+  color: #f5f5f5;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 16px;
+  max-width: 95%;
+  margin-left: 5px; /* ou 20px selon ton besoin */
+  margin-right: auto; /* conserve l’espace à droite */
+  font-size: 0.75rem;
+  position: relative;
+  top: 0;                   /* Forcer la position en haut */
+}
+
+/* 🏷️ Titre principal */
+.historic-container h1 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #ffd700;
+  letter-spacing: 0.5px;
+}
+
+/* 📊 Table principale */
+.historic-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: rgba(15, 15, 15, 0.85);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.15);
+  font-size: 0.78rem; /* plus petit texte dans la table */
+  table-layout: fixed; /* force des colonnes uniformes */
+}
+
+/* 🧩 En-têtes de colonnes */
+.historic-table th {
+  color: #ffd700;
+  font-weight: 600;
+  background-color: rgba(30, 30, 30, 0.9);
+  text-transform: uppercase;
+  padding: 8px 6px;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+}
+
+/* 📋 Cellules */
+.historic-table td {
+  padding: 7px 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 🪄 Raccourcir les colonnes automatiquement */
+.historic-table th:nth-child(1),
+.historic-table td:nth-child(1) {
+  width: 25%;
+}
+.historic-table th:nth-child(2),
+.historic-table td:nth-child(2) {
+  width: 20%;
+}
+.historic-table th:nth-child(3),
+.historic-table td:nth-child(3) {
+  width: 20%;
+}
+.historic-table th:nth-child(4),
+.historic-table td:nth-child(4) {
+  width: 35%;
+}
+
+/* 🌈 Hover */
+.historic-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: background 0.25s ease;
+}
+
+/* 🟢 Statuts */
+.status.approved {
+  color: #00ff88;
+  font-weight: 600;
+}
+.status.rejected {
+  color: #ff4c4c;
+  font-weight: 600;
+}
+.status.pending {
+  color: #ffcc00;
+  font-weight: 600;
+}
+
+/* 📱 Adaptation mobile */
+@media (max-width: 600px) {
+  .historic-container {
+    font-size: 0.8rem;
+    padding: 5px;
+  }
+
+  .historic-table th,
+  .historic-table td {
+    padding: 8px 1px;
+    font-size: 0.7rem;
+  }
+
+  .historic-table th:nth-child(1),
+  .historic-table td:nth-child(1) {
+    width: 28%;
+  }
+  .historic-table th:nth-child(2),
+  .historic-table td:nth-child(2) {
+    width: 18%;
+  }
+  .historic-table th:nth-child(3),
+  .historic-table td:nth-child(3) {
+    width: 22%;
+  }
+  .historic-table th:nth-child(4),
+  .historic-table td:nth-child(4) {
+    width: 32%;
+  }
+}
+
+/* 📦 Conteneur scrollable si besoin */
+.table-container {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+/* 🪙 Détails visuels */
+.method-icon {
+  margin-right: 4px;
+}
+.method-name {
+  font-weight: 500;
+}
+.amount {
+  font-weight: 600;
+}
+.currency {
+  opacity: 0.7;
+  margin-left: 2px;
+}
+
+/* 💫 États vides et chargement */
+.loading-state,
+.empty-state {
+  margin: 20px 0;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ffd700;
+  border-top: 3px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ⚠️ Message d’erreur */
+.error-message {
+  color: #ff4c4c;
+  background: rgba(255, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 0.85rem;
+  margin: 10px 0;
+}
+
+.historic-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0;              /* Supprime tout l’espace en haut */
+  padding-top: 0;             /* Aucun padding haut */
+  justify-content: flex-start; /* Aligne le contenu tout en haut */
+  min-height: 100vh;          /* Occupe toute la hauteur de l’écran */
+}
+
+/* 🏷️ Titre principal */
+.historic-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 5px 0 6px 0;  /* Réduit encore plus l’espace autour du titre */
+  text-align: center;
+}

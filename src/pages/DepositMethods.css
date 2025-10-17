@@ -1,0 +1,133 @@
+.methods-container {
+  padding: 1rem;
+  text-align: center;
+  color: #fff;
+  height: 100vh; /* pleine hauteur */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* empêche les débordements */
+}
+
+.methods-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0; /* empêche d’être compressé */
+}
+
+.methods-header-icon {
+  font-size: 1.5rem;
+  color: #00ffb2;
+}
+
+/* Conteneur scrollable */
+.methods-grid {
+  flex: 1; /* prend tout l’espace dispo */
+  overflow-y: auto; /* permet le scroll vertical */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  justify-items: center;
+  padding-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #00ffb2 #1e1e1e;
+}
+
+/* Style scrollbar (Chrome, Edge, etc.) */
+.methods-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.methods-grid::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 10px;
+}
+.methods-grid::-webkit-scrollbar-thumb {
+  background-color: #00ffb2;
+  border-radius: 10px;
+}
+
+/* Carte plus compacte */
+.method-card {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.6rem;
+  width: 130px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0, 255, 150, 0.1);
+}
+
+.method-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 255, 150, 0.25);
+  transform: translateY(-4px);
+}
+
+.method-image-wrapper {
+  position: relative;
+}
+
+.method-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 0.3rem;
+}
+
+.country-flag {
+  position: absolute;
+  bottom: 0;
+  right: 8px;
+  width: 20px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.method-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Bouton retour */
+.back-button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background: #00ffb2;
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  flex-shrink: 0;
+}
+
+.back-button:hover {
+  background: #00d491;
+}
+
+/* Chargement */
+.methods-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #ccc;
+}
+
+.spinner {
+  margin: 0 auto 1rem;
+  border: 3px solid #333;
+  border-top: 3px solid #00ffb2;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
