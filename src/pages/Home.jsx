@@ -1,36 +1,43 @@
 // src/pages/Home.jsx
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaRegCalendarCheck } from "react-icons/fa";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
-import UserProfile from "../components/UserProfile.jsx";
-import LuckyGameLogo from "../components/LuckyGameLogo"; 
-import TradeGameLogo from "../components/TradeGameLogo"; 
-import ActionsLogo from "../components/ActionsLogo"; // ✅ Nouveau logo d’investissement
+import LuckyGameLogo from "../components/LuckyGameLogo";
+import TradeGameLogo from "../components/TradeGameLogo";
+import BonusLogo from "../components/BonusLogo";
+import ActionsLogo from "../components/ActionsLogo";
 
 import "./Home.css";
 
 const Home = ({ points, setPoints, level, setLevel }) => {
   const navigate = useNavigate();
   const { user, loading, isAuthenticated } = useUser();
-  const [showProfile, setShowProfile] = useState(false);
 
+  // 👀 Suivi de l’état utilisateur (utile en dev)
   useEffect(() => {
-    console.log("État utilisateur :", {
-      loading,
-      isAuthenticated,
-      userData: user,
-    });
+    if (process.env.NODE_ENV === "development") {
+      console.log("État utilisateur :", { loading, isAuthenticated, user });
+    }
   }, [user, loading, isAuthenticated]);
 
-  // ⚡ Redirection si non authentifié
+  // 🚪 Redirection si non authentifié
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate("/auth-choice", { replace: true });
     }
   }, [loading, isAuthenticated, navigate]);
+
+  // 🎁 Aller à la page Bonus
+  const goToBonus = () => {
+    navigate("/bonus");
+  };
+
+  // 👤 Aller à la page Profil
+  const goToProfile = () => {
+    navigate("/profile");
+  };
 
   if (loading) {
     return (
@@ -42,11 +49,6 @@ const Home = ({ points, setPoints, level, setLevel }) => {
 
   return (
     <div className="home">
-      {/* 📅 Récompense quotidienne */}
-      <Link to="/daily" className="calendar-button" title="Récompense quotidienne">
-        <FaRegCalendarCheck />
-      </Link>
-
       {/* ⛏️ Cercle de minage */}
       <MiningCircle
         points={points}
@@ -55,34 +57,18 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         setLevel={setLevel}
       />
 
-      {/* 🎰 Logo Lucky Game */}
+      {/* 🎰 Jeux et investissements */}
       <LuckyGameLogo />
-
-      {/* 💹 Logo Trade Game */}
       <TradeGameLogo />
-
-      {/* 📈 Nouveau : Logo Actions (investissement personnel) */}
       <ActionsLogo />
 
-      {/* 👤 Bouton profil */}
-      <button
-        className="guest-button"
-        onClick={() => setShowProfile(true)}
-      >
+      {/* 🎁 Logo Bonus flottant */}
+      <BonusLogo onClick={goToBonus} />
+
+      {/* 👤 Bouton profil utilisateur redirige vers page complète */}
+      <button className="guest-button" onClick={goToProfile}>
         {user?.username || "Guest"} (profil)
       </button>
-
-      {/* 👤 Modal UserProfile */}
-      {showProfile && (
-        <div className="modal-overlay" onClick={() => setShowProfile(false)}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <UserProfile onClose={() => setShowProfile(false)} />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import { UserProvider, useUser } from "./contexts/UserContext";
-import { AdmProvider } from "./contexts/AdmContext"; // 🔹 Ajout du provider dépôts
+import { AdmProvider } from "./contexts/AdmContext"; // 🔹 Provider dépôts/retraits
 
 import LuckyDistributorGame from "./pages/LuckyDistributorGame";
 import backgroundImage from "./assets/background.png";
@@ -17,7 +17,7 @@ const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
 const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
-const UserProfile = lazy(() => import("./components/UserProfile"));
+const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
 // 🧭 Pages publiques
 const AuthChoice = lazy(() => import("./pages/AuthChoice"));
@@ -37,15 +37,17 @@ const BalancePage = lazy(() => import("./pages/BalancePage"));
 const ValidateTask = lazy(() => import("./pages/ValidateTask"));
 const MyActions = lazy(() => import("./pages/MyActions"));
 const Status = lazy(() => import("./pages/Status"));
-const Quotidien = lazy(() => import("./pages/Quotidien"));
 const Settings = lazy(() => import("./pages/Settings"));
 const TradeGame = lazy(() => import("./pages/TradeGame"));
 const Actions = lazy(() => import("./pages/Actions"));
+const Bonus = lazy(() => import("./pages/Bonus"));
+const DailyTasks = lazy(() => import("./pages/DailyTasks"));
 
-// 💰 Dépôts
+// 💰 Dépôts et retraits
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
 const Depots = lazy(() => import("./pages/Depots"));
 const Retraits = lazy(() => import("./pages/Retraits"));
+const RetraitMethode = lazy(() => import("./pages/RetraitMethode")); // ✅ ajout
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -109,27 +111,35 @@ function AppContent() {
               <Route path="/login" element={<Login />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/welcome" element={<Welcome />} />
-              <Route path="/historic" element={<Historic />} /> {/* ✅ historique */}
+              <Route path="/historic" element={<Historic />} />
 
               {/* Pages protégées */}
               <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/tasks/:taskId/validate" element={<ProtectedRoute><ValidateTask /></ProtectedRoute>} />
+              <Route path="/daily-tasks/:packId" element={<ProtectedRoute><DailyTasks /></ProtectedRoute>} />
               <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
-              <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
               <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
+
+              {/* 💰 Dépôts */}
               <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
               <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
-              <Route path="/retraits" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
+
+              {/* 💸 Retraits */}
+              <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
+              <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
+
+              {/* Autres pages */}
               <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
-              <Route path="/daily" element={<ProtectedRoute><Quotidien /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/lucky-game" element={<LuckyDistributorGame />} />
               <Route path="/tradegame" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
               <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
+              <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

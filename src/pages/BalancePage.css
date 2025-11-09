@@ -33,7 +33,9 @@
   justify-content: center;
   gap: 12px;
   margin-bottom: 30px;
+  margin-top: 50px; /* ✅ ajoute cet espace au-dessus */
 }
+
 
 .balance-header h2 {
   font-size: 26px;
@@ -172,3 +174,11 @@
     font-size: 22px;
   }
 }
+
+.page-container.balance-container {
+  width: 100vw; /* largeur complète de la fenêtre */
+  margin: 0;    /* supprime tout centrage éventuel */
+  left: 0;
+  right: 0;
+}
+

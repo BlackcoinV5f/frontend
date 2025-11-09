@@ -5,9 +5,10 @@ import ActionCard from "../components/ActionCard.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import "./Actions.css";
 
-// ✅ Lucide icons
+// ✅ Icônes Lucide
 import { DollarSign, Building2, Sparkles, User2 } from "lucide-react";
 
+// ✅ Liste des catégories d’actions/packs
 const categories = [
   { id: "finance", label: "Finance", icon: <DollarSign size={18} /> },
   { id: "immobilier", label: "Real Estate", icon: <Building2 size={18} /> },
@@ -19,40 +20,44 @@ const Actions = () => {
   const [activeTab, setActiveTab] = useState("finance");
   const [actions, setActions] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const { axiosInstance, user } = useUser();
 
-  // 🔹 Fonction de récupération des actions
+  // 🔹 Récupération des actions depuis l’API
   const fetchActions = async () => {
     setLoading(true);
     try {
       let response;
+
       if (activeTab === "myactif") {
-        // 🔹 Actions de l'utilisateur
-        response = await axiosInstance.get("/actions/me");
+        // 🔸 Récupère uniquement les packs achetés par l'utilisateur
+        response = await axiosInstance.get("/actions/my-packs");
       } else {
-        // 🔹 Actions par catégorie
+        // 🔸 Récupère les packs disponibles selon la catégorie
         response = await axiosInstance.get(`/actions/category/${activeTab}`);
       }
+
       setActions(response.data || []);
     } catch (error) {
-      console.error("❌ Error loading actions:", error);
+      console.error("❌ Erreur lors du chargement des actions :", error);
       setActions([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔄 Récupération à chaque changement de tab ou utilisateur
+  // 🔄 Actualiser à chaque changement d’onglet ou d’utilisateur
   useEffect(() => {
     fetchActions();
   }, [activeTab, user]);
 
   if (loading) return <LoadingSpinner fullScreen />;
 
+  // ✅ Détermine le contexte à passer au composant ActionCard
+  const cardContext = activeTab === "myactif" ? "owned" : "available";
+
   return (
     <div className="actions-page">
-      {/* ✅ Barre de catégories */}
+      {/* ✅ Barre de navigation entre catégories */}
       <div className="categories-bar">
         {categories.map(({ id, label, icon }) => (
           <button
@@ -69,11 +74,19 @@ const Actions = () => {
       {/* ✅ Contenu principal */}
       <div className="actions-content">
         {actions.length === 0 ? (
-          <p className="no-actions">No actions available</p>
+          <p className="no-actions">Aucune action disponible</p>
         ) : (
           <div className="actions-grid">
             {actions.map((action) => (
-              <ActionCard key={action.id} action={action} />
+              <ActionCard
+                key={action.id}
+                action={{
+                  ...action,
+                  status: action.status || "disponible",
+                  pack_status: action.pack_status || action.status,
+                }}
+                context={cardContext} // 🔥 ici on passe le bon mode à la carte
+              />
             ))}
           </div>
         )}

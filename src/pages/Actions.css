@@ -84,3 +84,11 @@
   margin-top: 50px;
   font-style: italic;
 }
+
+.actions-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  padding-bottom: 200px; /* ✅ espace pour la barre du bas */
+}
+

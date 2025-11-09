@@ -1,39 +1,37 @@
 // src/components/Navbar.jsx
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { FaUserCircle, FaFire, FaCog } from "react-icons/fa"; // ⚡ Ajout FaCog
-import UserProfile from "./UserProfile";
+import { Link, useNavigate } from "react-router-dom";
+import { FaUserCircle, FaFire, FaCog } from "react-icons/fa";
 import "./Navbar.css";
 
 const Navbar = ({ user }) => {
-  const [showProfile, setShowProfile] = useState(false);
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+    navigate("/profile"); // redirection vers la page complète
+  };
 
   return (
-    <>
-      <nav className="navbar">
-        {/* 👤 Profil utilisateur */}
-        <span onClick={() => setShowProfile(true)} className="nav-item">
-          <FaUserCircle className="nav-icon small-icon" />
-          <span className="small-text">{user?.username || "Guest"}</span>
-        </span>
+    <nav className="navbar">
+      {/* 👤 Profil utilisateur */}
+      <span onClick={handleProfileClick} className="nav-item cursor-pointer">
+        <FaUserCircle className="nav-icon small-icon" />
+        <span className="small-text">{user?.username || "Guest"}</span>
+      </span>
 
-        {/* 🔥 Points */}
-        <Link to="/balance" className="nav-item">
-          <FaFire className="nav-icon small-icon" />
-          <span className="small-text">Points</span>
-        </Link>
+      {/* 🔥 Points */}
+      <Link to="/balance" className="nav-item">
+        <FaFire className="nav-icon small-icon" />
+        <span className="small-text">Points</span>
+      </Link>
 
-        {/* ⚙️ Paramètres */}
-        <Link to="/settings" className="nav-item">
-          <FaCog className="nav-icon small-icon" />
-          <span className="small-text">Settings</span>
-        </Link>
-      </nav>
-
-      {/* 👤 Modal profil */}
-      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
-    </>
+      {/* ⚙️ Paramètres */}
+      <Link to="/settings" className="nav-item">
+        <FaCog className="nav-icon small-icon" />
+        <span className="small-text">Settings</span>
+      </Link>
+    </nav>
   );
 };
 

@@ -152,6 +152,15 @@ function Step1({ user, handleNext }) {
           l’accès à votre compte.
         </p>
 
+        {/* Nouveau paragraphe KYC */}
+        <p className="kyc-info">
+          🔒 Pour des raisons de sécurité et afin de mieux gérer nos utilisateurs,
+          nous utilisons le processus <strong>KYC</strong> (vérification d'identité).  
+          Cela nous permet de contrôler nos utilisateurs fidèles, d’éviter les comptes doubles,
+          et de prévenir l’utilisation de bots ou tout autre comportement compromettant la sécurité
+          de notre système.
+        </p>
+
         <div className="security-badge">
           <FaLock size={32} />
         </div>

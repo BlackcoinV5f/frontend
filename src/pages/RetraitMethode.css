@@ -1,0 +1,160 @@
+/* =======================
+   RetraitMethode.css (défilement + cartes verticales)
+   ======================= */
+
+/* Conteneur principal */
+.withdraw-container {
+  height: 100vh; /* ✅ pleine hauteur d’écran */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  box-sizing: border-box;
+  overflow: hidden; /* conteneur fixe */
+}
+
+/* Titre */
+.withdraw-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 1rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Liste scrollable */
+.withdraw-list {
+  flex: 1;
+  width: 100%;
+  max-width: 520px;
+  overflow-y: auto; /* ✅ permet le défilement interne */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  justify-items: center;
+  padding: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: #38bdf8 #1e293b;
+}
+
+/* Scrollbar personnalisée */
+.withdraw-list::-webkit-scrollbar {
+  width: 6px;
+}
+.withdraw-list::-webkit-scrollbar-track {
+  background: #0f172a;
+  border-radius: 10px;
+}
+.withdraw-list::-webkit-scrollbar-thumb {
+  background: #38bdf8;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+.withdraw-list::-webkit-scrollbar-thumb:hover {
+  background: #0ea5e9;
+}
+
+/* Carte de méthode (style carré vertical) */
+.withdraw-card {
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.8rem;
+  width: 100%;
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.withdraw-card:hover {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: #38bdf8;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(56, 189, 248, 0.2);
+}
+
+/* Icône */
+.withdraw-icon {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 6px;
+  margin-bottom: 0.5rem;
+}
+
+/* Texte */
+.withdraw-info {
+  text-align: center;
+}
+
+.withdraw-info h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.withdraw-info p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+/* États */
+.withdraw-loading,
+.withdraw-error,
+.withdraw-empty {
+  text-align: center;
+  font-size: 1rem;
+  padding: 2rem;
+  color: #cbd5e1;
+}
+
+.withdraw-error {
+  color: #f87171;
+}
+
+.withdraw-empty {
+  color: #facc15;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .withdraw-title {
+    font-size: 1.2rem;
+  }
+
+  .withdraw-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+    padding-right: 0.3rem;
+  }
+
+  .withdraw-card {
+    max-width: 160px;
+    padding: 0.7rem;
+  }
+
+  .withdraw-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .withdraw-info h3 {
+    font-size: 0.85rem;
+  }
+
+  .withdraw-info p {
+    font-size: 0.75rem;
+  }
+}

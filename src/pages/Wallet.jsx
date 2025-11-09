@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FaWallet } from "react-icons/fa";
 import { GiCash, GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
 import { RiCoinsFill } from "react-icons/ri";
-import { AiOutlineHistory } from "react-icons/ai"; // icône historique
+import { AiOutlineHistory } from "react-icons/ai";
 import "./Wallet.css";
 
 const Wallet = () => {
@@ -24,7 +24,7 @@ const Wallet = () => {
       setIsLoading(true);
       try {
         const res = await axiosInstance.get("/wallet/");
-        setWalletPoints(res.data.amount || 0);
+        setWalletPoints(res.data.balance || 0);
         setAnimateWallet(true);
         setTimeout(() => setAnimateWallet(false), 1000);
       } catch (err) {
@@ -81,11 +81,12 @@ const Wallet = () => {
           Dépôt
         </motion.button>
 
+        {/* 🔹 Correction ici : on va vers /retrait-methode */}
         <motion.button
           className="wallet-button withdraw-button"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/retraits")}
+          onClick={() => navigate("/retrait-methode")}
         >
           <GiTakeMyMoney className="button-icon" />
           Retrait
@@ -110,7 +111,6 @@ const Wallet = () => {
         transition={{ type: "spring", stiffness: 300 }}
         onClick={() => setAnimateWallet(true)}
       >
-        {/* Animation des pièces */}
         <div className="coins-animation">
           <motion.div
             animate={{ rotate: [0, 360] }}

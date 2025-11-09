@@ -1,90 +1,141 @@
-                                                                                                                                                                                                                                                  import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { GiTakeMyMoney } from "react-icons/gi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAdm } from "../contexts/AdmContext";
+import { useUser } from "../contexts/UserContext";
 import "./Retraits.css";
 
 const Retraits = () => {
+  const { axiosDeposit } = useAdm();
+  const { user } = useUser();
   const navigate = useNavigate();
-  const [montant, setMontant] = useState("");
-  const [iban, setIban] = useState("");
+  const location = useLocation();
+
+  // Méthode reçue depuis la page précédente
+  const method = location.state?.selectedMethod;
+
+  const [form, setForm] = useState({
+    address: "",
+    amount: "",
+  });
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleRetrait = async (e) => {
-    e.preventDefault();
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-    if (!montant || !iban) {
-      setMessage("Veuillez renseigner tous les champs.");
+  const handleSubmit = async () => {
+    if (!form.address || !form.amount) {
+      setMessage("❌ Tous les champs sont obligatoires !");
       return;
     }
 
-    setLoading(true);
-    setMessage("");
+    const amountNumber = parseFloat(form.amount);
+    if (isNaN(amountNumber) || amountNumber < 1.2) {
+      setMessage("❌ Le montant minimal de retrait est de 1.2 BKC !");
+      return;
+    }
+
+    if (!user?.id) {
+      setMessage("❌ Utilisateur non identifié.");
+      return;
+    }
 
     try {
-      // Simulation d’un appel API (tu pourras le remplacer par ton backend)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setSubmitting(true);
+      setMessage("");
 
-      setMessage(`✅ Retrait de ${montant} € vers ${iban} effectué avec succès !`);
-      setMontant("");
-      setIban("");
-    } catch (error) {
-      console.error(error);
+      const payload = {
+        user_id: user.id,
+        username: user.username,
+        method_id: method.id,
+        method_name: method.name,
+        address: form.address,
+        amount: amountNumber,
+      };
+
+      console.log("Payload retrait :", payload);
+
+      await axiosDeposit.post("/withdrawals/", payload);
+
+      setMessage("✅ Demande de retrait envoyée avec succès !");
+      setForm({ address: "", amount: "" });
+    } catch (err) {
+      console.error(err);
       setMessage("❌ Une erreur est survenue lors du retrait.");
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
+  if (!method) {
+    return (
+      <div className="withdraw-container">
+        <p>Aucune méthode sélectionnée. Retournez en arrière pour en choisir une.</p>
+        <motion.button
+          className="back-button"
+          onClick={() => navigate("/withdraw-methods")}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          ← Retour
+        </motion.button>
+      </div>
+    );
+  }
+
   return (
-    <div className="withdraw-container">
+    <motion.div
+      className="withdraw-container"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="withdraw-header">
-        <GiTakeMyMoney className="withdraw-icon" />
-        <h2>Effectuer un Retrait</h2>
+        <img src={method.icon_url} alt={method.name} className="withdraw-method-icon" />
+        <h2>{method.name}</h2>
+        <p className="withdraw-country">Pays : {method.country}</p>
       </div>
 
-      <form className="withdraw-form" onSubmit={handleRetrait}>
-        <label htmlFor="iban">IBAN ou numéro de compte</label>
+      <div className="withdraw-form">
         <input
-          id="iban"
-          type="text"
-          value={iban}
-          onChange={(e) => setIban(e.target.value)}
-          placeholder="Ex: FR76 1234 5678 9012 3456 7890 123"
+          name="address"
+          placeholder="Adresse / numéro de compte"
+          value={form.address}
+          onChange={handleChange}
         />
 
-        <label htmlFor="montant">Montant (€)</label>
         <input
-          id="montant"
+          name="amount"
           type="number"
-          value={montant}
-          onChange={(e) => setMontant(e.target.value)}
-          placeholder="Entrez le montant à retirer"
+          placeholder="Montant à retirer (min 1.2 BKC)"
+          value={form.amount}
+          onChange={handleChange}
         />
 
         <motion.button
-          type="submit"
           className="withdraw-button"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          disabled={loading}
+          disabled={submitting}
+          onClick={handleSubmit}
         >
-          {loading ? "Traitement..." : "Confirmer le Retrait"}
+          {submitting ? "Envoi..." : "Valider le retrait"}
         </motion.button>
-      </form>
+      </div>
 
       {message && <p className="withdraw-message">{message}</p>}
 
       <motion.button
         className="back-button"
-        onClick={() => navigate(-1)}
+        onClick={() => navigate("/withdraw-methods")}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        ← Retour
+        ⬅ Retour aux méthodes
       </motion.button>
-    </div>
+    </motion.div>
   );
 };
 

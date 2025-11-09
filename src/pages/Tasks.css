@@ -1,16 +1,29 @@
+/* ===========================
+   CONTENEUR PRINCIPAL
+=========================== */
 .tasks-container {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   color: white;
   padding: 2rem;
   max-width: 900px;
-  margin: 2rem auto;
+  margin: 70px auto 70px auto; /* ✅ espace en haut et en bas pour les barres */
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* ✅ scroll interne sans contenu coupé */
   overflow-y: auto;
-  max-height: 80vh;
+
+  /* ✅ hauteur adaptée à la fenêtre, moins l’espace des barres */
+  height: calc(100vh - 140px); /* 70px haut + 70px bas */
+
+  /* ✅ empêche le padding de fausser la hauteur */
+  box-sizing: border-box;
 }
 
+/* ===========================
+   EN-TÊTE ET PROGRESSION
+=========================== */
 .tasks-header {
   display: flex;
   justify-content: space-between;
@@ -41,6 +54,9 @@
   font-weight: bold;
 }
 
+/* ===========================
+   LISTE DES TÂCHES
+=========================== */
 .tasks-list {
   display: flex;
   flex-direction: column;
@@ -71,11 +87,11 @@
 }
 
 .platform-icon {
-  width: 32px;      /* taille uniforme pour tous les logos */
-  height: 32px;     /* taille uniforme pour tous les logos */
-  object-fit: contain; /* garde les proportions originales */
-  border-radius: 4px;  /* optionnel : coins légèrement arrondis */
-  background: rgba(255, 255, 255, 0.05); /* léger fond si logo transparent */
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
   padding: 2px;
 }
 
@@ -90,6 +106,9 @@
   color: gold;
 }
 
+/* ===========================
+   BOUTONS
+=========================== */
 .task-button,
 .validate-button {
   background: gold;
@@ -112,6 +131,9 @@
   cursor: not-allowed;
 }
 
+/* ===========================
+   COOLDOWN / ÉTAT VIDE
+=========================== */
 .cooldown-container {
   display: flex;
   flex-direction: column;
@@ -135,6 +157,9 @@
   margin-top: 1.5rem;
 }
 
+/* ===========================
+   ANIMATIONS
+=========================== */
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
