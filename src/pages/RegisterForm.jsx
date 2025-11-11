@@ -163,7 +163,7 @@ const RegisterForm = () => {
           <PhoneInput international defaultCountry="BJ" value={formData.phoneNumber} onChange={handlePhoneChange} placeholder={t("register.phoneNumber")} required />
           <input type="email" name="email" placeholder={t("register.email")} value={formData.email} onChange={handleChange} required />
           <input type="text" name="username" placeholder={t("register.username")} value={formData.username} onChange={handleChange} required />
-          <input type="file" accept="image/*" name="avatar" onChange={handleAvatarChange} />
+          
         </div>
 
         {/* Promo Code */}
