@@ -27,7 +27,6 @@ const levelImages = {
   9: level9,
 };
 
-// Seuils de points pour chaque niveau
 const levelThresholds = {
   1: 0,
   2: 3500,
@@ -42,6 +41,7 @@ const levelThresholds = {
 
 const MiningCircle = () => {
   const { user } = useUser();
+
   const [progress, setProgress] = useState(0);
   const [isMining, setIsMining] = useState(false);
   const [buttonText, setButtonText] = useState("START");
@@ -61,35 +61,40 @@ const MiningCircle = () => {
   };
 
   const calculateLevel = (totalPoints) => {
-    let currentLevel = 1;
-    for (let lvl = 1; lvl <= 9; lvl++) {
-      if (totalPoints >= levelThresholds[lvl]) currentLevel = lvl;
+    let lvl = 1;
+    for (let i = 1; i <= 9; i++) {
+      if (totalPoints >= levelThresholds[i]) lvl = i;
       else break;
     }
-    return currentLevel;
+    return lvl;
   };
 
   const fetchMiningHistory = async () => {
     if (!user?.id) return;
+
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/history/${user.id}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/mining/history/${user.id}`,
+        { credentials: "include" }
+      );
       const data = await res.json();
-      const totalPoints = data.history.reduce((acc, entry) => acc + entry.points, 0);
-      setPoints(totalPoints);
-      setLevel(calculateLevel(totalPoints));
+
+      const total = data.history.reduce((acc, entry) => acc + entry.points, 0);
+      setPoints(total);
+      setLevel(calculateLevel(total));
     } catch (err) {
-      console.error("❌ Erreur récupération historique minage :", err);
+      console.error("Erreur récupération historique :", err);
     }
   };
 
   const fetchMiningStatus = async () => {
     if (!user?.id) return;
+
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/status/${user.id}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/mining/status/${user.id}`,
+        { credentials: "include" }
+      );
       const data = await res.json();
 
       clearInterval(intervalRef.current);
@@ -104,71 +109,76 @@ const MiningCircle = () => {
           setTimeLeft((prev) => {
             if (prev <= 1000) {
               clearInterval(intervalRef.current);
-              setIsMining(false);
               setProgress(100);
+              setIsMining(false);
               setButtonText("CLAIM");
               fetchMiningHistory();
               return 0;
             }
-            const newVal = prev - 1000;
-            setProgress(((data.total_cycle_ms - newVal) / data.total_cycle_ms) * 100);
-            setButtonText(formatTime(newVal));
-            return newVal;
+
+            const updated = prev - 1000;
+            setProgress(((data.total_cycle_ms - updated) / data.total_cycle_ms) * 100);
+            setButtonText(formatTime(updated));
+            return updated;
           });
         }, 1000);
-      } else if (data.status === "ready_to_claim") {
+      }
+
+      else if (data.status === "ready_to_claim") {
         setProgress(100);
+        setIsMining(false);
         setButtonText("CLAIM");
-        setIsMining(false);
-      } else {
+      }
+
+      else {
         setProgress(0);
-        setButtonText("START");
         setIsMining(false);
+        setButtonText("START");
       }
     } catch (err) {
-      console.error("❌ Erreur récupération statut minage :", err);
+      console.error("Erreur statut minage :", err);
     }
   };
 
   const startMining = async () => {
     if (!user?.id) return;
+
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/start/${user.id}`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/mining/start/${user.id}`,
+        { method: "POST", credentials: "include" }
+      );
       const data = await res.json();
+
       if (data.status === "authorized") {
         setTotalCycleMs(data.total_cycle_ms);
         fetchMiningStatus();
-      } else {
-        alert(data.detail || "Impossible de démarrer le minage.");
       }
     } catch (err) {
-      console.error("❌ Impossible de démarrer le minage :", err);
+      console.error("Erreur démarrage minage :", err);
     }
   };
 
   const claimPoints = async () => {
     if (!user?.id) return;
+
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mining/claim/${user.id}`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/mining/claim/${user.id}`,
+        { method: "POST", credentials: "include" }
+      );
       const data = await res.json();
 
       if (data.status === "success") {
-        setPoints((prev) => prev + data.points_earned); // ✅ basé sur backend
-        setLevel(calculateLevel(points + data.points_earned));
+        const newTotal = points + data.points_earned;
+        setPoints(newTotal);
+        setLevel(calculateLevel(newTotal));
         setProgress(0);
-        setButtonText("START");
         setIsMining(false);
-      } else {
-        alert(data.detail || "Impossible de réclamer les points.");
+        setButtonText("START");
       }
     } catch (err) {
-      console.error("❌ Impossible de réclamer les points :", err);
+      console.error("Erreur claim :", err);
     }
   };
 
@@ -179,7 +189,7 @@ const MiningCircle = () => {
   }, [user]);
 
   return (
-    <div className="mining-container">
+    <div className="mining-wrapper">
       <div className="progress-circle">
         <CircularProgressbar
           value={progress}
@@ -187,17 +197,22 @@ const MiningCircle = () => {
           styles={buildStyles({
             pathColor: "green",
             textColor: "#fff",
-            trailColor: "#ddd",
+            trailColor: "#333",
             strokeLinecap: "round",
-            textSize: "16px",
           })}
         />
-        <img src={levelImages[level]} alt={`Level ${level}`} className="mining-image" />
+
+        <img
+          src={levelImages[level]}
+          alt={`Level ${level}`}
+          className="mining-image"
+        />
       </div>
+
       <button
         className="mining-button"
-        onClick={buttonText === "START" ? startMining : claimPoints}
         disabled={isMining && buttonText !== "CLAIM"}
+        onClick={buttonText === "START" ? startMining : claimPoints}
       >
         {buttonText}
       </button>

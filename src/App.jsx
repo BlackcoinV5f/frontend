@@ -4,14 +4,14 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import { UserProvider, useUser } from "./contexts/UserContext";
-import { AdmProvider } from "./contexts/AdmContext"; // 🔹 Provider dépôts/retraits
+import { AdmProvider } from "./contexts/AdmContext";
 
 import LuckyDistributorGame from "./pages/LuckyDistributorGame";
 import backgroundImage from "./assets/background.png";
 import Historic from "./pages/Historic";
 import "./App.css";
 
-// 🧩 Composants communs
+// 🧩 Composants
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
@@ -43,11 +43,11 @@ const Actions = lazy(() => import("./pages/Actions"));
 const Bonus = lazy(() => import("./pages/Bonus"));
 const DailyTasks = lazy(() => import("./pages/DailyTasks"));
 
-// 💰 Dépôts et retraits
+// 💰 Dépôts / Retraits
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
 const Depots = lazy(() => import("./pages/Depots"));
 const Retraits = lazy(() => import("./pages/Retraits"));
-const RetraitMethode = lazy(() => import("./pages/RetraitMethode")); // ✅ ajout
+const RetraitMethode = lazy(() => import("./pages/RetraitMethode"));
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
@@ -62,23 +62,18 @@ const ProtectedRoute = ({ children }) => {
 };
 ProtectedRoute.propTypes = { children: PropTypes.node.isRequired };
 
-// 🧠 Contenu principal
+
+// ⭐ Contenu principal
 function AppContent() {
   const { user, loading } = useUser();
-  const [showSplash, setShowSplash] = useState(true);
   const location = useLocation();
 
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Remonter en haut à chaque changement de page
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
-
-  if (showSplash) {
-    return (
-      <Suspense fallback={<LoadingSpinner />}>
-        <SplashScreen onFinish={() => setShowSplash(false)} />
-      </Suspense>
-    );
-  }
 
   if (loading) {
     return (
@@ -94,6 +89,14 @@ function AppContent() {
       className="app-container"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
+      {/* SPLASH ÉCRAN DANS LE CONTAINER MOBILE */}
+      {showSplash && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <SplashScreen onFinish={() => setShowSplash(false)} />
+        </Suspense>
+      )}
+
+      {/* Contenu normal de l'application */}
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
           <Navbar user={user} />
@@ -104,6 +107,7 @@ function AppContent() {
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
+
               {/* Pages publiques */}
               <Route path="/" element={<LandingRedirect />} />
               <Route path="/auth-choice" element={<AuthChoice />} />
@@ -123,26 +127,27 @@ function AppContent() {
               <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
 
-              {/* 💰 Dépôts */}
+              {/* Dépôts */}
               <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
               <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
 
-              {/* 💸 Retraits */}
+              {/* Retraits */}
               <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
               <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
 
-              {/* Autres pages */}
+              {/* Autres */}
               <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/lucky-game" element={<LuckyDistributorGame />} />
-              <Route path="/tradegame" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
+              <Route path="/trade-game" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
               <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
               <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
+
             </Routes>
           </Suspense>
         </ErrorBoundary>
@@ -157,7 +162,8 @@ function AppContent() {
   );
 }
 
-// 🚀 App avec contexte utilisateur + contexte dépôt
+
+// 🚀 App racine
 export default function App() {
   return (
     <UserProvider>
