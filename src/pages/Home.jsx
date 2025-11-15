@@ -15,26 +15,26 @@ const Home = ({ points, setPoints, level, setLevel }) => {
   const navigate = useNavigate();
   const { user, loading, isAuthenticated } = useUser();
 
-  // 👀 Suivi de l’état utilisateur (utile en dev)
+  // Suivi de l’état utilisateur (dev)
   useEffect(() => {
     if (process.env.NODE_ENV === "development") {
       console.log("État utilisateur :", { loading, isAuthenticated, user });
     }
   }, [user, loading, isAuthenticated]);
 
-  // 🚪 Redirection si non authentifié
+  // Redirection si non authentifié
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate("/auth-choice", { replace: true });
     }
   }, [loading, isAuthenticated, navigate]);
 
-  // 🎁 Aller à la page Bonus
+  // Aller à la page Bonus
   const goToBonus = () => {
     navigate("/bonus");
   };
 
-  // 👤 Aller à la page Profil
+  // Aller à la page Profil
   const goToProfile = () => {
     navigate("/profile");
   };
@@ -49,7 +49,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
 
   return (
     <div className="home">
-      {/* ⛏️ Cercle de minage */}
+      {/* ⛏️ Cercle de minage au centre */}
       <MiningCircle
         points={points}
         setPoints={setPoints}
@@ -57,15 +57,15 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         setLevel={setLevel}
       />
 
-      {/* 🎰 Jeux et investissements */}
-      <LuckyGameLogo />
-      <TradeGameLogo />
-      <ActionsLogo />
+      {/* 🎰 Conteneur pour logos fixes */}
+      <div className="logos-container">
+        <LuckyGameLogo className="lucky-game-logo" />
+        <TradeGameLogo className="trade-game-logo" />
+        <ActionsLogo className="actions-logo" />
+        <BonusLogo className="bonus-logo" onClick={goToBonus} />
+      </div>
 
-      {/* 🎁 Logo Bonus flottant */}
-      <BonusLogo onClick={goToBonus} />
-
-      {/* 👤 Bouton profil utilisateur redirige vers page complète */}
+      {/* 👤 Bouton profil utilisateur */}
       <button className="guest-button" onClick={goToProfile}>
         {user?.username || "Guest"} (profil)
       </button>

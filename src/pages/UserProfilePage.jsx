@@ -1,11 +1,9 @@
-// src/pages/UserProfilePage.jsx
 import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import {
   FiLogOut,
   FiEdit,
   FiCheck,
-  FiUser,
   FiMail,
   FiPhone,
   FiGlobe,
@@ -37,15 +35,17 @@ const UserProfilePage = () => {
     if (isEditing) {
       try {
         const formData = new FormData();
-        if (editedUser.first_name) formData.append("first_name", editedUser.first_name);
-        if (editedUser.last_name) formData.append("last_name", editedUser.last_name);
+        if (editedUser.first_name)
+          formData.append("first_name", editedUser.first_name);
+        if (editedUser.last_name)
+          formData.append("last_name", editedUser.last_name);
         if (editedUser.phone) formData.append("phone", editedUser.phone);
         if (editedUser.country) formData.append("country", editedUser.country);
         if (editedUser.email) formData.append("email", editedUser.email);
-        if (editedUser.birth_date) formData.append("birth_date", editedUser.birth_date);
-        if (editedUser.avatar instanceof File) {
+        if (editedUser.birth_date)
+          formData.append("birth_date", editedUser.birth_date);
+        if (editedUser.avatar instanceof File)
           formData.append("avatar", editedUser.avatar);
-        }
 
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/user/update-profile`,
@@ -57,7 +57,6 @@ const UserProfilePage = () => {
         );
 
         if (!res.ok) throw new Error("Erreur API update profil");
-
         const updatedUser = await res.json();
         setUser(updatedUser);
       } catch (err) {
@@ -101,7 +100,21 @@ const UserProfilePage = () => {
   };
 
   const displayValue = (value) => (value ? value : "—");
-  const avatarSrc = user.avatar_url || null;
+
+  // ✅ Gestion avatar dynamique avec fallback
+  const avatarSrc =
+    user?.avatar_url && user.avatar_url.trim() !== "" ? user.avatar_url : null;
+
+  const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "?";
+  const getColorFromName = (name) => {
+    const colors = ["#4a90e2", "#e67e22", "#2ecc71", "#9b59b6", "#e74c3c"];
+    let hash = 0;
+    for (let i = 0; i < name?.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+  const avatarColor = getColorFromName(user.first_name || user.username);
 
   return (
     <div className="user-profile-page">
@@ -112,16 +125,32 @@ const UserProfilePage = () => {
       <div className="profile-avatar-section">
         <div className="avatar-container">
           {avatarSrc ? (
-            <img src={avatarSrc} alt="Photo de profil" className="profile-picture" />
+            <img
+              src={avatarSrc}
+              alt="Photo de profil"
+              className="profile-picture"
+              onError={(e) => (e.target.style.display = "none")}
+            />
           ) : (
-            <div className="default-avatar">
-              <FiUser size={32} />
+            <div
+              className="avatar-initial"
+              style={{
+                backgroundColor: avatarColor,
+              }}
+            >
+              {getInitial(user.first_name || user.username)}
             </div>
           )}
-          <div className={`status-badge ${user.is_verified ? "verified" : "pending"}`}>
+
+          <div
+            className={`status-badge ${
+              user.is_verified ? "verified" : "pending"
+            }`}
+          >
             {user.is_verified ? "Vérifié" : "En attente"}
           </div>
         </div>
+
         <div className="user-names">
           <h3>
             {displayValue(user.first_name)} {displayValue(user.last_name)}
@@ -136,55 +165,74 @@ const UserProfilePage = () => {
           <span>{completionPercentage()}%</span>
         </div>
         <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${completionPercentage()}%` }}></div>
+          <div
+            className="progress-fill"
+            style={{ width: `${completionPercentage()}%` }}
+          ></div>
         </div>
       </div>
 
       <div className="profile-details">
         <h4>Informations Personnelles</h4>
 
-        {/* Email */}
         <div className="detail-row">
-          <div className="detail-icon"><FiMail /></div>
+          <div className="detail-icon">
+            <FiMail />
+          </div>
           <div className="detail-content">
             <label>Email</label>
             {isEditing ? (
-              <input type="email" value={editedUser.email || ""} onChange={(e) => handleInputChange("email", e.target.value)} />
+              <input
+                type="email"
+                value={editedUser.email || ""}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+              />
             ) : (
               <p>{displayValue(user.email)}</p>
             )}
           </div>
         </div>
 
-        {/* Téléphone */}
         <div className="detail-row">
-          <div className="detail-icon"><FiPhone /></div>
+          <div className="detail-icon">
+            <FiPhone />
+          </div>
           <div className="detail-content">
             <label>Téléphone</label>
             {isEditing ? (
-              <input type="tel" value={editedUser.phone || ""} onChange={(e) => handleInputChange("phone", e.target.value)} />
+              <input
+                type="tel"
+                value={editedUser.phone || ""}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+              />
             ) : (
               <p>{displayValue(user.phone)}</p>
             )}
           </div>
         </div>
 
-        {/* Pays */}
         <div className="detail-row">
-          <div className="detail-icon"><FiGlobe /></div>
+          <div className="detail-icon">
+            <FiGlobe />
+          </div>
           <div className="detail-content">
             <label>Pays</label>
             {isEditing ? (
-              <input type="text" value={editedUser.country || ""} onChange={(e) => handleInputChange("country", e.target.value)} />
+              <input
+                type="text"
+                value={editedUser.country || ""}
+                onChange={(e) => handleInputChange("country", e.target.value)}
+              />
             ) : (
               <p>{displayValue(user.country)}</p>
             )}
           </div>
         </div>
 
-        {/* Tâches d'initiation */}
         <div className="detail-row">
-          <div className="detail-icon"><FiAward /></div>
+          <div className="detail-icon">
+            <FiAward />
+          </div>
           <div className="detail-content">
             <label>Tâches d'initiation</label>
             <p>{user.has_completed_welcome_tasks ? "Complétées" : "En cours"}</p>
@@ -199,7 +247,10 @@ const UserProfilePage = () => {
       )}
 
       <div className="profile-actions">
-        <button className={`edit-button ${isEditing ? "save" : ""}`} onClick={handleEditToggle}>
+        <button
+          className={`edit-button ${isEditing ? "save" : ""}`}
+          onClick={handleEditToggle}
+        >
           {isEditing ? <FiCheck size={16} /> : <FiEdit size={16} />}
           {isEditing ? "Sauvegarder" : "Modifier le profil"}
         </button>

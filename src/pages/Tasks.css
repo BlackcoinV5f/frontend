@@ -1,25 +1,26 @@
 /* ===========================
-   CONTENEUR PRINCIPAL
+   CONTENEUR PRINCIPAL (carte non limitée)
 =========================== */
 .tasks-container {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   color: white;
   padding: 2rem;
   max-width: 900px;
-  margin: 70px auto 70px auto; /* ✅ espace en haut et en bas pour les barres */
+  margin: 0 auto; /* centré seulement sur l’axe horizontal */
+
+  /* espace interne au lieu de marges figées */
+  padding-top: 80px;  /* espace pour la top-bar */
+  padding-bottom: 80px; /* espace pour la bottom-bar */
+
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
 
-  /* ✅ scroll interne sans contenu coupé */
-  overflow-y: auto;
-
-  /* ✅ hauteur adaptée à la fenêtre, moins l’espace des barres */
-  height: calc(100vh - 140px); /* 70px haut + 70px bas */
-
-  /* ✅ empêche le padding de fausser la hauteur */
+  height: 100vh; /* pleine hauteur */
   box-sizing: border-box;
+  overflow-y: auto;
 }
+
 
 /* ===========================
    EN-TÊTE ET PROGRESSION

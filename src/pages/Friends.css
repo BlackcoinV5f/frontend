@@ -1,15 +1,47 @@
+/* ============================
+   CONTAINER PRINCIPAL — VERSION CORRECTE
+============================ */
 .friends-container {
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  padding: 25px;
+
+  /* IMPORTANT : PAS DE min-height, PAS DE height multiple */
+  height: calc(100vh - 120px); /* Header 60px + Bottom nav 60px */
+
+  padding: 25px 25px 40px; /* Un padding bas pour éviter que ça cache sous la nav */
+
   background: linear-gradient(145deg, #1a1a2e, #16213e);
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   color: white;
+
+  overflow-y: auto !important;
+  overflow-x: hidden;
   position: relative;
-  overflow: hidden;
 }
 
+.friends-container {
+  margin-top: 25px; /* ← petit espace entre la barre du haut et le bloc */
+}
+
+/* ❤️ La zone doit être scrollable entre le header fixe et la navbar fixe */
+.friends-container {
+  position: relative;
+
+  /* Remplace 100vh par une hauteur calculée */
+  height: calc(100vh - 120px); /* 60px header + 60px bottom nav */
+  
+  overflow-y: auto !important;
+  overflow-x: hidden;
+
+  padding-bottom: 40px; /* éviter que le dernier élément passe sous la navbar */
+}
+
+
+/* ============================
+   HEADER
+============================ */
 .friends-header {
   display: flex;
   align-items: center;
@@ -34,6 +66,10 @@
   color: transparent;
 }
 
+
+/* ============================
+   DESCRIPTION
+============================ */
 .friends-description {
   font-size: 16px;
   color: rgba(255, 255, 255, 0.8);
@@ -41,13 +77,27 @@
   margin-bottom: 30px;
 }
 
-.referral-section, .invited-section {
+
+/* ============================
+   SECTIONS
+============================ */
+.referral-section,
+.invited-section {
   background: rgba(30, 30, 50, 0.5);
   border-radius: 15px;
   padding: 20px;
   margin-bottom: 25px;
 }
 
+/* ❗ Suppression du scrolling interne + hauteur imposée */
+.invited-section {
+  padding-right: 10px;
+}
+
+
+/* ============================
+   BOUTON GÉNÉRATION DE CODE
+============================ */
 .generate-code-button {
   display: flex;
   align-items: center;
@@ -68,6 +118,10 @@
   cursor: not-allowed;
 }
 
+
+/* ============================
+   ZONE LIEN DE PARRAINAGE
+============================ */
 .referral-link-container {
   display: flex;
   gap: 10px;
@@ -104,6 +158,10 @@
   background: #4caf50;
 }
 
+
+/* ============================
+   LISTE DES INVITÉS
+============================ */
 .invited-list {
   list-style: none;
   padding: 0;
@@ -114,7 +172,7 @@
 }
 
 .invited-list li {
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   padding: 12px;
   border-radius: 10px;
   display: flex;
@@ -132,13 +190,17 @@
 
 .user-badge {
   margin-left: auto;
-  background: rgba(0,180,255,0.2);
+  background: rgba(0, 180, 255, 0.2);
   color: #00b4ff;
   padding: 4px 8px;
   border-radius: 20px;
   font-size: 12px;
 }
 
+
+/* ============================
+   ÉTAT VIDE
+============================ */
 .empty-invites {
   display: flex;
   flex-direction: column;
@@ -146,7 +208,7 @@
   text-align: center;
   padding: 30px;
   border-radius: 10px;
-  border: 2px dashed rgba(255,255,255,0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
 }
 
 .empty-invites img {

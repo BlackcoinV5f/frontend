@@ -42,6 +42,19 @@
   margin-right: 6px;
 }
 
+.nav-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
+
+.nav-avatar-placeholder {
+  margin-right: 8px;
+  text-transform: uppercase;
+}
+
 /* 📌 Responsive Design */
 @media screen and (max-width: 768px) {
   .navbar {

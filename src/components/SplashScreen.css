@@ -1,21 +1,25 @@
 /* SplashScreen.css */
+
 .splash-container {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100dvh;             /* 🔹 vrai plein écran mobile */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
-  z-index: 9999;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  z-index: 50;                /* 🔹 assez haut, mais ne bloque pas entire app */
   overflow: hidden;
+  border-radius: inherit;
+  pointer-events: auto;       /* géré dynamiquement dans JSX */
 }
 
 .particles {
   position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -68,7 +72,6 @@
   color: white;
   font-size: 14px;
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .brand-text {
@@ -77,26 +80,4 @@
   font-size: 12px;
   letter-spacing: 1px;
   text-transform: uppercase;
-}
-
-/* Animation supplémentaire */
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .splash-logo {
-    width: 70%;
-  }
-  
-  .loading-container {
-    width: 70%;
-  }
-  
-  .brand-text {
-    font-size: 11px;
-  }
 }

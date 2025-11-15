@@ -11,7 +11,7 @@
 /* === Conteneur global du bouton BONUS === */
 .bonus-logo-container {
   position: absolute;
-  top: 80px;    /* ✅ Distance depuis le haut */
+  top: 120px;    /* ✅ Distance depuis le haut */
   left: 25px;   /* ✅ Distance depuis le bord gauche */
   z-index: 2000;
   pointer-events: auto;

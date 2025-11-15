@@ -1,80 +1,83 @@
-/* Settings.css */
-
-/* Container principal */
+/* ===========================
+   CONTAINER PRINCIPAL
+=========================== */
 .settings-container {
   display: flex;
-  flex-direction: column; /* empile verticalement le contenu */
-  align-items: flex-start; /* aligne tout à gauche */
+  flex-direction: column;
+  align-items: flex-start;
+
   min-height: 100vh;
-  /* background: #121212;  <-- supprimé pour transparence */
+  width: 100vw;
+  overflow-x: hidden;
+
+  background: radial-gradient(circle at top, #0b0b18, #121222, #0a0a12);
+
   color: #fff;
   font-family: "Arial", sans-serif;
   font-size: 0.75rem;
-  padding-left: 1rem; /* légère marge gauche */
-  padding-right: 1rem;
+
+  padding: 125px 1rem 75px; /* ↓ légèrement réduit */
+  box-sizing: border-box;
 }
 
-/* Contenu principal */
+/* ===========================
+   CONTENU PRINCIPAL
+=========================== */
 .settings-content {
-  margin-top: 1rem;   
-  margin-left: 0;      /* suppression de toute marge gauche */
-  padding: 1cap 0.5rem;
-  text-align: left;
   width: 100%;
-  max-width: none;
-   transform: translate(-90px, 50px);
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0.85rem;  /* ↓ un peu réduit */
+  text-align: left;
 }
 
 /* Titres principaux */
 .settings-content h1 {
   font-size: 1.1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem; /* ↓ réduit */
   color: #00ffcc;
   font-weight: 600;
-  text-align: left;
 }
 
-/* Sections */
+/* ===========================
+   SECTIONS
+=========================== */
 .settings-section {
-  margin-bottom: 1.9rem;
-  padding-bottom: 0.9rem;
-
-  text-align: left;
+  margin-bottom: 1.5rem;   /* ↓ réduit */
+  padding-bottom: 0.7rem;  /* ↓ réduit */
 }
 
-/* Sous-titres de section */
 .settings-section h2 {
   font-size: 0.85rem;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem; /* ↓ réduit */
   color: #00d4ff;
   font-weight: 500;
-  text-align: left;
 }
 
-/* Select pour la langue */
+/* Sélecteur de langue */
 .settings-section select {
-  padding: 0.25rem 0.5rem;
+  padding: 0.22rem 0.45rem; /* ↓ léger */
   border-radius: 3px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: #222;
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.74rem; /* ↓ très léger */
   cursor: pointer;
   width: 140px;
-  margin-top: 0.3rem;
-  margin-left: 0; /* aligné à gauche */
+  margin-top: 0.25rem; /* ↓ léger */
 }
 
-/* Icônes réseaux sociaux */
+/* ===========================
+   ICONES SOCIAUX
+=========================== */
 .social-icons {
   display: flex;
-  gap: 0.8rem;
-  justify-content: flex-start; /* aligné à gauche */
-  margin-top: 0.9rem;
+  gap: 0.65rem;      /* ↓ réduit */
+  margin-top: 0.7rem; /* ↓ réduit */
 }
 
 .social-icons a {
-  font-size: 1.2rem;
+  font-size: 1.1rem; /* ↓ un peu plus petit */
   color: #00d4ff;
   transition: color 0.3s ease;
 }
@@ -83,20 +86,20 @@
   color: #ffcc00;
 }
 
-/* Responsive pour mobile */
+/* ===========================
+   RESPONSIVE MOBILE
+=========================== */
 @media (max-width: 768px) {
   .settings-container {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding: 110px 0.7rem 80px; /* ↓ légèrement réduit */
+  }
+
+  .settings-section:last-of-type {
+    margin-bottom: 7.5rem; /* ↓ réduit */
   }
 
   .settings-content {
-    padding: 0.8rem;
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .social-icons {
-    justify-content: flex-start;
+    padding: 0.7rem; /* ↓ réduit */
+    max-width: 100%;
   }
 }
