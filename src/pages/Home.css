@@ -1,228 +1,138 @@
-/* src/pages/Home.css
-   Layout stable pour la page Home dans un cadre mobile (max-width: 420px).
-   - Ne pas utiliser height:100vh sur les blocs internes
-   - Tous les éléments positionnés en absolute sont ancrés au parent .home (position: relative)
-   - Prévoit un espace en bas pour la bottom-bar (padding-bottom)
-*/
-
-/* --- Structure principale --- */
-.home {
-  position: relative;       /* CONTEXTE pour les éléments absolus */
-  width: 100%;
-  height: 100%;             /* s'appuie sur .app-container (height:100% recommandé) */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 16px;
-  box-sizing: border-box;
-  overflow: hidden;
-  /* réserve un espace pour la bottom bar (évite que le contenu la pousse hors écran) */
-  padding-bottom: 80px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* --- MiningCircle (centre) ---
-   On neutralise les styles qui utilisaient height:100vh ou margin-top excessif */
-.home .mining-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: auto;         /* important : ne pas forcer 100vh */
-  margin: 0;            /* supprime margin-top massif */
-  padding: 18px 0;
-  box-sizing: border-box;
-  z-index: 5;
-}
-
-/* Le cercle et l'image à l'intérieur */
-.home .progress-circle {
-  width: 150px;
-  height: 150px;
-  max-width: 45vw;
-  max-height: 45vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.home .mining-image {
+/* 📅 === Bouton Calendrier === */
+.calendar-button {
   position: absolute;
-  width: 72%;
-  height: 72%;
-  object-fit: cover;
+  top: 55px;
+  left: 14px;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  pointer-events: none;
-}
-
-/* Bouton du mining (sous le cercle) */
-.home .mining-button {
-  margin-top: 14px;
-  padding: 8px 14px;
-  font-size: 14px;
-  border: none;
-  background-color: #0072ff;
-  color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 6;
-}
-
-/* --- Logos container (fixe autour du cercle) ---
-   Plutôt que des positions absolues dispersées, on utilise une grille simple */
-.logos-container {
-  position: absolute;
-  top: 16%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 380px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  gap: 10px;
-  z-index: 6;
-  pointer-events: auto;
-}
-
-/* Classes pour chaque logo — taille cohérente et responsive */
-.logos-container .lucky-game-logo,
-.logos-container .trade-game-logo,
-.logos-container .actions-logo,
-.logos-container .bonus-logo {
-  width: 64px;
-  height: 64px;
-  max-width: 18vw;
-  max-height: 18vw;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.03);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  transition: transform 150ms ease, box-shadow 150ms ease;
-  cursor: pointer;
-}
-
-/* Hover/active (desktop) */
-.logos-container .lucky-game-logo:hover,
-.logos-container .trade-game-logo:hover,
-.logos-container .actions-logo:hover,
-.logos-container .bonus-logo:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
-}
-
-/* Si le logo est un composant qui accepte className, styles s'appliqueront */
-
-/* --- Guest / profil button
-   Position : en haut à droite du cadre, pas en fixed global */
-.guest-button {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 12;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.95);
-  border: 1px solid rgba(0,0,0,0.06);
+  background-color: #ffffff;
+  border: 2px solid #ccc;
   color: #222;
-  border-radius: 12px;
-  font-weight: 600;
+  font-size: 20px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
 }
 
-/* --- Calendar button (on l'a déjà; s'assure qu'il soit ancré au .home) */
-.home .calendar-button {
-  position: absolute; /* reste absolu mais relatif à .home */
-  top: 64px;
-  left: 12px;
-  z-index: 20;
+.calendar-button:hover {
+  background-color: #f1f1f1;
+  transform: scale(1.05);
 }
 
-/* --- Bonus badge (par exemple sur un coin de logo) */
-.home .bonus-badge {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  z-index: 20;
+/* ✅ État "réclamé" (bonus déjà pris) */
+.calendar-button.claimed {
+  background-color: #00c851;
+  color: white;
+  border-color: #00a94d;
+  box-shadow: 0 0 10px rgba(0, 200, 81, 0.6);
 }
 
-/* --- Bottom bar : fixée DANS le cadre mobile */
-.home .bottom-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  background: rgba(34,34,34,0.98);
-  color: #fff;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  z-index: 15;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+/* 📲 Adaptation mobile */
+@media (max-width: 480px) {
+  .calendar-button {
+    top: 50px;
+    left: 10px;
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
 }
 
-/* Espace réservé au contenu principal pour éviter recouvrement par bottom bar */
-.home .content-spacer {
-  height: 76px; /* slightly larger than bottom-bar to provide breathing room */
-}
-
-/* --- Fullscreen modal override: keeps modal relative to viewport but doesn't break layout */
+/* 🧱 === Modale plein écran === */
 .fullscreen-modal {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px); /* ✅ effet moderne */
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  overflow-y: auto; /* permet le scroll sur mobile */
+}
+
+/* 🧭 Contenu interne de la modale */
+.fullscreen-modal .modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 380px;
+  padding: 20px;
+  color: #222;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  animation: popIn 0.25s ease-in-out;
+}
+
+/* ✖️ Bouton de fermeture */
+.fullscreen-modal .close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 22px;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1200;
+  transition: background 0.2s;
 }
 
-/* --- Responsive adjustments */
-@media (max-width: 420px) {
-  .logos-container {
-    top: 12%;
-    gap: 8px;
-  }
+.fullscreen-modal .close-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
 
-  .logos-container .lucky-game-logo,
-  .logos-container .trade-game-logo,
-  .logos-container .actions-logo,
-  .logos-container .bonus-logo {
-    width: 56px;
-    height: 56px;
-    max-width: 20vw;
-    max-height: 20vw;
-    border-radius: 10px;
+/* ✨ Animation d'apparition */
+@keyframes popIn {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
   }
-
-  .home .progress-circle {
-    width: 36vw;
-    height: 36vw;
-  }
-
-  .guest-button {
-    top: 10px;
-    right: 8px;
-    padding: 6px 10px;
-    font-size: 13px;
-  }
-
-  .home {
-    padding: 12px;
-    padding-bottom: 92px; /* plus d'espace pour bottom bar si besoin */
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-/* Desktop / large phone adjustments */
-@media (min-width: 421px) {
-  .logos-container {
-    top: 18%;
-  }
+.bonus-badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: red;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  animation: pulse 1.5s infinite;
 }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+
