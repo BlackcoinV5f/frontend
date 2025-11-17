@@ -11,7 +11,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 
-import { FaTiktok, FaHeadset } from "react-icons/fa6"; // TikTok + Assistance OK
+import { FaTiktok, FaHeadset } from "react-icons/fa6";
 
 import "./Settings.css";
 
@@ -33,7 +33,7 @@ const Settings = () => {
     <div className="settings-container">
       <main className="settings-content">
 
-        {/* 🌍 Langue */}
+        {/* Language */}
         <section className="settings-section">
           <h2>Language</h2>
           <select
@@ -49,39 +49,44 @@ const Settings = () => {
           </select>
         </section>
 
-        {/* 📖 Autres sections */}
+        {/* FAQ */}
         <section className="settings-section">
           <h2>FAQ Blackcoin</h2>
         </section>
 
+        {/* Whitepaper */}
         <section className="settings-section">
           <h2>Whitepaper</h2>
         </section>
 
+        {/* Support */}
         <section className="settings-section">
           <h2>Support</h2>
         </section>
 
+        {/* Privacy Policy */}
         <section className="settings-section">
           <h2>Politique de confidentialité</h2>
         </section>
 
-        {/* 💬 WhatsApp */}
+        {/* WhatsApp */}
         <section className="settings-section">
           <h2>WhatsApp</h2>
           <div className="social-icons">
 
+            {/* Groupe / Channel WhatsApp */}
             <a
-              href="https://whatsapp.com/channel/yourchannel"
+              href="https://chat.whatsapp.com/DG3Tt2tYep4GVUTAYC03RO"
               target="_blank"
               rel="noopener noreferrer"
-              title="WhatsApp Channel"
+              title="WhatsApp Chanel"
             >
               <FaWhatsapp />
             </a>
 
+            {/* Assistance */}
             <a
-              href="https://wa.me/yourassistance"
+              href="https://wa.me/qr/PEEOS7ZXZCPTK1"
               target="_blank"
               rel="noopener noreferrer"
               title="Assistance WhatsApp"
@@ -92,7 +97,7 @@ const Settings = () => {
           </div>
         </section>
 
-        {/* 🌐 Réseaux sociaux */}
+        {/* Social Media */}
         <section className="settings-section">
           <h2>Suivez-nous sur</h2>
           <div className="social-icons">
