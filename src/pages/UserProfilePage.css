@@ -3,7 +3,7 @@
 /* Page racine */
 .user-profile-page {
   background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: #ffffff; /* texte par défaut blanc pour lisibilité */
+  color: #ffffff;
   border-radius: 16px;
   width: 100%;
   max-width: 800px;
@@ -11,7 +11,10 @@
   padding: 0;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 
-  /* Scroll si contenu trop grand */
+  /* Ajout des espaces haut et bas */
+  padding-top: 70px;      /* espace entre barre du haut et "Profil Utilisateur" */
+  padding-bottom: 80px;   /* espace entre barre du bas et bouton Déconnecter */
+
   max-height: 90vh;
   overflow-y: auto;
   display: flex;
@@ -29,9 +32,16 @@
   background: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(8px);
   position: sticky;
-  top: 0;
+  top: 60px;   /* ou la hauteur exacte de ta barre */
   z-index: 10;
 }
+
+.profile-header {
+  position: sticky;
+  top: 60px;
+  z-index: 20;
+}
+
 
 .profile-header h2 {
   margin: 0;
@@ -65,7 +75,6 @@
   animation: float 4s ease-in-out infinite;
 }
 
-/* === Avatar avec initiale (si pas de photo) === */
 .avatar-initial {
   width: 100px;
   height: 100px;
@@ -226,7 +235,7 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.5rem;
-  padding-bottom: 3rem; /* espace sous le bouton déconnecter */
+  padding-bottom: 3rem;
   border-top: 1px solid rgba(255,255,255,0.2);
   flex-shrink: 0;
 }
@@ -266,7 +275,7 @@
   background-color: transparent;
   color: #ffffff;
   border: 1px solid rgba(255,255,255,0.2);
-  margin-bottom: 1rem; /* espace supplémentaire sous déconnecter */
+  margin-bottom: 1rem;
 }
 
 .logout-button:hover {
@@ -281,6 +290,8 @@
     max-width: 100%;
     border-radius: 12px;
     max-height: 95vh;
+    padding-top: 70px;
+    padding-bottom: 80px;
   }
 
   .profile-header,

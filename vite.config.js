@@ -4,18 +4,19 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/", // ✔ indispensable pour un bon build SPA
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // Utiliser '@' pour référencer le dossier src
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000', // Adresse de ton backend FastAPI en local
+        target: 'http://localhost:8000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // Supprime le /api du chemin
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

@@ -8,11 +8,12 @@ import {
   FiPhone,
   FiGlobe,
   FiAward,
+  FiX,
 } from "react-icons/fi";
 
 import "./UserProfilePage.css";
 
-const UserProfilePage = () => {
+const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
   const { user, logoutUser, isAuthenticated, setUser } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
@@ -101,7 +102,6 @@ const UserProfilePage = () => {
 
   const displayValue = (value) => (value ? value : "—");
 
-  // ✅ Gestion avatar dynamique avec fallback
   const avatarSrc =
     user?.avatar_url && user.avatar_url.trim() !== "" ? user.avatar_url : null;
 
@@ -118,8 +118,13 @@ const UserProfilePage = () => {
 
   return (
     <div className="user-profile-page">
+      
+      {/* HEADER + BOUTON FERMER */}
       <div className="profile-header">
-        <h2>Profil Utilisateur</h2>
+        <h2 className="profile-title">Profil Utilisateur</h2>
+        <button className="close-button" onClick={onClose}>
+          <FiX size={20} />
+        </button>
       </div>
 
       <div className="profile-avatar-section">
@@ -134,14 +139,11 @@ const UserProfilePage = () => {
           ) : (
             <div
               className="avatar-initial"
-              style={{
-                backgroundColor: avatarColor,
-              }}
+              style={{ backgroundColor: avatarColor }}
             >
               {getInitial(user.first_name || user.username)}
             </div>
           )}
-
           <div
             className={`status-badge ${
               user.is_verified ? "verified" : "pending"
