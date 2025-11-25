@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 import {
   FiLogOut,
   FiEdit,
@@ -13,10 +14,11 @@ import {
 
 import "./UserProfilePage.css";
 
-const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
+const UserProfilePage = () => {
   const { user, logoutUser, isAuthenticated, setUser } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -36,17 +38,13 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
     if (isEditing) {
       try {
         const formData = new FormData();
-        if (editedUser.first_name)
-          formData.append("first_name", editedUser.first_name);
-        if (editedUser.last_name)
-          formData.append("last_name", editedUser.last_name);
+        if (editedUser.first_name) formData.append("first_name", editedUser.first_name);
+        if (editedUser.last_name) formData.append("last_name", editedUser.last_name);
         if (editedUser.phone) formData.append("phone", editedUser.phone);
         if (editedUser.country) formData.append("country", editedUser.country);
         if (editedUser.email) formData.append("email", editedUser.email);
-        if (editedUser.birth_date)
-          formData.append("birth_date", editedUser.birth_date);
-        if (editedUser.avatar instanceof File)
-          formData.append("avatar", editedUser.avatar);
+        if (editedUser.birth_date) formData.append("birth_date", editedUser.birth_date);
+        if (editedUser.avatar instanceof File) formData.append("avatar", editedUser.avatar);
 
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/user/update-profile`,
@@ -64,6 +62,7 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
         console.error("Erreur mise à jour profil:", err);
       }
     }
+
     setIsEditing(!isEditing);
   };
 
@@ -86,7 +85,7 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
   };
 
   const completionPercentage = () => {
-    const requiredFields = [
+    const required = [
       "first_name",
       "last_name",
       "username",
@@ -96,16 +95,16 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
       "avatar_url",
       "has_completed_welcome_tasks",
     ];
-    const completedFields = requiredFields.filter((key) => !!user?.[key]).length;
-    return Math.round((completedFields / requiredFields.length) * 100);
+    const done = required.filter((key) => !!user?.[key]).length;
+    return Math.round((done / required.length) * 100);
   };
 
   const displayValue = (value) => (value ? value : "—");
-
   const avatarSrc =
     user?.avatar_url && user.avatar_url.trim() !== "" ? user.avatar_url : null;
 
   const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "?";
+
   const getColorFromName = (name) => {
     const colors = ["#4a90e2", "#e67e22", "#2ecc71", "#9b59b6", "#e74c3c"];
     let hash = 0;
@@ -114,19 +113,20 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
     }
     return colors[Math.abs(hash) % colors.length];
   };
+
   const avatarColor = getColorFromName(user.first_name || user.username);
 
   return (
     <div className="user-profile-page">
-      
-      {/* HEADER + BOUTON FERMER */}
+
+      {/* HEADER sans texte */}
       <div className="profile-header">
-        <h2 className="profile-title">Profil Utilisateur</h2>
-        <button className="close-button" onClick={onClose}>
+        <button className="close-button" onClick={() => navigate(-1)}>
           <FiX size={20} />
         </button>
       </div>
 
+      {/* AVATAR */}
       <div className="profile-avatar-section">
         <div className="avatar-container">
           {avatarSrc ? (
@@ -144,6 +144,7 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
               {getInitial(user.first_name || user.username)}
             </div>
           )}
+
           <div
             className={`status-badge ${
               user.is_verified ? "verified" : "pending"
@@ -161,11 +162,13 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
         </div>
       </div>
 
+      {/* PROGRESS */}
       <div className="completion-section">
         <div className="completion-header">
           <span>Complétion du profil</span>
           <span>{completionPercentage()}%</span>
         </div>
+
         <div className="progress-bar">
           <div
             className="progress-fill"
@@ -174,6 +177,7 @@ const UserProfilePage = ({ onClose }) => {  // <-- Ajout onClose
         </div>
       </div>
 
+      {/* DETAILS */}
       <div className="profile-details">
         <h4>Informations Personnelles</h4>
 
