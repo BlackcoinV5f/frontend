@@ -1,0 +1,32 @@
+.rewardpoints-card {
+  background: #111;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.rewardpoints-label {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.rewardpoints-amount {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.rewardpoints-hint {
+  font-size: 11px;
+  opacity: 0.55;
+  margin-top: 4px;
+}
+
+.rotating-coin {
+  font-size: 28px;
+  color: gold;
+  opacity: 0.9;
+}

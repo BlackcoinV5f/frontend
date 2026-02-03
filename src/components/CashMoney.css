@@ -1,0 +1,32 @@
+.cashmoney-card {
+  background: #0f172a;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  color: #fff;
+}
+
+.cashmoney-label {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.cashmoney-amount {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cashmoney-hint {
+  font-size: 11px;
+  opacity: 0.55;
+  margin-top: 4px;
+}
+
+.cash-icon {
+  font-size: 20px;
+  color: #22c55e;
+}

@@ -32,8 +32,8 @@ const Info = () => {
         transition={{ delay: 0.3 }}
         className="highlight"
       >
-        L’équipe <strong>BLACKCOIN</strong> poursuit activement le développement du projet, 
-        avec de nombreuses fonctionnalités majeures en préparation.
+        L’équipe <strong>BLACKCOIN</strong> poursuit activement le développement du projet,
+        avec de nombreuses fonctionnalités majeures actuellement en préparation.
       </motion.p>
 
       {/* SOCIALS */}
@@ -53,15 +53,15 @@ const Info = () => {
       >
         <h3>🌍 À propos du projet</h3>
         <p>
-          Le projet <strong>BLACKCOIN</strong> est une initiative collaborative réunissant 
-          plusieurs membres issus de différents pays.  
-          Lancé le <strong>21 mars 2024</strong>, il est toujours en développement actif, 
-          avec des améliorations continues.
+          Le projet <strong>BLACKCOIN</strong> est une initiative collaborative réunissant
+          plusieurs membres issus de différents pays.
+          Lancé le <strong>21 mars 2024</strong>, le projet est en développement continu,
+          avec pour objectif de bâtir un écosystème solide et durable.
         </p>
       </motion.div>
 
-      {/* AVANCEMENT DU DÉVELOPPEMENT */}
-      <motion.div 
+      {/* AVANCEMENT */}
+      <motion.div
         className="roadmap"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -73,13 +73,12 @@ const Info = () => {
           <motion.li whileHover={{ x: 5 }}>🤝 Système de parrainage : <strong>90%</strong></motion.li>
           <motion.li whileHover={{ x: 5 }}>👛 Intégration du wallet : <strong>70%</strong></motion.li>
           <motion.li whileHover={{ x: 5 }}>💳 Dépôts & retraits : <strong>70%</strong></motion.li>
-          <motion.li whileHover={{ x: 5 }}>📈 Achats & ventes d’actions : <strong>50%</strong></motion.li>
+          <motion.li whileHover={{ x: 5 }}>📈 Investissement & parts du projet : <strong>50%</strong></motion.li>
           <motion.li whileHover={{ x: 5 }}>🎮 Jeux de loisirs pour gagner des points : <strong>65%</strong></motion.li>
         </ul>
 
         <p className="info-note">
-          ⚠️ Les informations présentes ici peuvent évoluer à tout moment selon 
-          l’avancée du développement.
+          ⚠️ Les informations affichées peuvent évoluer en fonction de l’avancement du projet.
         </p>
       </motion.div>
 
@@ -93,21 +92,26 @@ const Info = () => {
         <h3>📌 IMPORTANT — Clarifications</h3>
 
         <p>
-          Le service <strong>SIP — Service d’Investissement Personnel</strong> propose 
-          uniquement des actions réelles, validées en partenariat avec différentes 
-          structures à travers le monde.
+          Le service <strong>SIP — Système d’Investissement Participatif</strong> permet aux
+          utilisateurs de contribuer financièrement au développement du projet
+          <strong> BLACKCOIN</strong>.
         </p>
 
         <p>
-          Par exemple, dans la section <strong>Finance</strong>, nous avons conclu 
-          des accords avec plusieurs banques privées et indépendantes dans 
-          différents pays.
+          Ces contributions sont considérées comme des <strong>investissements dans le projet</strong>
+          et donnent droit à des <strong>parts proportionnelles</strong>, selon les conditions
+          définies par l’équipe.
         </p>
 
         <p>
-          Nous garantissons une totale transparence :  
-          tous les accords, mécanismes et engagements sont expliqués sur nos 
-          réseaux sociaux officiels.
+          BLACKCOIN ne fonctionne pas comme une banque et ne propose aucun service bancaire.
+          Il s’agit d’un <strong>modèle de financement participatif</strong> destiné à soutenir
+          le lancement, la maintenance et l’évolution du projet.
+        </p>
+
+        <p>
+          Par souci de transparence, toutes les règles, mécanismes et informations liées à
+          l’investissement sont communiquées via nos canaux officiels.
         </p>
       </motion.div>
 
