@@ -17,11 +17,19 @@ import { FaTiktok, FaHeadset } from "react-icons/fa6";
 
 import "./Settings.css";
 
+/* ============================
+   LANGUAGES
+============================ */
+
 const languages = [
   { code: "en", label: "English" },
   { code: "fr", label: "Français" },
   { code: "es", label: "Español" },
 ];
+
+/* ============================
+   COMPONENT
+============================ */
 
 const Settings = () => {
   const { i18n } = useTranslation();
@@ -52,7 +60,7 @@ const Settings = () => {
           </select>
         </section>
 
-        {/* ================= Links Section ================= */}
+        {/* ================= Links ================= */}
         <section className="settings-section clickable">
           <Link to="/faq" className="settings-link">
             FAQ Blackcoin
@@ -113,29 +121,63 @@ const Settings = () => {
         <section className="settings-section">
           <h2>Suivez-nous</h2>
           <div className="social-icons">
-            <a href="https://www.facebook.com/share/1CjsWSj1P3/" target="_blank" rel="noopener noreferrer">
+
+            <a
+              href="https://www.facebook.com/share/1CjsWSj1P3/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Facebook"
+            >
               <FaFacebook />
             </a>
 
-            <a href="https://www.youtube.com/@Blackcoinchaine" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.youtube.com/@Blackcoinchaine"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="YouTube"
+            >
               <FaYoutube />
             </a>
 
-            <a href="https://t.me/+VXuf93TxzKxlMzE0" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://t.me/+VXuf93TxzKxlMzE0"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Telegram"
+            >
               <FaTelegram />
             </a>
 
-            <a href="https://x.com/BlackcoinON" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://x.com/BlackcoinON"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Twitter"
+            >
               <FaTwitter />
             </a>
 
-            <a href="https://instagram.com/blackcoin" target="_blank" rel="noopener noreferrer">
+            {/* ✅ Instagram corrigé */}
+            <a
+              href="https://www.instagram.com/blackcoin_bkc"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Instagram"
+            >
               <FaInstagram />
             </a>
 
-            <a href="https://www.tiktok.com/@blackcoinsecurity" target="_blank" rel="noopener noreferrer">
+            {/* ✅ TikTok corrigé */}
+            <a
+              href="https://www.tiktok.com/@blackcoin_official"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="TikTok"
+            >
               <FaTiktok />
             </a>
+
           </div>
         </section>
 
