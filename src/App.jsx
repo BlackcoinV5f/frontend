@@ -7,8 +7,8 @@ import { UserProvider, useUser } from "./contexts/UserContext";
 import { AdmProvider } from "./contexts/AdmContext";
 
 import LuckyDistributorGame from "./pages/LuckyDistributorGame";
-import backgroundImage from "./assets/background.png";
 import Historic from "./pages/Historic";
+import backgroundImage from "./assets/background.png";
 import "./App.css";
 
 // 🧩 Composants
@@ -42,6 +42,8 @@ const TradeGame = lazy(() => import("./pages/TradeGame"));
 const Actions = lazy(() => import("./pages/Actions"));
 const Bonus = lazy(() => import("./pages/Bonus"));
 const DailyTasks = lazy(() => import("./pages/DailyTasks"));
+const Airdrop = lazy(() => import("./pages/Airdrop"));
+const AirdropClaim = lazy(() => import("./pages/AirdropClaim"));
 
 // 💰 Dépôts / Retraits
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
@@ -51,7 +53,12 @@ const RetraitMethode = lazy(() => import("./pages/RetraitMethode"));
 
 // 🔐 Route protégée
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isEmailVerified, hasCompletedWelcomeTasks, loading } = useUser();
+  const {
+    isAuthenticated,
+    isEmailVerified,
+    hasCompletedWelcomeTasks,
+    loading,
+  } = useUser();
 
   if (loading) return <LoadingSpinner />;
   if (!isAuthenticated) return <Navigate to="/auth-choice" replace />;
@@ -60,17 +67,18 @@ const ProtectedRoute = ({ children }) => {
 
   return children;
 };
-ProtectedRoute.propTypes = { children: PropTypes.node.isRequired };
 
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 // ⭐ Contenu principal
 function AppContent() {
   const { user, loading } = useUser();
   const location = useLocation();
-
   const [showSplash, setShowSplash] = useState(true);
 
-  // Remonter en haut à chaque changement de page
+  // Scroll top à chaque navigation
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -89,26 +97,26 @@ function AppContent() {
       className="app-container"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      {/* SPLASH ÉCRAN DANS LE CONTAINER MOBILE */}
+      {/* Splash */}
       {showSplash && (
         <Suspense fallback={<LoadingSpinner />}>
           <SplashScreen onFinish={() => setShowSplash(false)} />
         </Suspense>
       )}
 
-      {/* Contenu normal de l'application */}
+      {/* Navbar */}
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
           <Navbar user={user} />
         </Suspense>
       </ErrorBoundary>
 
+      {/* Pages */}
       <main className="content">
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-
-              {/* Pages publiques */}
+              {/* Public */}
               <Route path="/" element={<LandingRedirect />} />
               <Route path="/auth-choice" element={<AuthChoice />} />
               <Route path="/register" element={<RegisterForm />} />
@@ -117,7 +125,7 @@ function AppContent() {
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/historic" element={<Historic />} />
 
-              {/* Pages protégées */}
+              {/* Protected */}
               <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
               <Route path="/tasks/:taskId/validate" element={<ProtectedRoute><ValidateTask /></ProtectedRoute>} />
@@ -145,14 +153,25 @@ function AppContent() {
               <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
               <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
 
+              {/* ✅ AIRDROP */}
+              <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+              <Route
+                path="/airdrop/:platformId"
+                element={
+                  <ProtectedRoute>
+                    <AirdropClaim />
+                  </ProtectedRoute>
+                }
+              />
+
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
-
             </Routes>
           </Suspense>
         </ErrorBoundary>
       </main>
 
+      {/* Footer */}
       <ErrorBoundary>
         <Suspense fallback={<LoadingSpinner />}>
           <Footer />
@@ -161,7 +180,6 @@ function AppContent() {
     </div>
   );
 }
-
 
 // 🚀 App racine
 export default function App() {

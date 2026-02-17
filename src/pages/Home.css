@@ -51,10 +51,25 @@
   transform: scale(0.9);
 }
 
+/* AIRDROP (taille spécifique si besoin) */
+.airdrop-logo {
+  /* Vous pouvez ajuster la taille si nécessaire */
+  width: 80px; /* même taille que les autres logos */
+  /* ou une taille différente selon votre logo */
+  /* width: 70px; */
+  /* height: 70px; */
+}
+
+/* Suppression des anciens styles pour .airdrop-box */
+.airdrop-box, .airdrop-title {
+  /* Ces styles ne sont plus nécessaires */
+}
+
 /* Mobile */
 @media (max-width: 480px) {
   .logo,
-  .bonus-logo {
+  .bonus-logo,
+  .airdrop-logo {
     width: 70px;
   }
 }

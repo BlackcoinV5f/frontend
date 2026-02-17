@@ -5,18 +5,21 @@ import { GiCash } from "react-icons/gi";
 import "./CashMoney.css";
 
 const CashMoney = () => {
-  const { axiosInstance } = useUser();
+  const { user, axiosInstance } = useUser(); // récupération de l'utilisateur connecté
   const controls = useAnimation();
 
   const [cashBalance, setCashBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
 
+  // 🔄 Charger le solde d'argent réel
   useEffect(() => {
     const loadCashBalance = async () => {
+      if (!user?.id) return; // si utilisateur non connecté, rien faire
+
       setIsLoading(true);
       try {
-        const res = await axiosInstance.get("/wallet/cash");
+        const res = await axiosInstance.get("/wallet/realcash");
         setCashBalance(res.data.cash_balance ?? 0);
         setAnimate(true);
         setTimeout(() => setAnimate(false), 800);
@@ -29,8 +32,9 @@ const CashMoney = () => {
     };
 
     loadCashBalance();
-  }, [axiosInstance]);
+  }, [user, axiosInstance]);
 
+  // ⚡ Animation légère lors du clic ou du chargement
   useEffect(() => {
     if (animate) {
       controls.start({

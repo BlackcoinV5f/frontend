@@ -290,6 +290,26 @@
   color: #4a5568;
 }
 
+.kyc-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background-color: #f39c12;
+  color: #ffffff;
+}
+
+.kyc-button:hover {
+  background-color: #e67e22;
+}
+
+
 /* Responsive */
 @media (max-width: 640px) {
   .user-profile-page {
@@ -302,6 +322,22 @@
 
   .profile-avatar-section {
   margin-top: 50px; /* espace juste entre la barre du haut et le cercle */
+}
+
+.kyc-button {
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.kyc-button:hover {
+  background-color: #e67e22;
 }
 
   .profile-header,

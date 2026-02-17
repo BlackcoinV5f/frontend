@@ -8,12 +8,13 @@ import ActionsLogoImg from "../assets/ActionsLogo.png";
 import LuckyGameLogoImg from "../assets/LuckyGameLogo.png";
 import TradeGameLogoImg from "../assets/TradeGameLogo.png";
 import BonusLogoImg from "../assets/BonusLogo.png";
+import AirdropLogoImg from "../assets/AirdropLogo.png";
 
 import "./Home.css";
 
 const Home = ({ points, setPoints, level, setLevel }) => {
   const navigate = useNavigate();
-  const { user, loading, isAuthenticated } = useUser();
+  const { loading, isAuthenticated } = useUser();
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -32,7 +33,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
   return (
     <div className="home">
 
-      {/* BONUS À GAUCHE */}
+      {/* 🎁 BONUS À GAUCHE */}
       <img
         src={BonusLogoImg}
         alt="Bonus"
@@ -40,7 +41,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         onClick={() => navigate("/bonus")}
       />
 
-      {/* CERCLE DE MINAGE CENTRÉ */}
+      {/* ⛏️ CERCLE DE MINAGE */}
       <div className="mining-container">
         <MiningCircle
           points={points}
@@ -50,8 +51,17 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         />
       </div>
 
-      {/* LOGOS À DROITE */}
+      {/* 📦 COLONNE DROITE */}
       <div className="logos-container">
+
+        {/* 🪂 AIRDROP EN HAUT (logo seul) */}
+        <img
+          src={AirdropLogoImg}
+          alt="Airdrop"
+          className="logo airdrop-logo"
+          onClick={() => navigate("/airdrop")}
+        />
+
         <img
           src={LuckyGameLogoImg}
           alt="Lucky Game"

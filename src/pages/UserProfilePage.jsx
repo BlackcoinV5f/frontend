@@ -1,3 +1,4 @@
+// src/pages/UserProfilePage.jsx
 import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +23,9 @@ const UserProfilePage = () => {
 
   if (!user) return null;
 
+  // -------------------------------
+  // Déconnexion
+  // -------------------------------
   const handleLogout = async () => {
     try {
       await fetch(`${import.meta.env.VITE_BACKEND_URL}/logout`, {
@@ -34,6 +38,9 @@ const UserProfilePage = () => {
     }
   };
 
+  // -------------------------------
+  // Toggle édition profil
+  // -------------------------------
   const handleEditToggle = async () => {
     if (isEditing) {
       try {
@@ -100,6 +107,7 @@ const UserProfilePage = () => {
   };
 
   const displayValue = (value) => (value ? value : "—");
+
   const avatarSrc =
     user?.avatar_url && user.avatar_url.trim() !== "" ? user.avatar_url : null;
 
@@ -118,8 +126,7 @@ const UserProfilePage = () => {
 
   return (
     <div className="user-profile-page">
-
-      {/* HEADER sans texte */}
+      {/* HEADER */}
       <div className="profile-header">
         <button className="close-button" onClick={() => navigate(-1)}>
           <FiX size={20} />
@@ -246,13 +253,25 @@ const UserProfilePage = () => {
         </div>
       </div>
 
+      {/* WARNING */}
       {!isProfileComplete(user) && (
         <div className="warning-message">
           ⚠️ Complétez votre profil pour accéder à toutes les fonctionnalités
         </div>
       )}
 
+      {/* ACTIONS */}
       <div className="profile-actions">
+        {/* Bouton KYC (visible si non vérifié) */}
+        {!user.is_verified && (
+          <button
+            className="kyc-button"
+            onClick={() => navigate("/kyc")}
+          >
+            Vérifier mon identité (KYC)
+          </button>
+        )}
+
         <button
           className={`edit-button ${isEditing ? "save" : ""}`}
           onClick={handleEditToggle}
