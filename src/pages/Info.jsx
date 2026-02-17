@@ -10,8 +10,11 @@ const SocialIcon = ({ href, icon, label }) => (
     whileHover={{ scale: 1.1, y: -5 }}
     whileTap={{ scale: 0.9 }}
     className="social-icon"
+    title={label}
   >
-    <span role="img" aria-label={label}>{icon}</span>
+    <span role="img" aria-label={label}>
+      {icon}
+    </span>
   </motion.a>
 );
 
@@ -32,16 +35,47 @@ const Info = () => {
         transition={{ delay: 0.3 }}
         className="highlight"
       >
-        L’équipe <strong>BLACKCOIN</strong> poursuit activement le développement du projet,
-        avec de nombreuses fonctionnalités majeures actuellement en préparation.
+        L’équipe <strong>BLACKCOIN</strong> poursuit activement le développement
+        du projet avec de nombreuses fonctionnalités majeures en préparation.
       </motion.p>
 
       {/* SOCIALS */}
       <div className="social-grid">
-        <SocialIcon href="https://t.me/blackcoin" icon="📢" label="Telegram" />
-        <SocialIcon href="https://x.com/blackcoin" icon="𝕏" label="X (Twitter)" />
-        <SocialIcon href="https://facebook.com/blackcoin" icon="📘" label="Facebook" />
-        <SocialIcon href="https://youtube.com/blackcoin" icon="▶️" label="YouTube" />
+        <SocialIcon
+          href="https://t.me/+VXuf93TxzKxlMzE0"
+          icon="📢"
+          label="Telegram"
+        />
+
+        <SocialIcon
+          href="https://x.com/BlackcoinON"
+          icon="𝕏"
+          label="X (Twitter)"
+        />
+
+        <SocialIcon
+          href="https://www.facebook.com/share/1CjsWSj1P3/"
+          icon="📘"
+          label="Facebook"
+        />
+
+        <SocialIcon
+          href="https://www.youtube.com/@Blackcoinchaine"
+          icon="▶️"
+          label="YouTube"
+        />
+
+        <SocialIcon
+          href="https://www.instagram.com/blackcoin_bkc"
+          icon="📸"
+          label="Instagram"
+        />
+
+        <SocialIcon
+          href="https://www.tiktok.com/@blackcoin_official"
+          icon="🎵"
+          label="TikTok"
+        />
       </div>
 
       {/* DESCRIPTION DU PROJET */}
@@ -53,65 +87,46 @@ const Info = () => {
       >
         <h3>🌍 À propos du projet</h3>
         <p>
-          Le projet <strong>BLACKCOIN</strong> est une initiative collaborative réunissant
-          plusieurs membres issus de différents pays.
-          Lancé le <strong>21 mars 2024</strong>, le projet est en développement continu,
-          avec pour objectif de bâtir un écosystème solide et durable.
+          BLACKCOIN est une initiative collaborative internationale lancée le
+          <strong> 21 mars 2024</strong>, avec pour objectif de construire un
+          écosystème numérique solide, transparent et durable.
         </p>
+
+        <p>
+          Pour consulter le <strong>Livre Blanc</strong>, la
+          <strong> Feuille de route</strong> ainsi que la
+          <strong> Politique de confidentialité</strong>,
+          veuillez visiter notre site officiel :
+        </p>
+
+        <motion.a
+          href="https://blackcoinweb.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="official-link"
+          whileHover={{ scale: 1.05 }}
+        >
+          🌐 www.blackcoinweb.com
+        </motion.a>
       </motion.div>
 
-      {/* AVANCEMENT */}
-      <motion.div
-        className="roadmap"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
-        <h3>🚀 État d’avancement du développement</h3>
-        <ul>
-          <motion.li whileHover={{ x: 5 }}>🔧 Système de minage : <strong>85%</strong></motion.li>
-          <motion.li whileHover={{ x: 5 }}>🤝 Système de parrainage : <strong>90%</strong></motion.li>
-          <motion.li whileHover={{ x: 5 }}>👛 Intégration du wallet : <strong>70%</strong></motion.li>
-          <motion.li whileHover={{ x: 5 }}>💳 Dépôts & retraits : <strong>70%</strong></motion.li>
-          <motion.li whileHover={{ x: 5 }}>📈 Investissement & parts du projet : <strong>50%</strong></motion.li>
-          <motion.li whileHover={{ x: 5 }}>🎮 Jeux de loisirs pour gagner des points : <strong>65%</strong></motion.li>
-        </ul>
-
-        <p className="info-note">
-          ⚠️ Les informations affichées peuvent évoluer en fonction de l’avancement du projet.
-        </p>
-      </motion.div>
-
-      {/* CLARIFICATIONS IMPORTANTES */}
+      {/* NOTE IMPORTANTE */}
       <motion.div
         className="section important"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.75 }}
+        transition={{ delay: 0.7 }}
       >
-        <h3>📌 IMPORTANT — Clarifications</h3>
-
+        <h3>📌 Communication Officielle</h3>
         <p>
-          Le service <strong>SIP — Système d’Investissement Participatif</strong> permet aux
-          utilisateurs de contribuer financièrement au développement du projet
-          <strong> BLACKCOIN</strong>.
+          Toutes les informations officielles, mises à jour et annonces
+          importantes concernant le projet BLACKCOIN sont publiées
+          exclusivement via notre site officiel et nos réseaux sociaux.
         </p>
 
         <p>
-          Ces contributions sont considérées comme des <strong>investissements dans le projet</strong>
-          et donnent droit à des <strong>parts proportionnelles</strong>, selon les conditions
-          définies par l’équipe.
-        </p>
-
-        <p>
-          BLACKCOIN ne fonctionne pas comme une banque et ne propose aucun service bancaire.
-          Il s’agit d’un <strong>modèle de financement participatif</strong> destiné à soutenir
-          le lancement, la maintenance et l’évolution du projet.
-        </p>
-
-        <p>
-          Par souci de transparence, toutes les règles, mécanismes et informations liées à
-          l’investissement sont communiquées via nos canaux officiels.
+          Nous vous invitons à toujours vérifier les informations via nos
+          canaux officiels afin d’éviter toute confusion.
         </p>
       </motion.div>
 
