@@ -9,6 +9,7 @@ import LuckyGameLogoImg from "../assets/LuckyGameLogo.png";
 import TradeGameLogoImg from "../assets/TradeGameLogo.png";
 import BonusLogoImg from "../assets/BonusLogo.png";
 import AirdropLogoImg from "../assets/AirdropLogo.png";
+import BlackAiLogoImg from "../assets/BlackAiLogo.png"; // 🚀 Nouveau logo
 
 import "./Home.css";
 
@@ -41,6 +42,14 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         onClick={() => navigate("/bonus")}
       />
 
+      {/* 🖤 BLACK AI LOGO - DROITE, AU-DESSUS DU BONUS */}
+      <img
+        src={BlackAiLogoImg}
+        alt="BlackAI"
+        className="logo blackai-logo"
+        onClick={() => navigate("/black-ai")}
+      />
+
       {/* ⛏️ CERCLE DE MINAGE */}
       <div className="mining-container">
         <MiningCircle
@@ -51,10 +60,10 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         />
       </div>
 
-      {/* 📦 COLONNE DROITE */}
+      {/* 📦 COLONNE DROITE DES AUTRES LOGOS */}
       <div className="logos-container">
 
-        {/* 🪂 AIRDROP EN HAUT (logo seul) */}
+        {/* 🪂 AIRDROP */}
         <img
           src={AirdropLogoImg}
           alt="Airdrop"

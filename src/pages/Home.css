@@ -29,6 +29,22 @@
   z-index: 5;
 }
 
+/* LOGO BLACKAI À GAUCHE, AU-DESSUS DU BONUS */
+.blackai-logo {
+  position: absolute;
+  left: 4%;                  /* même alignement horizontal que le Bonus */
+  top: 30%;                   /* centre vertical du conteneur */
+  transform: translateY(-150%); /* remonte juste au-dessus du bonus */
+  width: 80px;
+  cursor: pointer;
+  z-index: 6;
+  transition: transform 0.15s ease;
+}
+
+.blackai-logo:active {
+  transform: translateY(-150%) scale(0.9);
+}
+
 /* LOGOS À DROITE */
 .logos-container {
   position: absolute;

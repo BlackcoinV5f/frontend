@@ -44,6 +44,8 @@ const Bonus = lazy(() => import("./pages/Bonus"));
 const DailyTasks = lazy(() => import("./pages/DailyTasks"));
 const Airdrop = lazy(() => import("./pages/Airdrop"));
 const AirdropClaim = lazy(() => import("./pages/AirdropClaim"));
+const Kyc = lazy(() => import("./pages/Kyc"));
+const BlackAI = lazy(() => import("./pages/BlackAI"));
 
 // 💰 Dépôts / Retraits
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
@@ -163,6 +165,24 @@ function AppContent() {
                   </ProtectedRoute>
                 }
               />
+
+              <Route
+  path="/kyc"
+  element={
+    <ProtectedRoute>
+      <Kyc />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/black-ai"
+  element={
+    <ProtectedRoute>
+      <BlackAI />
+    </ProtectedRoute>
+  }
+/>
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />

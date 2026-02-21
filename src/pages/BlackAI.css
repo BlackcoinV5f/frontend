@@ -1,0 +1,23 @@
+                                                                                                                                                                                                                                                  .blackai-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 40px; /* espace depuis le haut */
+  min-height: 100vh;
+  background-color: #000; /* ou la couleur de ton choix */
+  color: #fff;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.blackai-logo-top {
+  width: 120px; /* adapte la taille du logo */
+  margin-bottom: 20px;
+}
+
+.blackai-message p {
+  font-size: 18px;
+  max-width: 600px;
+  line-height: 1.5;
+}

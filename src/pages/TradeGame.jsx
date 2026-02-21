@@ -284,7 +284,7 @@ export default function TradeGame() {
           setIsSpinning(false);
           setIsFalling(true);
           setIsCrashed(true);
-          setHistory((prev) => [finalM.toFixed(2), ...prev].slice(0, 6));
+          setHistory((prev) => [Number(finalM), ...prev].slice(0, 6));
           try {
             ws.close();
           } catch {}
@@ -355,14 +355,26 @@ export default function TradeGame() {
       {cashoutMsg && <div className="cashout-msg">{cashoutMsg}</div>}
 
       <div className="tradegame-history">
-        <div className="history-list">
-          {history.length === 0 ? (
-            <span>N/A</span>
-          ) : (
-            history.map((m, i) => <span key={i}>{m}x</span>)
-          )}
-        </div>
-      </div>
+  <div className="history-list">
+    {history.length === 0 ? (
+      <span>N/A</span>
+    ) : (
+      history.map((m, i) => {
+        const value = Number(m);
+        const isGreen = value >= 3.0;
+
+        return (
+          <span
+            key={i}
+            className={`history-item ${isGreen ? "green" : "red"}`}
+          >
+            {value.toFixed(2)}x
+          </span>
+        );
+      })
+    )}
+  </div>
+</div>
 
       <div className="tradegame-form">
         <div className="bet-row">

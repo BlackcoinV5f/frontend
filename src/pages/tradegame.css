@@ -1,339 +1,203 @@
-/* src/pages/tradegame.css (corrigé) */
+/* ============================= */
+/* CONTAINER PRINCIPAL */
+/* ============================= */
 
 .tradegame-container {
-  position: relative;
+  height: 100dvh;
   width: 100%;
-  height: 100vh;
   background: #0f172a;
   color: #fff;
   font-family: sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   overflow: hidden;
 }
 
-.tradegame-balance {
-  position: absolute;
-  top: 90px;
-  left: 120px;
-  font-size: 1.3rem;
-  font-weight: bold;
-  transition: transform 0.5s ease;
+/* ============================= */
+/* ZONE FIXE (balance + board + timer + history) */
+/* ============================= */
+
+.tradegame-fixed-area {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-/* -------------------------
-   Plateau de jeu
-   ------------------------- */
+/* ============================= */
+/* BALANCE */
+/* ============================= */
+
+.tradegame-balance {
+  margin-top: 70px;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+/* ============================= */
+/* BOARD */
+/* ============================= */
+
 .tradegame-board {
-  position: absolute;
-  top: 130px;
-  left: 2px;
-  width: 9.5cm;
-  height: 7cm;
+  position: relative;
+  width: 95%;
+  max-width: 420px;
+  aspect-ratio: 4 / 3;
+  margin-top: 15px;
   background: #1e293b;
-  border: 1px solid #0f172a;
   border-radius: 12px;
+  overflow: hidden;
+
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  overflow: hidden;
-  transition: transform 0.5s ease, background 0.3s linear;
-  position: relative;
-  /* stacking context for pseudo + children */
 }
 
-/* -------------------------
-   ÉTOILES (-> ::before)
-   ------------------------- */
+/* ============================= */
+/* STARS */
+/* ============================= */
+
 .tradegame-board::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
-  z-index: 0; /* derrière tout */
+
   background-image:
-    radial-gradient(circle at 6% 12%, rgba(255,255,255,0.95) 0.7px, transparent 1.6px),
-    radial-gradient(circle at 18% 28%, rgba(255,255,255,0.9) 0.7px, transparent 1.6px),
-    radial-gradient(circle at 30% 8%, rgba(255,255,255,0.85) 0.6px, transparent 1.4px),
-    radial-gradient(circle at 45% 35%, rgba(255,255,255,0.9) 0.8px, transparent 1.6px),
-    radial-gradient(circle at 62% 18%, rgba(255,255,255,0.95) 0.8px, transparent 1.6px),
-    radial-gradient(circle at 75% 50%, rgba(255,255,255,0.85) 0.6px, transparent 1.4px),
-    radial-gradient(circle at 86% 22%, rgba(255,255,255,0.9) 0.7px, transparent 1.4px),
-    radial-gradient(circle at 10% 70%, rgba(255,255,255,0.8) 0.6px, transparent 1.4px),
-    radial-gradient(circle at 28% 78%, rgba(255,255,255,0.85) 0.7px, transparent 1.4px),
-    radial-gradient(circle at 52% 68%, rgba(255,255,255,0.9) 0.8px, transparent 1.6px),
-    radial-gradient(circle at 70% 82%, rgba(255,255,255,0.8) 0.6px, transparent 1.4px),
-    radial-gradient(circle at 88% 70%, rgba(255,255,255,0.85) 0.7px, transparent 1.4px),
-    radial-gradient(circle at 42% 12%, rgba(255,255,255,0.95) 0.9px, transparent 2px);
-  background-repeat: no-repeat;
-  opacity: 0.95;
+    radial-gradient(circle at 20% 30%, #fff 1px, transparent 2px),
+    radial-gradient(circle at 60% 70%, #fff 1px, transparent 2px),
+    radial-gradient(circle at 80% 20%, #fff 1px, transparent 2px);
+
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.8;
 }
 
-/* -------------------------
-   NUAGE (-> ::after)
-   ------------------------- */
-.tradegame-board::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1; /* au-dessus des étoiles, sous les barres et logo */
-  opacity: 0;
-  transition: opacity 0.25s linear;
-  background: transparent;
-  filter: none;
-}
-
-.tradegame-board.running::after {
-  opacity: 1;
-  background: repeating-linear-gradient(
-    to left,
-    rgba(255,255,255,0.06) 0px,
-    rgba(255,255,255,0.06) 18px,
-    rgba(255,255,255,0.02) 18px,
-    rgba(255,255,255,0.02) 100px
-  );
-  filter: blur(8px) contrast(1.05);
-  animation: cloudsMove 0.7s linear infinite;
-}
-
-.tradegame-board.crashed::after {
-  animation: none;
-  opacity: 0.85;
-  background: linear-gradient(180deg, rgba(127,29,29,0.35), rgba(0,0,0,0.6));
-  filter: none;
-}
-
-@keyframes cloudsMove {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-220px); }
-}
-
-/* Logo qui tombe au crash */
-.tradegame-logo-img.falling {
-  animation: fallDown 1.2s ease-in forwards;
-}
-
-@keyframes fallDown {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  70% {
-    transform: translateY(250px) rotate(40deg);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(500px) rotate(70deg);
-    opacity: 0;
-  }
-}
-
-/* when running -> show + scroll */
-.tradegame-board.running .board-bar-bottom {
-  opacity: 1;
-  animation: scrollBarX 0.12s linear infinite;
-}
-.tradegame-board.running .board-bar-left {
-  opacity: 1;
-  animation: scrollBarY 0.12s linear infinite;
-}
-
-/* when crashed -> hide */
-.tradegame-board.crashed .board-bar-bottom,
-.tradegame-board.crashed .board-bar-left {
-  animation: none;
-  opacity: 0;
-}
-
-@keyframes scrollBarX {
-  from { background-position: 0 0; }
-  to   { background-position: -24px 0; }
-}
-@keyframes scrollBarY {
-  from { background-position: 0 0; }
-  to   { background-position: 0 -24px; }
-}
-
-/* -------------------------
-   ÉTOILES ANIMÉES (calque 1)
-   ------------------------- */
 .tradegame-board.running::before {
   animation: starsMove 40s linear infinite;
-  background-size: cover;
 }
 
 @keyframes starsMove {
   from { transform: translateX(0); }
-  to   { transform: translateX(-200px); }
+  to { transform: translateX(-200px); }
 }
 
-/* -------------------------
-   NUAGE (calque 1 - nuages lents)
-   ------------------------- */
+/* ============================= */
+/* CLOUDS */
+/* ============================= */
+
 .tradegame-board::after {
   content: "";
   position: absolute;
   inset: 0;
-  pointer-events: none;
   z-index: 1;
+  pointer-events: none;
   opacity: 0;
-  background: transparent;
-  filter: none;
 }
 
 .tradegame-board.running::after {
   opacity: 1;
   background: repeating-linear-gradient(
     to left,
-    rgba(255,255,255,0.06) 0px,
-    rgba(255,255,255,0.06) 18px,
-    rgba(255,255,255,0.02) 18px,
-    rgba(255,255,255,0.02) 100px
+    rgba(255,255,255,0.05) 0px,
+    rgba(255,255,255,0.05) 20px,
+    rgba(255,255,255,0.01) 20px,
+    rgba(255,255,255,0.01) 100px
   );
-  filter: blur(8px) contrast(1.05);
-  animation: cloudsMoveSlow 30s linear infinite;
+  animation: cloudsMove 30s linear infinite;
 }
 
-/* -------------------------
-   NUAGE (calque 2 - nuages rapides)
-   ------------------------- */
-.tradegame-board .clouds-fast {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to left,
-    rgba(255,255,255,0.03) 0px,
-    rgba(255,255,255,0.03) 12px,
-    rgba(255,255,255,0.01) 12px,
-    rgba(255,255,255,0.01) 60px
-  );
-  filter: blur(6px) contrast(1.02);
-  animation: cloudsMoveFast 10s linear infinite;
+.tradegame-board.crashed::after {
+  opacity: 0.8;
+  background: linear-gradient(180deg, rgba(127,29,29,0.4), rgba(0,0,0,0.6));
 }
 
-@keyframes cloudsMoveSlow {
+@keyframes cloudsMove {
   from { transform: translateX(0); }
-  to   { transform: translateX(-1000px); }
+  to { transform: translateX(-800px); }
 }
 
-@keyframes cloudsMoveFast {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-600px); }
-}
+/* ============================= */
+/* LOGO */
+/* ============================= */
 
-/* --------------------------- 
-   Logo wrapper & image (logo above bars)
-   --------------------------- */
 .logo-wrapper {
   position: absolute;
-  transform-origin: center center;
-  will-change: left, bottom, transform;
-  z-index: 5; /* doit être au-dessus des barres */
+  z-index: 5;
 }
 
 .tradegame-logo-img {
-  display: block;
   width: 60px;
-  height: auto;
-  transform-origin: center center;
-  transition: filter 0.2s ease;
 }
 
 .tradegame-logo-img.spinning {
-  animation: spin 1.8s linear infinite;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.9)) drop-shadow(0 0 12px rgba(0,200,255,0.8));
+  animation: spin 2s linear infinite;
 }
 
-.tradegame-logo-img.crashed {
+.tradegame-logo-img.crashed:not(.falling) {
   animation: shake 0.5s infinite;
-  filter: grayscale(40%) drop-shadow(0 0 4px rgba(255,0,0,0.6));
+  filter: grayscale(40%);
 }
 
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-/* Logo qui tombe au crash (tu l'avais déjà) */
 .tradegame-logo-img.falling {
   animation: fallDown 1.2s ease-in forwards;
 }
 
-/* keyframes inchangés (tu peux ajuster la distance si nécessaire) */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 @keyframes fallDown {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  70% {
-    transform: translateY(250px) rotate(40deg);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(500px) rotate(70deg);
+  to {
+    transform: translateY(400px) rotate(60deg);
     opacity: 0;
   }
 }
 
-/* Appliquer le "shake" uniquement si le logo n'est PAS en train de tomber */
-.tradegame-logo-img.crashed:not(.falling) {
-  animation: shake 0.5s infinite;
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  50% { transform: translateX(-5px); }
 }
 
-/* Toujours appliquer l'effet visuel (teinte) */
-.tradegame-logo-img.crashed {
-  filter: grayscale(40%) drop-shadow(0 0 4px rgba(255,0,0,0.6));
-}
+/* ============================= */
+/* MULTIPLIER */
+/* ============================= */
 
-/* ---------------------------
-   Multiplier (bas droite)
-   --------------------------- */
 .tradegame-multiplier {
   position: absolute;
   bottom: 10px;
-  right: 100px;
-  font-size: 1.8rem;
+  right: 10px;
+  font-size: 1.6rem;
   font-weight: bold;
   color: #22c55e;
 }
 
-/* positionnement identique à avant (déplacer si nécessaire) */
+/* ============================= */
+/* TIMER */
+/* ============================= */
+
 .round-timer {
-  position: absolute;
-  top: 360px;
-  left: 10px;
-  width: calc(100% - 20px);
-  height: 24px;
-  display: flex;
-  align-items: center;
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* style simple pour le texte Pré-départ */
-.prestart-countdown {
-  background: rgba(0,0,0,0.45);
-  color: #fff;
-  padding: 4px 10px;
+  width: 95%;
+  max-width: 420px;
+  height: 20px;
+  margin-top: 15px;
+  background: rgba(255,255,255,0.1);
   border-radius: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  pointer-events: none;
-  user-select: none;
+  overflow: hidden;
 }
 
-.prestart-number {
-  margin-left: 8px;
-  font-size: 16px;
-  font-weight: 800;
-}
-
-/* Barre de progression fluide */
 .round-timer-bar {
   height: 100%;
-  background-color: #ffcc00;
-  transform-origin: left center;
+  background: #ffcc00;
 }
 
-/* Animation pour le compte à rebours de 10 secondes */
 .round-timer-bar.active {
   animation: countdown 10s linear forwards;
 }
@@ -343,82 +207,114 @@
   to { width: 0%; }
 }
 
-/* Déplacer toutes les lignes (input + bouton) vers le haut */
-.bet-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: -12px; /* remonte la ligne de 12px, ajuste selon besoin */
-}
+/* ============================= */
+/* HISTORY */
+/* ============================= */
 
-.cashout-msg {
-  position: absolute;
-  top: 350px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: #22c55e;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1rem;
-  opacity: 0;
-  animation: cashoutAnim 2.5s forwards;
-  z-index: 20;
-}
-
-@keyframes cashoutAnim {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
-  }
-  20% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  80% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-10px);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
-  }
-}
-
-/* ---------------------------
-   Historique & formulaire (inchangés)
-   --------------------------- */
 .tradegame-history {
-  position: absolute;
-  top: 420px;
-  left: 0px;
-  width: 11cm;
+  width: 95%;
+  max-width: 420px;
+  margin-top: 20px;
   background: #1e293b;
   border-radius: 8px;
-  padding: 1px;
-  transition: transform 0.5s ease;
+  padding: 10px;
 }
-.history-list { display:flex; flex-wrap:wrap; gap:8px; }
-.history-list span { background:#334155; padding:4px 8px; border-radius:6px; font-size:0.9rem; }
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Nouveau style dynamique */
+
+.history-item {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.history-item.green {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.history-item.red {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+/* ============================= */
+/* FORMULAIRE (ZONE SCROLLABLE) */
+/* ============================= */
 
 .tradegame-form {
-  position:absolute;
-  top:500px;
-  left:8px;
-  width:5cm;
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-  transition:transform 0.5s ease;
-}
-.bet-row { display:flex; align-items:center; gap:10px; }
-.tradegame-input { flex:1; padding:15px; border-radius:20px; border:none; outline:none; font-size:1rem; color:#000; }
-.tradegame-btn { padding:15px 16px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; color:#fff; transition:background 0.2s, transform 0.3s ease; }
-.tradegame-btn.play { background:#22c55e; } .tradegame-btn.play:hover { background:#16a34a; }
-.tradegame-btn.cashout1 { background:#3b82f6; } .tradegame-btn.cashout1:hover { background:#2563eb; }
-.tradegame-btn.cashout2 { background:#a855f7; } .tradegame-btn.cashout2:hover { background:#9333ea; }
+  width: 100%;
+  max-width: 420px;
 
-/* utilities */
-@keyframes shake { 0%{ transform: translateX(0); } 25%{ transform: translateX(-5px); } 50%{ transform: translateX(5px); } 75%{ transform: translateX(-5px); } 100%{ transform: translateX(0); } }
-.move-down{ transform: translateY(50px); } .move-up{ transform: translateY(-50px); } .move-right{ transform: translateX(50px); } .move-left{ transform: translateX(-50px); }
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  padding: 20px 0 calc(90px + env(safe-area-inset-bottom)) 0;
+}
+
+/* ============================= */
+/* BET ROW */
+/* ============================= */
+
+.bet-row {
+  display: flex;
+  gap: 10px;
+  width: 95%;
+  margin: 0 auto;
+}
+
+.tradegame-input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #000;
+}
+
+.tradegame-btn {
+  flex-shrink: 0;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.tradegame-btn:hover {
+  transform: translateY(-2px);
+}
+
+.tradegame-btn.play { background: #22c55e; }
+.tradegame-btn.cashout1 { background: #3b82f6; }
+.tradegame-btn.cashout2 { background: #a855f7; }
+
+/* ============================= */
+/* MOBILE */
+/* ============================= */
+
+@media (max-width: 480px) {
+  .bet-row {
+    flex-direction: column;
+  }
+
+  .tradegame-btn {
+    width: 100%;
+  }
+}

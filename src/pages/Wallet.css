@@ -1,12 +1,22 @@
 /* ============================= */
+/* RESET RECOMMANDÉ */
+/* ============================= */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* évite double scroll */
+}
+
+/* ============================= */
 /* CONTAINER PRINCIPAL */
 /* ============================= */
 
 .wallet-container {
   width: 100%;
   min-height: 100vh;
-  min-height: 100dvh; /* meilleure gestion mobile */
-  margin: 0;
+  min-height: 100dvh;
   padding: 2rem;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   color: white;
@@ -16,31 +26,34 @@
   overflow-x: hidden;
 
   -webkit-overflow-scrolling: touch;
+  contain: layout paint; /* empêche les animations d’affecter le scroll */
 }
 
-/* Effet lumineux arrière-plan */
+/* ============================= */
+/* SHINE BACKGROUND (corrigé) */
+/* ============================= */
+
 .wallet-container::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
+  inset: 0;
   background: linear-gradient(
-    to bottom right,
-    rgba(255, 215, 0, 0) 0%,
+    120deg,
+    transparent 40%,
     rgba(255, 215, 0, 0.05) 50%,
-    rgba(255, 215, 0, 0) 100%
+    transparent 60%
   );
-  transform: rotate(30deg);
+  transform: translateX(-100%);
   animation: shine 8s linear infinite;
   pointer-events: none;
   z-index: 0;
+  will-change: transform;
 }
 
 @keyframes shine {
-  0% { transform: rotate(30deg) translate(-30%, -30%); }
-  100% { transform: rotate(30deg) translate(30%, 30%); }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 /* ============================= */
@@ -80,7 +93,7 @@
   background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
   border-radius: 20px;
   padding: 30px 20px;
-  margin: 70px 0 30px;
+  margin: 40px 0 30px;
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 215, 0, 0.1);
@@ -90,19 +103,20 @@
   z-index: 1;
 }
 
-/* Animation coins */
+/* Coins animation (safe transform only) */
+
 @keyframes moveUpDown {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(20px); }
-  100% { transform: translateY(0); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(15px); }
 }
 
 .coins-animation {
   position: absolute;
   inset: 0;
-  overflow: hidden;
   opacity: 0.1;
   animation: moveUpDown 4s ease-in-out infinite;
+  pointer-events: none;
+  will-change: transform;
 }
 
 .rotating-coin {
@@ -121,7 +135,10 @@
   right: -20px;
 }
 
-/* Balance texte */
+/* ============================= */
+/* BALANCE TEXTE */
+/* ============================= */
+
 .balance-label {
   font-size: 18px;
   color: rgba(255, 255, 255, 0.7);
@@ -233,8 +250,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: 0.3s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.wallet-button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
 }
 
 .deposit-button {
@@ -277,11 +299,11 @@
     font-size: 34px;
   }
 
-  .info-item {
-    padding: 12px;
-  }
-
   .wallet-actions {
     gap: 1rem;
+  }
+
+  .info-item {
+    padding: 12px;
   }
 }
