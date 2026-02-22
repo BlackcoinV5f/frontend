@@ -41,8 +41,48 @@
   transition: transform 0.15s ease;
 }
 
+.mining-container {
+  pointer-events: none;
+}
+
+.logo-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.logo-button img {
+  width: 80px;
+  display: block;
+}
+
+.bonus-logo {
+  position: absolute;
+  top: 50%;
+  left: 4%;
+  transform: translateY(-50%);
+}
+
+.blackai-logo {
+  position: absolute;
+  left: 4%;
+  top: 30%;
+  transform: translateY(-150%);
+  transition: transform 0.15s ease;
+}
+
 .blackai-logo:active {
   transform: translateY(-150%) scale(0.9);
+}
+
+.blackai-logo:active {
+  transform: translateY(-150%) scale(0.9);
+}
+
+.blackai-logo img {
+  width: 120px;   /* ajuste ici si tu veux 90px ou 100px */
 }
 
 /* LOGOS À DROITE */

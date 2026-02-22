@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
@@ -9,19 +9,17 @@ import LuckyGameLogoImg from "../assets/LuckyGameLogo.png";
 import TradeGameLogoImg from "../assets/TradeGameLogo.png";
 import BonusLogoImg from "../assets/BonusLogo.png";
 import AirdropLogoImg from "../assets/AirdropLogo.png";
-import BlackAiLogoImg from "../assets/BlackAiLogo.png"; // 🚀 Nouveau logo
+import BlackAiLogoImg from "../assets/BlackAiLogo.png";
 
 import "./Home.css";
 
 const Home = ({ points, setPoints, level, setLevel }) => {
   const navigate = useNavigate();
-  const { loading, isAuthenticated } = useUser();
+  const { loading } = useUser();
 
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate("/auth-choice", { replace: true });
-    }
-  }, [loading, isAuthenticated, navigate]);
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
 
   if (loading) {
     return (
@@ -34,23 +32,25 @@ const Home = ({ points, setPoints, level, setLevel }) => {
   return (
     <div className="home">
 
-      {/* 🎁 BONUS À GAUCHE */}
-      <img
-        src={BonusLogoImg}
-        alt="Bonus"
-        className="bonus-logo"
-        onClick={() => navigate("/bonus")}
-      />
+      {/* 🎁 BONUS */}
+      <button
+        type="button"
+        className="logo-button bonus-logo"
+        onClick={() => handleNavigate("/bonus")}
+      >
+        <img src={BonusLogoImg} alt="Bonus" />
+      </button>
 
-      {/* 🖤 BLACK AI LOGO - DROITE, AU-DESSUS DU BONUS */}
-      <img
-        src={BlackAiLogoImg}
-        alt="BlackAI"
-        className="logo blackai-logo"
-        onClick={() => navigate("/black-ai")}
-      />
+      {/* 🖤 BLACK AI */}
+      <button
+        type="button"
+        className="logo-button blackai-logo"
+        onClick={() => handleNavigate("/black-ai")}
+      >
+        <img src={BlackAiLogoImg} alt="BlackAI" />
+      </button>
 
-      {/* ⛏️ CERCLE DE MINAGE */}
+      {/* ⛏️ MINING */}
       <div className="mining-container">
         <MiningCircle
           points={points}
@@ -60,37 +60,41 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         />
       </div>
 
-      {/* 📦 COLONNE DROITE DES AUTRES LOGOS */}
+      {/* 📦 COLONNE DROITE */}
       <div className="logos-container">
 
-        {/* 🪂 AIRDROP */}
-        <img
-          src={AirdropLogoImg}
-          alt="Airdrop"
-          className="logo airdrop-logo"
-          onClick={() => navigate("/airdrop")}
-        />
+        <button
+          type="button"
+          className="logo-button"
+          onClick={() => handleNavigate("/airdrop")}
+        >
+          <img src={AirdropLogoImg} alt="Airdrop" />
+        </button>
 
-        <img
-          src={LuckyGameLogoImg}
-          alt="Lucky Game"
-          className="logo"
-          onClick={() => navigate("/lucky-game")}
-        />
+        <button
+          type="button"
+          className="logo-button"
+          onClick={() => handleNavigate("/lucky-game")}
+        >
+          <img src={LuckyGameLogoImg} alt="Lucky Game" />
+        </button>
 
-        <img
-          src={TradeGameLogoImg}
-          alt="Trade Game"
-          className="logo"
-          onClick={() => navigate("/trade-game")}
-        />
+        <button
+          type="button"
+          className="logo-button"
+          onClick={() => handleNavigate("/trade-game")}
+        >
+          <img src={TradeGameLogoImg} alt="Trade Game" />
+        </button>
 
-        <img
-          src={ActionsLogoImg}
-          alt="Actions"
-          className="logo"
-          onClick={() => navigate("/actions")}
-        />
+        <button
+          type="button"
+          className="logo-button"
+          onClick={() => handleNavigate("/actions")}
+        >
+          <img src={ActionsLogoImg} alt="Actions" />
+        </button>
+
       </div>
     </div>
   );

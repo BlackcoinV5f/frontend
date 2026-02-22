@@ -1,23 +1,232 @@
-                                                                                                                                                                                                                                                  .blackai-page {
+.blackai-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 40px; /* espace depuis le haut */
-  min-height: 100vh;
-  background-color: #000; /* ou la couleur de ton choix */
-  color: #fff;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(100vh - 160px);
+  padding: 60px 20px 40px;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #0a0a0a 100%);
+  color: #ffffff;
   text-align: center;
-  font-family: Arial, sans-serif;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Effet de particules en arrière-plan */
+.blackai-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%);
+  animation: backgroundPulse 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Logo avec animation améliorée */
 .blackai-logo-top {
-  width: 120px; /* adapte la taille du logo */
-  margin-bottom: 20px;
+  width: 180px;
+  margin-bottom: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6));
+  animation: 
+    logoFloat 3s ease-in-out infinite,
+    logoGlow 2s ease-in-out infinite,
+    logoRotate 10s linear infinite;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+.blackai-logo-top:hover {
+  animation: logoPulse 0.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.9));
+  transform: scale(1.1);
+}
+
+/* Animation de flottement */
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(2deg);
+  }
+}
+
+/* Animation de lueur */
+@keyframes logoGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 40px rgba(0, 255, 255, 0.9)) drop-shadow(0 0 60px rgba(0, 150, 255, 0.5));
+  }
+}
+
+/* Animation de rotation lente */
+@keyframes logoRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Animation de pulsation au survol */
+@keyframes logoPulse {
+  0%, 100% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* Animation de fond */
+@keyframes backgroundPulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Message avec animations */
+.blackai-message {
+  max-width: 800px;
+  position: relative;
+  z-index: 2;
+  animation: messageAppear 1.5s ease-out;
 }
 
 .blackai-message p {
-  font-size: 18px;
-  max-width: 600px;
-  line-height: 1.5;
+  font-size: 24px;
+  line-height: 1.8;
+  opacity: 0;
+  animation: textFadeIn 2s ease-out forwards;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, #00ffff 50%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* Animation d'apparition du message */
+@keyframes messageAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation du texte */
+@keyframes textFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+/* Effet de particules flottantes */
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: particleFloat 4s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(100px);
+    opacity: 0;
+  }
+}
+
+/* Animation du contour du message */
+.blackai-message::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  border: 2px solid rgba(0, 255, 255, 0.2);
+  border-radius: 30px;
+  animation: borderGlow 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  }
+  50% {
+    border-color: rgba(0, 255, 255, 0.8);
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .blackai-logo-top {
+    width: 140px;
+  }
+  
+  .blackai-message p {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blackai-logo-top {
+    width: 120px;
+  }
+  
+  .blackai-message p {
+    font-size: 18px;
+  }
 }
