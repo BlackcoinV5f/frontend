@@ -41,9 +41,6 @@
   transition: transform 0.15s ease;
 }
 
-.mining-container {
-  pointer-events: none;
-}
 
 .logo-button {
   background: none;
@@ -77,9 +74,7 @@
   transform: translateY(-150%) scale(0.9);
 }
 
-.blackai-logo:active {
-  transform: translateY(-150%) scale(0.9);
-}
+
 
 .blackai-logo img {
   width: 120px;   /* ajuste ici si tu veux 90px ou 100px */
