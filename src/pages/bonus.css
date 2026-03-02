@@ -242,6 +242,34 @@
     padding: 18px;
   }
 
+ /* ================= COOLDOWN (HIGH CONTRAST) ================= */
+
+.cooldown-info {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  color: #f5f5f5; /* texte principal très clair */
+  font-weight: 600;
+}
+
+.cooldown-info strong {
+  display: block;
+  margin-top: 6px;
+
+  font-size: 1.4rem;
+  font-weight: 700;
+
+  color: #ffffff; /* blanc pur */
+  letter-spacing: 1px;
+
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+}
+
   .points-value {
     font-size: 1.6rem;
   }

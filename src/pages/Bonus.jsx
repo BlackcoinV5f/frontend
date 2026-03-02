@@ -1,5 +1,5 @@
 // src/pages/Bonus.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
 import {
@@ -10,14 +10,13 @@ import {
   FaUsers,
   FaCoins,
   FaGem,
-  FaCrown,
-  FaStar,
   FaTicketAlt,
 } from "react-icons/fa";
 import "./bonus.css";
 
 export default function Bonus() {
   const { user } = useUser();
+  const BACKEND = import.meta.env.VITE_BACKEND_URL;
 
   const [bonus, setBonus] = useState(null);
   const [conditions, setConditions] = useState({});
@@ -25,18 +24,15 @@ export default function Bonus() {
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [countdown, setCountdown] = useState("");
 
-  const BACKEND = import.meta.env.VITE_BACKEND_URL;
+  const notifiedRef = useRef(false); // empêche double notification
 
   // ==========================================================
   // 🔹 FETCH BONUS STATUS
   // ==========================================================
   const fetchBonusData = async () => {
     if (!user) return;
-
-    setLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       const res = await axios.get(
@@ -50,7 +46,7 @@ export default function Bonus() {
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Erreur lors du chargement des bonus"
+          "Erreur lors du chargement"
       );
     } finally {
       setLoading(false);
@@ -76,6 +72,7 @@ export default function Bonus() {
 
       setBonus(res.data);
       setSuccess("🎉 Bonus réclamé avec succès !");
+      notifiedRef.current = false;
     } catch (err) {
       setError(
         err.response?.data?.detail ||
@@ -87,43 +84,60 @@ export default function Bonus() {
     }
   };
 
+  // ==========================================================
+  // 🔹 INITIAL LOAD
+  // ==========================================================
   useEffect(() => {
     fetchBonusData();
   }, [user]);
 
   // ==========================================================
-  // 🔹 STATUS UI
+  // 🔹 COUNTDOWN + AUTO REACTIVATION
   // ==========================================================
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "eligible":
-        return <FaCheck className="status-icon eligible" />;
-      case "cooldown":
-        return <FaSpinner className="status-icon spin" />;
-      case "insufficient_points":
-        return <FaExclamationTriangle className="status-icon pending" />;
-      case "conditions_not_met":
-        return <FaGem className="status-icon pending" />;
-      default:
-        return <FaExclamationTriangle className="status-icon pending" />;
+  useEffect(() => {
+    if (!bonus?.next_claim_at || bonus.status !== "cooldown") {
+      setCountdown("");
+      return;
     }
-  };
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case "eligible":
-        return "Éligible";
-      case "cooldown":
-        return "Cooldown actif";
-      case "insufficient_points":
-        return "Points insuffisants";
-      case "conditions_not_met":
-        return "Conditions non remplies";
-      default:
-        return "Non disponible";
-    }
-  };
+    const tick = () => {
+      const now = new Date();
+      const next = new Date(bonus.next_claim_at);
+      const diff = next - now;
 
+      if (diff <= 0) {
+        setCountdown("Disponible");
+        if (!notifiedRef.current) {
+          notifiedRef.current = true;
+
+          // 🔔 notification frontend
+          window.dispatchEvent(new CustomEvent("bonus:available"));
+
+          // 🔄 refresh backend
+          fetchBonusData();
+        }
+        return;
+      }
+
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+
+      setCountdown(
+        `${h.toString().padStart(2, "0")}h ` +
+        `${m.toString().padStart(2, "0")}m ` +
+        `${s.toString().padStart(2, "0")}s`
+      );
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [bonus]);
+
+  // ==========================================================
+  // 🔹 UI HELPERS
+  // ==========================================================
   const total = bonus?.total_points || 1;
   const remaining = bonus?.points_restants || 0;
   const progressPercent = Math.min((remaining / total) * 100, 100);
@@ -137,6 +151,9 @@ export default function Bonus() {
     );
   }
 
+  // ==========================================================
+  // 🔹 RENDER
+  // ==========================================================
   return (
     <div className="bonus-page">
       <div className="bonus-header">
@@ -148,30 +165,18 @@ export default function Bonus() {
       {loading && (
         <div className="bonus-loading">
           <FaSpinner className="spin" />
-          <p>Chargement...</p>
+          Chargement...
         </div>
       )}
 
-      {error && (
-        <div className="bonus-error">
-          <FaExclamationTriangle />
-          <p>{error}</p>
-        </div>
-      )}
-
-      {success && (
-        <div className="bonus-success">
-          <FaCheck />
-          <p>{success}</p>
-        </div>
-      )}
+      {error && <div className="bonus-error">{error}</div>}
+      {success && <div className="bonus-success">{success}</div>}
 
       {!loading && bonus && (
         <div className="bonus-content">
-          {/* Carte Points */}
+          {/* POINTS */}
           <div className="points-card">
             <h3>Vos Points</h3>
-
             <div className="points-value">
               {remaining} / {total}
             </div>
@@ -180,56 +185,40 @@ export default function Bonus() {
               <div
                 className="progress-bar"
                 style={{ width: `${progressPercent}%` }}
-              ></div>
+              />
             </div>
 
-            <div className="status-indicator">
-              {getStatusIcon(bonus.status)}
-              <span>{getStatusText(bonus.status)}</span>
-            </div>
-
-            {bonus.next_claim_at && bonus.status === "cooldown" && (
+            {bonus.status === "cooldown" && (
               <div className="cooldown-info">
-                Prochaine réclamation :
+                ⏳ Disponible dans :
                 <br />
-                {new Date(bonus.next_claim_at).toLocaleString()}
+                <strong>{countdown}</strong>
               </div>
             )}
           </div>
 
-          {/* Conditions */}
+          {/* CONDITIONS */}
           <div className="conditions-card">
             <h3>Conditions</h3>
 
-            <div
-              className={`condition-item ${
-                conditions?.pack ? "completed" : ""
-              }`}
-            >
-              <FaGem />
-              Pack actif
+            <div className={`condition-item ${conditions.has_pack ? "completed" : ""}`}>
+              <FaGem /> Pack actif
+            </div>
+
+            <div className={`condition-item ${conditions.has_deposit ? "completed" : ""}`}>
+              <FaTicketAlt /> Dépôt effectué
             </div>
 
             <div
               className={`condition-item ${
-                conditions?.deposit ? "completed" : ""
+                conditions.friends_count >= 3 ? "completed" : ""
               }`}
             >
-              <FaTicketAlt />
-              Dépôt effectué
-            </div>
-
-            <div
-              className={`condition-item ${
-                conditions?.friends_count >= 3 ? "completed" : ""
-              }`}
-            >
-              <FaUsers />
-              Parrainage ({conditions?.friends_count || 0}/3)
+              <FaUsers /> Parrainage ({conditions.friends_count || 0}/3)
             </div>
           </div>
 
-          {/* Action */}
+          {/* ACTION */}
           <div className="action-section">
             <button
               onClick={handleClaim}
@@ -240,13 +229,11 @@ export default function Bonus() {
             >
               {claiming ? (
                 <>
-                  <FaSpinner className="spin" />
-                  Réclamation...
+                  <FaSpinner className="spin" /> Réclamation...
                 </>
               ) : (
                 <>
-                  <FaCoins />
-                  Réclamer 0.3 BKC
+                  <FaCoins /> Réclamer 0.3 BKC
                 </>
               )}
             </button>

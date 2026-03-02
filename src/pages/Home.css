@@ -1,15 +1,19 @@
-/* Conteneur principal */
+/* ================================
+   CONTENEUR PRINCIPAL
+================================ */
 .home {
   position: relative;
   width: 100%;
-  height: calc(100vh - 80px); /* évite le menu du bas */
+  height: calc(100vh - 80px);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
 }
 
-/* Conteneur du cercle minier (centré + sans décalage) */
+/* ================================
+   MINING (CENTRE)
+================================ */
 .mining-container {
   position: relative;
   z-index: 2;
@@ -18,31 +22,11 @@
   align-items: center;
 }
 
-/* BONUS À GAUCHE */
-.bonus-logo {
-  position: absolute;
-  top: 50%;
-  left: 4%;
-  transform: translateY(-50%);
-  width: 80px;
-  cursor: pointer;
-  z-index: 5;
-}
-
-/* LOGO BLACKAI À GAUCHE, AU-DESSUS DU BONUS */
-.blackai-logo {
-  position: absolute;
-  left: 4%;                  /* même alignement horizontal que le Bonus */
-  top: 30%;                   /* centre vertical du conteneur */
-  transform: translateY(-150%); /* remonte juste au-dessus du bonus */
-  width: 80px;
-  cursor: pointer;
-  z-index: 6;
-  transition: transform 0.15s ease;
-}
-
-
+/* ================================
+   BOUTONS LOGOS (BASE)
+================================ */
 .logo-button {
+  position: relative; /* 🔴 IMPORTANT pour le badge */
   background: none;
   border: none;
   padding: 0;
@@ -51,22 +35,59 @@
 }
 
 .logo-button img {
-  width: 80px;
   display: block;
+  width: 80px;
 }
 
+/* ================================
+   BONUS (GAUCHE)
+================================ */
 .bonus-logo {
   position: absolute;
   top: 50%;
   left: 4%;
   transform: translateY(-50%);
+  z-index: 5;
 }
 
+/* 🔴 BADGE BONUS */
+.bonus-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 12px;
+  height: 12px;
+  background-color: #ff3b3b;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 59, 59, 0.8);
+  animation: pulse 1.5s infinite;
+  pointer-events: none;
+}
+
+/* Animation badge */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ================================
+   BLACK AI (GAUCHE HAUT)
+================================ */
 .blackai-logo {
   position: absolute;
   left: 4%;
   top: 30%;
   transform: translateY(-150%);
+  z-index: 6;
   transition: transform 0.15s ease;
 }
 
@@ -74,13 +95,13 @@
   transform: translateY(-150%) scale(0.9);
 }
 
-
-
 .blackai-logo img {
-  width: 120px;   /* ajuste ici si tu veux 90px ou 100px */
+  width: 120px;
 }
 
-/* LOGOS À DROITE */
+/* ================================
+   COLONNE DROITE
+================================ */
 .logos-container {
   position: absolute;
   top: 50%;
@@ -88,39 +109,19 @@
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 95px;  /* nouvel espacement */
+  gap: 95px;
   z-index: 5;
 }
 
-.logo {
-  width: 80px;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.logo:active {
-  transform: scale(0.9);
-}
-
-/* AIRDROP (taille spécifique si besoin) */
-.airdrop-logo {
-  /* Vous pouvez ajuster la taille si nécessaire */
-  width: 80px; /* même taille que les autres logos */
-  /* ou une taille différente selon votre logo */
-  /* width: 70px; */
-  /* height: 70px; */
-}
-
-/* Suppression des anciens styles pour .airdrop-box */
-.airdrop-box, .airdrop-title {
-  /* Ces styles ne sont plus nécessaires */
-}
-
-/* Mobile */
+/* ================================
+   MOBILE
+================================ */
 @media (max-width: 480px) {
-  .logo,
-  .bonus-logo,
-  .airdrop-logo {
+  .logo-button img {
     width: 70px;
+  }
+
+  .blackai-logo img {
+    width: 100px;
   }
 }

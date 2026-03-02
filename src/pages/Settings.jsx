@@ -78,9 +78,10 @@ const Settings = () => {
           </a>
         </section>
 
+        {/* ✅ Support → ouvre Gmail / app mail */}
         <section className="settings-section clickable">
           <a
-            href="mailto:support@blackcoinweb.com"
+            href="mailto:blackcoinservice@gmail.com?subject=Support%20Blackcoin&body=Bonjour%20l'équipe%20Blackcoin,%0D%0A%0D%0A"
             className="settings-link"
           >
             Support
@@ -93,27 +94,16 @@ const Settings = () => {
           </Link>
         </section>
 
-        {/* ================= WhatsApp ================= */}
+        {/* ================= WhatsApp (désactivé) ================= */}
         <section className="settings-section">
           <h2>WhatsApp</h2>
-          <div className="social-icons">
-            <a
-              href="https://chat.whatsapp.com/DG3Tt2tYep4GVUTAYC03RO"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="WhatsApp Channel"
-            >
+          <div className="social-icons disabled">
+            <span title="WhatsApp Channel (désactivé)">
               <FaWhatsapp />
-            </a>
-
-            <a
-              href="https://wa.me/qr/PEEOS7ZXZCPTK1"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Assistance WhatsApp"
-            >
+            </span>
+            <span title="Assistance WhatsApp (désactivée)">
               <FaHeadset />
-            </a>
+            </span>
           </div>
         </section>
 
@@ -158,7 +148,6 @@ const Settings = () => {
               <FaTwitter />
             </a>
 
-            {/* ✅ Instagram corrigé */}
             <a
               href="https://www.instagram.com/blackcoin_bkc"
               target="_blank"
@@ -168,7 +157,6 @@ const Settings = () => {
               <FaInstagram />
             </a>
 
-            {/* ✅ TikTok corrigé */}
             <a
               href="https://www.tiktok.com/@blackcoin_official"
               target="_blank"

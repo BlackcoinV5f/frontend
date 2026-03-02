@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
@@ -17,9 +17,31 @@ const Home = ({ points, setPoints, level, setLevel }) => {
   const navigate = useNavigate();
   const { loading } = useUser();
 
+  // 🔴 Badge bonus
+  const [bonusAvailable, setBonusAvailable] = useState(false);
+
   const handleNavigate = (path) => {
+    // Quand on clique sur Bonus → on enlève le badge
+    if (path === "/bonus") {
+      setBonusAvailable(false);
+    }
     navigate(path);
   };
+
+  // ==========================================================
+  // 🔔 ÉCOUTE DE L'ÉVÉNEMENT BONUS DISPONIBLE
+  // ==========================================================
+  useEffect(() => {
+    const handler = () => {
+      setBonusAvailable(true);
+    };
+
+    window.addEventListener("bonus:available", handler);
+
+    return () => {
+      window.removeEventListener("bonus:available", handler);
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -39,6 +61,9 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         onClick={() => handleNavigate("/bonus")}
       >
         <img src={BonusLogoImg} alt="Bonus" />
+
+        {/* 🔴 BADGE */}
+        {bonusAvailable && <span className="bonus-badge" />}
       </button>
 
       {/* 🖤 BLACK AI */}
@@ -62,7 +87,6 @@ const Home = ({ points, setPoints, level, setLevel }) => {
 
       {/* 📦 COLONNE DROITE */}
       <div className="logos-container">
-
         <button
           type="button"
           className="logo-button"
@@ -94,7 +118,6 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         >
           <img src={ActionsLogoImg} alt="Actions" />
         </button>
-
       </div>
     </div>
   );
