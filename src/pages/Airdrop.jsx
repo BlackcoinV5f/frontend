@@ -2,6 +2,9 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Airdrop.css";
 
+// Logo check
+import CheckLogo from "../assets/airdrop/CheckLogo.png";
+
 // Logos exchanges
 import BinanceLogo from "../assets/airdrop/binance.png";
 import BitgetLogo from "../assets/airdrop/bitget.png";
@@ -10,7 +13,7 @@ import OkxLogo from "../assets/airdrop/okx.png";
 import GateLogo from "../assets/airdrop/gate.png";
 import MexcLogo from "../assets/airdrop/mexc.png";
 
-// Logos on-chain
+// Logos wallets
 import TonWalletLogo from "../assets/airdrop/ton-wallet.png";
 import MetamaskLogo from "../assets/airdrop/metamask.png";
 
@@ -35,49 +38,76 @@ const Airdrop = () => {
     navigate(`/airdrop/${platformId}`);
   };
 
+  const goToCheck = () => {
+    navigate("/check");
+  };
+
   return (
     <div className="airdrop-page">
+      
+      {/* 🔹 Page Title */}
       <h2 className="airdrop-title">Airdrop Claim</h2>
 
+      {/* 🔹 Check Button (aligné à droite) */}
+      <div className="airdrop-check-wrapper">
+        <div className="airdrop-check-btn" onClick={goToCheck}>
+          <img
+            src={CheckLogo}
+            alt="Check eligibility"
+            className="check-logo"
+          />
+          <span className="check-title">Check</span>
+        </div>
+      </div>
+
+      {/* 🔹 Exchanges */}
       <section className="airdrop-section">
         <div className="section-header">
           <h3>Exchanges</h3>
         </div>
-        <div className="airdrop-scroll-container">
-          <div className="airdrop-grid">
-            {exchanges.map((item) => (
-              <div
-                key={item.id}
-                className="airdrop-card"
-                onClick={() => goToClaim(item.id)}
-              >
-                <img src={item.logo} alt={item.name} className="platform-logo" />
-                <span>{item.name}</span>
-              </div>
-            ))}
-          </div>
+
+        <div className="airdrop-grid">
+          {exchanges.map((item) => (
+            <div
+              key={item.id}
+              className="airdrop-card"
+              onClick={() => goToClaim(item.id)}
+            >
+              <img
+                src={item.logo}
+                alt={item.name}
+                className="platform-logo"
+              />
+              <span>{item.name}</span>
+            </div>
+          ))}
         </div>
       </section>
 
+      {/* 🔹 Wallets */}
       <section className="airdrop-section">
         <div className="section-header">
           <h3>On-chain Wallets</h3>
         </div>
-        <div className="airdrop-scroll-container">
-          <div className="airdrop-grid">
-            {wallets.map((item) => (
-              <div
-                key={item.id}
-                className="airdrop-card"
-                onClick={() => goToClaim(item.id)}
-              >
-                <img src={item.logo} alt={item.name} className="platform-logo" />
-                <span>{item.name}</span>
-              </div>
-            ))}
-          </div>
+
+        <div className="airdrop-grid">
+          {wallets.map((item) => (
+            <div
+              key={item.id}
+              className="airdrop-card"
+              onClick={() => goToClaim(item.id)}
+            >
+              <img
+                src={item.logo}
+                alt={item.name}
+                className="platform-logo"
+              />
+              <span>{item.name}</span>
+            </div>
+          ))}
         </div>
       </section>
+
     </div>
   );
 };

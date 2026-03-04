@@ -46,6 +46,7 @@ const Airdrop = lazy(() => import("./pages/Airdrop"));
 const AirdropClaim = lazy(() => import("./pages/AirdropClaim"));
 const Kyc = lazy(() => import("./pages/Kyc"));
 const BlackAI = lazy(() => import("./pages/BlackAI"));
+const Check = lazy(() => import("./pages/Check"));
 
 // 💰 Dépôts / Retraits
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
@@ -156,15 +157,25 @@ function AppContent() {
               <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
 
               {/* ✅ AIRDROP */}
-              <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
-              <Route
-                path="/airdrop/:platformId"
-                element={
-                  <ProtectedRoute>
-                    <AirdropClaim />
-                  </ProtectedRoute>
-                }
-              />
+<Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+
+<Route
+  path="/check"
+  element={
+    <ProtectedRoute>
+      <Check />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/airdrop/:platformId"
+  element={
+    <ProtectedRoute>
+      <AirdropClaim />
+    </ProtectedRoute>
+  }
+/>
 
               <Route
   path="/kyc"

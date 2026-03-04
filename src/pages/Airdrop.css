@@ -1,154 +1,181 @@
-/* Page globale */
+/* =========================
+   PAGE GLOBALE
+========================= */
 .airdrop-page {
+  width: 100%;
   min-height: 100vh;
-  padding: 40px 20px;
-  background: #0b0f1a;
+
+  padding-top: 90px;     /* espace navbar */
+  padding-bottom: 90px;  /* espace bottom nav */
+  padding-left: 16px;
+  padding-right: 16px;
+
+  background: linear-gradient(135deg, #0b0f1a, #1a1f2f);
   color: #ffffff;
-  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+
+  overflow-x: hidden;   /* on garde seulement ça */
 }
 
-/* Titre principal */
+/* =========================
+   TITRE PAGE
+========================= */
 .airdrop-title {
   text-align: center;
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* =========================
+   CHECK BUTTON (ALIGNÉ À DROITE)
+========================= */
+.airdrop-check-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+}
+
+.airdrop-check-btn {
+  height: 52px;
+  padding: 0 8px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: linear-gradient(135deg, #00c853, #00a86b);
+  border-radius: 28px;
+  cursor: pointer;
+
+  box-shadow: 0 6px 18px rgba(0, 200, 83, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.airdrop-check-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 200, 83, 0.45);
+}
+
+/* Logo Check */
+.check-logo {
+  width: 30px;       /* taille confortable */
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+  
+}
+
+/* Texte Check */
+.check-title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: #ffffff;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+.airdrop-section {
   margin-bottom: 40px;
 }
 
-/* Sections */
-.airdrop-section {
-  max-width: 1100px;
-  margin: 0 auto 50px;
-}
-
 .section-header h3 {
-  font-size: 22px;
-  margin-bottom: 20px;
-  color: #cfd6ff;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #a5b4fc;
 }
 
-/* Conteneur de défilement */
-.airdrop-scroll-container {
-  overflow-x: auto;
-  padding-bottom: 20px;
-  scrollbar-width: thin;
-  scrollbar-color: #4a5568 transparent;
-}
-
-/* Personnalisation de la scrollbar */
-.airdrop-scroll-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.airdrop-scroll-container::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-}
-
-.airdrop-scroll-container::-webkit-scrollbar-thumb {
-  background: #4a5568;
-  border-radius: 4px;
-}
-
-.airdrop-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #718096;
-}
-
-/* Grille horizontale */
+/* =========================
+   GRID
+========================= */
 .airdrop-grid {
-  display: flex;
-  gap: 20px;
-  min-width: fit-content;
-  padding: 10px 5px;
+  display: grid;
+  gap: 14px;
 }
 
-/* Carte */
+/* =========================
+   CARDS
+========================= */
 .airdrop-card {
-  background: #12172a;
+  background: rgba(18, 23, 42, 0.9);
   border-radius: 14px;
-  padding: 15px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  min-width: 130px;
-  flex-shrink: 0;
+  padding: 16px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  text-align: center;
+  cursor: pointer;
+
+  border: 1px solid rgba(165, 180, 252, 0.15);
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .airdrop-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  background: #1a2038;
+  transform: translateY(-3px);
+  border-color: rgba(165, 180, 252, 0.35);
 }
 
-/* Logo réduit */
+/* =========================
+   LOGOS PLATEFORMES
+========================= */
 .platform-logo {
-  width: 48px; /* Taille réduite */
-  height: 48px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-/* Nom */
+/* =========================
+   TEXTE DES CARDS
+========================= */
 .airdrop-card span {
-  display: block;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: #e6e8ff;
-  margin-top: auto;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .airdrop-title {
-    font-size: 26px;
-  }
-  
-  .airdrop-card {
-    min-width: 120px;
-    padding: 12px;
-  }
-  
-  .platform-logo {
-    width: 42px;
-    height: 42px;
-    margin-bottom: 8px;
-  }
-  
-  .section-header h3 {
-    font-size: 20px;
-  }
-}
-
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 480px) {
-  .airdrop-page {
-    padding: 30px 15px;
+  .airdrop-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
-  .airdrop-title {
-    font-size: 22px;
-    margin-bottom: 30px;
+
+  .airdrop-check-wrapper {
+    justify-content: center; /* sur mobile : centré */
   }
-  
-  .airdrop-section {
-    margin-bottom: 40px;
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .airdrop-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
-  
-  .airdrop-card {
-    min-width: 110px;
-    padding: 10px;
+}
+
+@media (min-width: 769px) {
+  .airdrop-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
-  
-  .platform-logo {
-    width: 38px;
-    height: 38px;
-  }
-  
-  .airdrop-card span {
-    font-size: 13px;
-  }
+}
+
+.airdrop-page {
+  height: 100vh;              /* important */
+  overflow-y: auto;           /* scroll activé */
+  overflow-x: hidden;
+
+  padding-top: 90px;          /* = hauteur navbar */
+  padding-bottom: 90px;       /* = hauteur bottom nav */
+  padding-left: 16px;
+  padding-right: 16px;
+
+  background: linear-gradient(135deg, #0b0f1a, #1a1f2f);
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
 }
