@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
 import {
   FaCheck,
   FaTimes,
@@ -9,6 +8,7 @@ import {
   FaWallet,
   FaArrowLeft,
 } from "react-icons/fa";
+import { useUser } from "../contexts/UserContext";
 import "./ValidateTask.css";
 
 const platformIcons = {
@@ -18,11 +18,10 @@ const platformIcons = {
   Twitter: <span style={{ color: "#1DA1F2" }}>🐦</span>,
 };
 
-const API_URL = import.meta.env.VITE_BACKEND_URL;
-
 const ValidateTask = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
+  const { axiosInstance } = useUser(); // ✅ CLIENT AUTHENTIFIÉ
 
   const [task, setTask] = useState(null);
   const [code, setCode] = useState("");
@@ -31,33 +30,25 @@ const ValidateTask = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [rewardDetails, setRewardDetails] = useState(null);
 
-  // Charger la tâche depuis l’API
+  // Charger la tâche
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        const res = await axios.get(`${API_URL}/tasks/`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        console.log("✅ Réponse API tasks:", res.data);
-
+        const res = await axiosInstance.get("/tasks/");
         const foundTask = res.data.find(
-          (x) => String(x.id) === String(taskId)
+          (t) => String(t.id) === String(taskId)
         );
-
         setTask(foundTask || null);
       } catch (err) {
-        console.error("❌ Erreur fetch tasks:", err);
+        console.error("❌ Erreur fetch task :", err);
         setTask(null);
       }
     };
 
     fetchTask();
-  }, [taskId]);
+  }, [taskId, axiosInstance]);
 
-  // Redirection après validation réussie
+  // Redirection après succès
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
@@ -77,24 +68,19 @@ const ValidateTask = () => {
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await axios.post(
-        `${API_URL}/tasks/${taskId}/validate`,
-        { code },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const res = await axiosInstance.post(
+        `/tasks/${taskId}/validate`,
+        { code }
       );
 
-      console.log("✅ Réponse validation:", res.data);
-
-      setRewardDetails(res.data);
+      setRewardDetails(res.data.reward); // ✅ STRUCTURE BACKEND
       setIsSuccess(true);
     } catch (err) {
-      console.error("❌ Erreur validation:", err);
+      console.error("❌ Erreur validation :", err);
       if (err.response?.status === 400) {
-        setError("❌ Code invalide");
+        setError(err.response.data?.detail || "Code invalide");
       } else if (err.response?.status === 401) {
-        setError("⚠️ Non autorisé (connectez-vous)");
+        setError("⚠️ Non autorisé. Veuillez vous reconnecter.");
       } else {
         setError("Erreur lors de la validation");
       }
@@ -111,7 +97,9 @@ const ValidateTask = () => {
         animate={{ opacity: 1 }}
       >
         <p>❌ Tâche introuvable.</p>
-        <button onClick={() => navigate("/tasks")}>Retour aux tâches</button>
+        <button onClick={() => navigate("/tasks")}>
+          Retour aux tâches
+        </button>
       </motion.div>
     );
   }
@@ -121,7 +109,6 @@ const ValidateTask = () => {
       className="validate-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
       <motion.button
@@ -142,23 +129,29 @@ const ValidateTask = () => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
           >
-            <motion.div className="success-icon" initial={{ scale: 0 }} animate={{ scale: 1 }}>
+            <motion.div
+              className="success-icon"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+            >
               <FaCheck size={60} />
             </motion.div>
-            <h2>Tâche validée avec succès !</h2>
+
+            <h2>Tâche validée avec succès 🎉</h2>
+
             <motion.div
               className="reward-breakdown"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="reward-item">
-                <FaCoins color="#FFD700" /> +{rewardDetails?.mainReward} pts (Balance principale)
+                <FaCoins color="#FFD700" /> +{rewardDetails.balance} pts (Balance)
               </div>
               <div className="reward-item">
-                <FaWallet color="#4CAF50" /> +{rewardDetails?.walletReward} pts (Portefeuille)
+                <FaWallet color="#4CAF50" /> +{rewardDetails.bonus} pts (Bonus)
               </div>
               <div className="reward-total">
-                Total gagné: {rewardDetails?.total} pts
+                Total gagné : {rewardDetails.total} pts
               </div>
             </motion.div>
           </motion.div>
@@ -173,18 +166,20 @@ const ValidateTask = () => {
               className="task-header"
               style={{ backgroundColor: `${task.color || "#ccc"}20` }}
             >
-              <div className="platform-icon">{platformIcons[task.platform]}</div>
-              <h2>Validation {task.platform}</h2>
+              <div className="platform-icon">
+                {platformIcons[task.platform]}
+              </div>
+              <h2>Validation</h2>
             </motion.div>
 
-            <p>Entrez le code de validation fourni après avoir complété la tâche</p>
+            <p>Entrez le code de validation fourni après la tâche</p>
 
             <div className="input-container">
               <input
                 type="text"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                placeholder="Entrez le code ici"
+                placeholder="Code de validation"
                 className={error ? "error-input" : ""}
               />
               {error && (
