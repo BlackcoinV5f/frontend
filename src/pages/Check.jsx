@@ -43,6 +43,7 @@ export default function Check() {
     { label: "Pack payé (bonus)", key: "pack", optional: true },
     { label: "50M pts", key: "points", optional: false },
     { label: "21 jours d'utilisation", key: "days", optional: false },
+    { label: "Level 5 (mining)", key: "level", optional: false }, // ✅ AJOUT
   ];
 
   const completed = criteria.filter(c => data[c.key]).length;

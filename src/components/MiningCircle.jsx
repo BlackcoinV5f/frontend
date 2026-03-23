@@ -27,66 +27,33 @@ const levelImages = {
   9: level9,
 };
 
-const levelThresholds = {
-  1: 0,
-  2: 3500,
-  3: 6000,
-  4: 11000,
-  5: 18000,
-  6: 29000,
-  7: 50000,
-  8: 100000,
-  9: 160000,
-};
-
 const MiningCircle = () => {
   const { user } = useUser();
 
   const [progress, setProgress] = useState(0);
-  const [isMining, setIsMining] = useState(false);
+  const [status, setStatus] = useState("idle"); // idle | running | ready
   const [buttonText, setButtonText] = useState("START");
+
   const [level, setLevel] = useState(1);
-  const [points, setPoints] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [totalCycleMs, setTotalCycleMs] = useState(0);
+  const [cycleMs, setCycleMs] = useState(0);
 
   const intervalRef = useRef(null);
 
+  // -------------------------
+  // Format time
+  // -------------------------
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
-    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
-    const seconds = String(totalSeconds % 60).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
+    const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+    const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+    const s = String(totalSeconds % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
   };
 
-  const calculateLevel = (totalPoints) => {
-    let lvl = 1;
-    for (let i = 1; i <= 9; i++) {
-      if (totalPoints >= levelThresholds[i]) lvl = i;
-      else break;
-    }
-    return lvl;
-  };
-
-  const fetchMiningHistory = async () => {
-    if (!user?.id) return;
-
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/mining/history/${user.id}`,
-        { credentials: "include" }
-      );
-      const data = await res.json();
-
-      const total = data.history.reduce((acc, entry) => acc + entry.points, 0);
-      setPoints(total);
-      setLevel(calculateLevel(total));
-    } catch (err) {
-      console.error("Erreur récupération historique :", err);
-    }
-  };
-
+  // -------------------------
+  // Fetch mining status (SOURCE UNIQUE)
+  // -------------------------
   const fetchMiningStatus = async () => {
     if (!user?.id) return;
 
@@ -95,14 +62,19 @@ const MiningCircle = () => {
         `${import.meta.env.VITE_BACKEND_URL}/mining/status/${user.id}`,
         { credentials: "include" }
       );
+
       const data = await res.json();
+
+      // 🔥 LEVEL DIRECTEMENT DU BACKEND
+      setLevel(data.level || 1);
 
       clearInterval(intervalRef.current);
 
       if (data.status === "running") {
-        setIsMining(true);
+        setStatus("running");
         setTimeLeft(data.remaining_time_ms);
-        setTotalCycleMs(data.total_cycle_ms);
+        setCycleMs(data.total_cycle_ms);
+
         setButtonText(formatTime(data.remaining_time_ms));
 
         intervalRef.current = setInterval(() => {
@@ -110,81 +82,87 @@ const MiningCircle = () => {
             if (prev <= 1000) {
               clearInterval(intervalRef.current);
               setProgress(100);
-              setIsMining(false);
+              setStatus("ready");
               setButtonText("CLAIM");
-              fetchMiningHistory();
               return 0;
             }
 
             const updated = prev - 1000;
-            setProgress(((data.total_cycle_ms - updated) / data.total_cycle_ms) * 100);
+
+            const progressValue =
+              ((data.total_cycle_ms - updated) / data.total_cycle_ms) * 100;
+
+            setProgress(progressValue);
             setButtonText(formatTime(updated));
+
             return updated;
           });
         }, 1000);
-      }
-
-      else if (data.status === "ready_to_claim") {
+      } else if (data.status === "ready_to_claim") {
         setProgress(100);
-        setIsMining(false);
+        setStatus("ready");
         setButtonText("CLAIM");
-      }
-
-      else {
+      } else {
         setProgress(0);
-        setIsMining(false);
+        setStatus("idle");
         setButtonText("START");
       }
     } catch (err) {
-      console.error("Erreur statut minage :", err);
+      console.error("Erreur statut :", err);
     }
   };
 
+  // -------------------------
+  // Start mining
+  // -------------------------
   const startMining = async () => {
-    if (!user?.id) return;
-
     try {
       const res = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/mining/start/${user.id}`,
         { method: "POST", credentials: "include" }
       );
+
       const data = await res.json();
 
       if (data.status === "authorized") {
-        setTotalCycleMs(data.total_cycle_ms);
         fetchMiningStatus();
       }
     } catch (err) {
-      console.error("Erreur démarrage minage :", err);
+      console.error("Erreur start :", err);
     }
   };
 
+  // -------------------------
+  // Claim
+  // -------------------------
   const claimPoints = async () => {
-    if (!user?.id) return;
-
     try {
       const res = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/mining/claim/${user.id}`,
         { method: "POST", credentials: "include" }
       );
+
       const data = await res.json();
 
       if (data.status === "success") {
-        const newTotal = points + data.points_earned;
-        setPoints(newTotal);
-        setLevel(calculateLevel(newTotal));
         setProgress(0);
-        setIsMining(false);
+        setStatus("idle");
         setButtonText("START");
+
+        // 🔥 refresh mining status (pas fetchStats)
+        await fetchMiningStatus();
       }
     } catch (err) {
       console.error("Erreur claim :", err);
     }
   };
 
+  // -------------------------
+  // INIT
+  // -------------------------
   useEffect(() => {
     fetchMiningStatus();
-    fetchMiningHistory();
+
     return () => clearInterval(intervalRef.current);
   }, [user]);
 
@@ -193,9 +171,9 @@ const MiningCircle = () => {
       <div className="progress-circle">
         <CircularProgressbar
           value={progress}
-          text={`${Math.round(progress)}%`}
+          text={status === "running" ? `${Math.round(progress)}%` : ""}
           styles={buildStyles({
-            pathColor: "green",
+            pathColor: "#00ff88",
             textColor: "#fff",
             trailColor: "#333",
             strokeLinecap: "round",
@@ -203,7 +181,7 @@ const MiningCircle = () => {
         />
 
         <img
-          src={levelImages[level]}
+          src={levelImages[level] || level1}
           alt={`Level ${level}`}
           className="mining-image"
         />
@@ -211,8 +189,8 @@ const MiningCircle = () => {
 
       <button
         className="mining-button"
-        disabled={isMining && buttonText !== "CLAIM"}
-        onClick={buttonText === "START" ? startMining : claimPoints}
+        disabled={status === "running" && buttonText !== "CLAIM"}
+        onClick={status === "idle" ? startMining : claimPoints}
       >
         {buttonText}
       </button>
