@@ -38,19 +38,20 @@ const Wallet = () => {
 
       {/* ===== ACTIONS ===== */}
       <div className="wallet-actions">
-        {/* ✅ DEPOT — route corrigée */}
+
+        {/* ❌ DEPOT DESACTIVE */}
         <motion.button
           type="button"
-          className="wallet-button deposit-button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/depots")}
+          className="wallet-button deposit-button disabled"
+          disabled
+          whileHover={{ scale: 1 }}
+          whileTap={{ scale: 1 }}
         >
           <GiReceiveMoney />
-          <span>Dépôt</span>
+          <span>Dépôt (bientôt)</span>
         </motion.button>
 
-        {/* ✅ RETRAIT — déjà correct */}
+        {/* ✅ RETRAIT */}
         <motion.button
           type="button"
           className="wallet-button withdraw-button"
@@ -73,6 +74,7 @@ const Wallet = () => {
           <AiOutlineHistory />
           <span>Historique</span>
         </motion.button>
+
       </div>
 
       {/* ===== SOLDES ===== */}

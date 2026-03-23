@@ -307,3 +307,10 @@ html, body {
     padding: 12px;
   }
 }
+
+.wallet-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(80%);
+}
