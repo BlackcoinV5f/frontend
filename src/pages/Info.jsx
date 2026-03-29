@@ -42,7 +42,7 @@ const Info = () => {
       {/* SOCIALS */}
       <div className="social-grid">
         <SocialIcon
-          href="https://t.me/+VXuf93TxzKxlMzE0"
+          href="https://t.me/+2VYCu2Ygs0Q1YTk0"
           icon="📢"
           label="Telegram"
         />

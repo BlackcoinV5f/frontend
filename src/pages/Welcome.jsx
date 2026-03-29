@@ -27,7 +27,7 @@ const TASKS_CONFIG = [
     key: "telegram",
     icon: <FaTelegram size={24} />,
     name: "Telegram",
-    link: "https://t.me/+VXuf93TxzKxlMzE0",
+    link: "https://t.me/+2VYCu2Ygs0Q1YTk0",
     points: 1000,
     color: "#0088cc",
   },

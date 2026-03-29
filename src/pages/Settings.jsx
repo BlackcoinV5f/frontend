@@ -131,7 +131,7 @@ const Settings = () => {
             </a>
 
             <a
-              href="https://t.me/+VXuf93TxzKxlMzE0"
+              href="https://t.me/+2VYCu2Ygs0Q1YTk0"
               target="_blank"
               rel="noopener noreferrer"
               title="Telegram"
