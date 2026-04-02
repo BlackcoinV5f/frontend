@@ -2,6 +2,7 @@
 import React, { useState, lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
+import "./i18n";
 
 import { UserProvider, useUser } from "./contexts/UserContext";
 import { AdmProvider } from "./contexts/AdmContext";

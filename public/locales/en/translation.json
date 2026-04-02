@@ -32,5 +32,36 @@
       "ageTooYoung": "You must be at least 13 years old to register.",
       "generic": "An error occurred. Please try again."
     }
+  },
+  "info": {
+    "title": "📢 Official Information — BLACKCOIN",
+    "intro": "The <1>BLACKCOIN</1> team is actively developing the project with many major features in preparation.",
+    "telegram": "Telegram",
+    "twitter": "X (Twitter)",
+    "facebook": "Facebook",
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
+    "aboutTitle": "🌍 About the Project",
+    "aboutText1": "BLACKCOIN is an international collaborative initiative launched on March 21, 2024, aiming to build a strong, transparent, and sustainable digital ecosystem.",
+    "aboutText2": "To view the White Paper, Roadmap, and Privacy Policy, please visit our official website:",
+    "communicationTitle": "📌 Official Communication",
+    "communicationText1": "All official information, updates, and important announcements regarding BLACKCOIN are published exclusively through our official website and social media channels.",
+    "communicationText2": "We encourage you to always verify information via our official channels to avoid confusion.",
+    "footer": "Thank you for being part of BLACKCOIN's evolution."
+  },
+  "userProfile": {
+    "header": { "close": "Close" },
+    "status": { "verified": "Verified", "pending": "Pending" },
+    "profileCompletion": "Profile Completion",
+    "personalInfo": "Personal Information",
+    "email": "Email",
+    "phone": "Phone",
+    "country": "Country",
+    "welcomeTasks": "Welcome Tasks",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "warningIncomplete": "⚠️ Complete your profile to access all features",
+    "actions": { "verifyKYC": "Verify Identity (KYC)", "editProfile": "Edit Profile", "save": "Save", "logout": "Logout" }
   }
 }

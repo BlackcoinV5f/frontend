@@ -1,7 +1,7 @@
 {
   "register": {
     "title": "Crear cuenta",
-    "personalInfo": "Información personal",
+    "personalInfo": "Información Personal",
     "firstName": "Nombre",
     "lastName": "Apellido",
     "birthDate": "Fecha de nacimiento",
@@ -14,7 +14,7 @@
     "confirmPassword": "Confirmar contraseña",
     "submit": "Crear mi cuenta",
     "loading": "Creando...",
-    "success": "¡Registro exitoso! Por favor revisa tu correo electrónico.",
+    "success": "¡Registro exitoso! Por favor, revisa tu correo electrónico.",
     "criteria": {
       "length": "Al menos 8 caracteres",
       "uppercase": "Una letra mayúscula",
@@ -22,15 +22,46 @@
       "specialChar": "Un carácter especial"
     },
     "errors": {
-      "missingFields": "Por favor complete todos los campos.",
-      "invalidEmail": "Dirección de correo inválida.",
+      "missingFields": "Por favor, completa todos los campos.",
+      "invalidEmail": "Correo electrónico inválido.",
       "invalidPhoneNumber": "Número de teléfono inválido.",
-      "invalidTelegramUsername": "Nombre de usuario de Telegram inválido.",
+      "invalidTelegramUsername": "Usuario de Telegram inválido.",
       "passwordMismatch": "Las contraseñas no coinciden.",
       "passwordWeak": "La contraseña es demasiado débil.",
       "invalidBirthDate": "Fecha de nacimiento inválida.",
       "ageTooYoung": "Debes tener al menos 13 años para registrarte.",
-      "generic": "Ha ocurrido un error. Por favor, inténtalo de nuevo."
+      "generic": "Ocurrió un error. Por favor, inténtalo de nuevo."
     }
+  },
+  "info": {
+    "title": "📢 Información oficial — BLACKCOIN",
+    "intro": "El equipo de <1>BLACKCOIN</1> está desarrollando activamente el proyecto con muchas funciones importantes en preparación.",
+    "telegram": "Telegram",
+    "twitter": "X (Twitter)",
+    "facebook": "Facebook",
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
+    "aboutTitle": "🌍 Sobre el proyecto",
+    "aboutText1": "BLACKCOIN es una iniciativa colaborativa internacional lanzada el 21 de marzo de 2024, con el objetivo de construir un ecosistema digital sólido, transparente y sostenible.",
+    "aboutText2": "Para ver el Libro Blanco, la Hoja de ruta y la Política de privacidad, visita nuestro sitio web oficial:",
+    "communicationTitle": "📌 Comunicación oficial",
+    "communicationText1": "Toda la información oficial, actualizaciones y anuncios importantes sobre BLACKCOIN se publican exclusivamente a través de nuestro sitio web oficial y canales de redes sociales.",
+    "communicationText2": "Te recomendamos verificar siempre la información a través de nuestros canales oficiales para evitar confusiones.",
+    "footer": "Gracias por ser parte de la evolución de BLACKCOIN."
+  },
+  "userProfile": {
+    "header": { "close": "Cerrar" },
+    "status": { "verified": "Verificado", "pending": "Pendiente" },
+    "profileCompletion": "Completitud del perfil",
+    "personalInfo": "Información Personal",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "country": "País",
+    "welcomeTasks": "Tareas de bienvenida",
+    "completed": "Completadas",
+    "inProgress": "En curso",
+    "warningIncomplete": "⚠️ Complete su perfil para acceder a todas las funciones",
+    "actions": { "verifyKYC": "Verificar identidad (KYC)", "editProfile": "Editar perfil", "save": "Guardar", "logout": "Cerrar sesión" }
   }
 }

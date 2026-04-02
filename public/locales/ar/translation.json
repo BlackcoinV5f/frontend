@@ -1,14 +1,14 @@
 {
   "register": {
     "title": "إنشاء حساب",
-    "personalInfo": "معلومات شخصية",
+    "personalInfo": "المعلومات الشخصية",
     "firstName": "الاسم الأول",
-    "lastName": "اسم العائلة",
+    "lastName": "الاسم الأخير",
     "birthDate": "تاريخ الميلاد",
     "contactInfo": "معلومات الاتصال",
     "phoneNumber": "رقم الهاتف",
     "email": "البريد الإلكتروني",
-    "telegramUsername": "اسم مستخدم تيليغرام",
+    "telegramUsername": "اسم مستخدم تيليجرام",
     "security": "الأمان",
     "password": "كلمة المرور",
     "confirmPassword": "تأكيد كلمة المرور",
@@ -23,14 +23,45 @@
     },
     "errors": {
       "missingFields": "يرجى ملء جميع الحقول.",
-      "invalidEmail": "عنوان بريد إلكتروني غير صالح.",
-      "invalidPhoneNumber": "رقم هاتف غير صالح.",
-      "invalidTelegramUsername": "اسم مستخدم تيليغرام غير صالح.",
+      "invalidEmail": "البريد الإلكتروني غير صالح.",
+      "invalidPhoneNumber": "رقم الهاتف غير صالح.",
+      "invalidTelegramUsername": "اسم مستخدم تيليجرام غير صالح.",
       "passwordMismatch": "كلمتا المرور غير متطابقتين.",
       "passwordWeak": "كلمة المرور ضعيفة جدًا.",
-      "invalidBirthDate": "تاريخ ميلاد غير صالح.",
+      "invalidBirthDate": "تاريخ الميلاد غير صالح.",
       "ageTooYoung": "يجب أن يكون عمرك 13 عامًا على الأقل للتسجيل.",
-      "generic": "حدث خطأ ما. حاول مرة أخرى."
+      "generic": "حدث خطأ. يرجى المحاولة مرة أخرى."
     }
+  },
+  "info": {
+    "title": "📢 معلومات رسمية — BLACKCOIN",
+    "intro": "فريق <1>BLACKCOIN</1> يواصل تطوير المشروع بنشاط مع العديد من الميزات الكبرى قيد التحضير.",
+    "telegram": "تيليجرام",
+    "twitter": "X (تويتر)",
+    "facebook": "فيسبوك",
+    "youtube": "يوتيوب",
+    "instagram": "إنستغرام",
+    "tiktok": "تيك توك",
+    "aboutTitle": "🌍 عن المشروع",
+    "aboutText1": "BLACKCOIN هي مبادرة تعاونية دولية أُطلقت في 21 مارس 2024، تهدف إلى بناء نظام رقمي قوي وشفاف ومستدام.",
+    "aboutText2": "لعرض الورقة البيضاء وخارطة الطريق وسياسة الخصوصية، يرجى زيارة موقعنا الرسمي:",
+    "communicationTitle": "📌 التواصل الرسمي",
+    "communicationText1": "جميع المعلومات الرسمية والتحديثات والإعلانات المهمة المتعلقة بـ BLACKCOIN يتم نشرها حصريًا عبر موقعنا الرسمي وقنوات التواصل الاجتماعي.",
+    "communicationText2": "نشجعك على التحقق دائمًا من المعلومات عبر قنواتنا الرسمية لتجنب الالتباس.",
+    "footer": "شكرًا لكونك جزءًا من تطور BLACKCOIN."
+  },
+  "userProfile": {
+    "header": { "close": "إغلاق" },
+    "status": { "verified": "تم التحقق", "pending": "قيد الانتظار" },
+    "profileCompletion": "اكتمال الملف الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "country": "البلد",
+    "welcomeTasks": "مهام الترحيب",
+    "completed": "مكتملة",
+    "inProgress": "جاري التنفيذ",
+    "warningIncomplete": "⚠️ أكمل ملفك الشخصي للوصول إلى جميع الميزات",
+    "actions": { "verifyKYC": "تحقق من هويتك (KYC)", "editProfile": "تعديل الملف الشخصي", "save": "حفظ", "logout": "تسجيل الخروج" }
   }
 }

@@ -25,6 +25,7 @@ const languages = [
   { code: "en", label: "English" },
   { code: "fr", label: "Français" },
   { code: "es", label: "Español" },
+  { code: "ar", label: "العربية" }, // ← langue arabe ajoutée
 ];
 
 /* ============================

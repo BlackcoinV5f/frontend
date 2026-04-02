@@ -12,10 +12,12 @@ import {
   FiAward,
   FiX,
 } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 import "./UserProfilePage.css";
 
 const UserProfilePage = () => {
+  const { t } = useTranslation();
   const { user, logoutUser, isAuthenticated, setUser } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [editedUser, setEditedUser] = useState({ ...user });
@@ -129,7 +131,7 @@ const UserProfilePage = () => {
       {/* HEADER */}
       <div className="profile-header">
         <button className="close-button" onClick={() => navigate(-1)}>
-          <FiX size={20} />
+          <FiX size={20} /> {t("userProfile.header.close")}
         </button>
       </div>
 
@@ -139,7 +141,7 @@ const UserProfilePage = () => {
           {avatarSrc ? (
             <img
               src={avatarSrc}
-              alt="Photo de profil"
+              alt={t("userProfile.personalInfo")}
               className="profile-picture"
               onError={(e) => (e.target.style.display = "none")}
             />
@@ -157,7 +159,9 @@ const UserProfilePage = () => {
               user.is_verified ? "verified" : "pending"
             }`}
           >
-            {user.is_verified ? "Vérifié" : "En attente"}
+            {user.is_verified
+              ? t("userProfile.status.verified")
+              : t("userProfile.status.pending")}
           </div>
         </div>
 
@@ -172,7 +176,7 @@ const UserProfilePage = () => {
       {/* PROGRESS */}
       <div className="completion-section">
         <div className="completion-header">
-          <span>Complétion du profil</span>
+          <span>{t("userProfile.profileCompletion")}</span>
           <span>{completionPercentage()}%</span>
         </div>
 
@@ -186,14 +190,14 @@ const UserProfilePage = () => {
 
       {/* DETAILS */}
       <div className="profile-details">
-        <h4>Informations Personnelles</h4>
+        <h4>{t("userProfile.personalInfo")}</h4>
 
         <div className="detail-row">
           <div className="detail-icon">
             <FiMail />
           </div>
           <div className="detail-content">
-            <label>Email</label>
+            <label>{t("userProfile.email")}</label>
             {isEditing ? (
               <input
                 type="email"
@@ -211,7 +215,7 @@ const UserProfilePage = () => {
             <FiPhone />
           </div>
           <div className="detail-content">
-            <label>Téléphone</label>
+            <label>{t("userProfile.phone")}</label>
             {isEditing ? (
               <input
                 type="tel"
@@ -229,7 +233,7 @@ const UserProfilePage = () => {
             <FiGlobe />
           </div>
           <div className="detail-content">
-            <label>Pays</label>
+            <label>{t("userProfile.country")}</label>
             {isEditing ? (
               <input
                 type="text"
@@ -247,8 +251,12 @@ const UserProfilePage = () => {
             <FiAward />
           </div>
           <div className="detail-content">
-            <label>Tâches d'initiation</label>
-            <p>{user.has_completed_welcome_tasks ? "Complétées" : "En cours"}</p>
+            <label>{t("userProfile.welcomeTasks")}</label>
+            <p>
+              {user.has_completed_welcome_tasks
+                ? t("userProfile.completed")
+                : t("userProfile.inProgress")}
+            </p>
           </div>
         </div>
       </div>
@@ -256,19 +264,15 @@ const UserProfilePage = () => {
       {/* WARNING */}
       {!isProfileComplete(user) && (
         <div className="warning-message">
-          ⚠️ Complétez votre profil pour accéder à toutes les fonctionnalités
+          {t("userProfile.warningIncomplete")}
         </div>
       )}
 
       {/* ACTIONS */}
       <div className="profile-actions">
-        {/* Bouton KYC (visible si non vérifié) */}
         {!user.is_verified && (
-          <button
-            className="kyc-button"
-            onClick={() => navigate("/kyc")}
-          >
-            Vérifier mon identité (KYC)
+          <button className="kyc-button" onClick={() => navigate("/kyc")}>
+            {t("userProfile.actions.verifyKYC")}
           </button>
         )}
 
@@ -277,12 +281,14 @@ const UserProfilePage = () => {
           onClick={handleEditToggle}
         >
           {isEditing ? <FiCheck size={16} /> : <FiEdit size={16} />}
-          {isEditing ? "Sauvegarder" : "Modifier le profil"}
+          {isEditing
+            ? t("userProfile.actions.save")
+            : t("userProfile.actions.editProfile")}
         </button>
 
         {isAuthenticated && (
           <button className="logout-button" onClick={handleLogout}>
-            <FiLogOut size={16} /> Déconnexion
+            <FiLogOut size={16} /> {t("userProfile.actions.logout")}
           </button>
         )}
       </div>
