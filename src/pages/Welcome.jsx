@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
+import { useTranslation } from "react-i18next";
 import {
   FaTelegram,
   FaFacebook,
@@ -77,20 +78,19 @@ const TOTAL_AVAILABLE_POINTS = TASKS_CONFIG.reduce(
 export default function Welcome() {
   const navigate = useNavigate();
   const { user, persistUserData } = useUser();
+  const { t } = useTranslation();
 
   const [step, setStep] = useState(1);
-  const [tasks, setTasks] = useState(
-    () =>
-      TASKS_CONFIG.reduce((acc, task) => {
-        acc[task.key] = false;
-        return acc;
-      }, {})
+  const [tasks, setTasks] = useState(() =>
+    TASKS_CONFIG.reduce((acc, task) => {
+      acc[task.key] = false;
+      return acc;
+    }, {})
   );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Redirection si non connecté
   useEffect(() => {
     if (!user) {
       navigate("/login", { replace: true });
@@ -125,10 +125,7 @@ export default function Welcome() {
       const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/welcome/complete-tasks`,
         { total_points: TOTAL_AVAILABLE_POINTS },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
 
       persistUserData(data.user);
@@ -137,12 +134,9 @@ export default function Welcome() {
       const message =
         err.response?.data?.detail ||
         err.message ||
-        "Une erreur est survenue.";
-      setError(
-        Array.isArray(message)
-          ? message.map((e) => e.msg).join(", ")
-          : message
-      );
+        t("welcome.error");
+
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -153,15 +147,10 @@ export default function Welcome() {
     else completeWelcomeTasks();
   };
 
-  if (!user) return <div className="loader">Chargement...</div>;
+  if (!user) return <div className="loader">{t("welcome.loading")}</div>;
 
   return (
-    <motion.div
-      className="welcome-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <motion.div className="welcome-container">
       <AnimatePresence mode="wait">
         {step === 1 ? (
           <Step1 user={user} handleNext={handleNext} />
@@ -186,48 +175,24 @@ export default function Welcome() {
 ============================ */
 
 function Step1({ user, handleNext }) {
+  const { t } = useTranslation();
+
   return (
-    <motion.div
-      className="welcome-step"
-      key="step1"
-      initial={{ x: -50, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 50, opacity: 0 }}
-    >
+    <motion.div className="welcome-step">
       <div className="welcome-card">
-        {user.avatar_url && (
-          <motion.img
-            src={user.avatar_url}
-            alt="Profile"
-            className="welcome-avatar"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-          />
-        )}
+        <h2>{t("welcome.step1.title", { name: user.first_name })}</h2>
 
-        <h2>🎉 Bienvenue {user.first_name} !</h2>
+        <p>{t("welcome.step1.description")}</p>
 
-        <p>
-          Merci de rejoindre notre communauté. Votre sécurité est notre
-          priorité.
-        </p>
-
-        <p className="warning-text">
-          ⚠️ Ne partagez jamais vos informations sensibles.
-        </p>
+        <p className="warning-text">{t("welcome.step1.warning")}</p>
 
         <div className="security-badge">
           <FaLock size={32} />
         </div>
 
-        <motion.button
-          className="next-button"
-          onClick={handleNext}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Continuer <FaArrowRight />
-        </motion.button>
+        <button className="next-button" onClick={handleNext}>
+          {t("welcome.step1.continue")} <FaArrowRight />
+        </button>
       </div>
     </motion.div>
   );
@@ -246,19 +211,18 @@ function Step2({
   handleTaskComplete,
   handleNext,
 }) {
+  const { t } = useTranslation();
+
   return (
-    <motion.div
-      className="welcome-step"
-      key="step2"
-      initial={{ x: 50, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: -50, opacity: 0 }}
-    >
+    <motion.div className="welcome-step">
       <div className="tasks-container">
-        <h2>📝 Activez votre compte</h2>
+        <h2>{t("welcome.step2.title")}</h2>
 
         <div className="total-points">
-          🎯 Points : <strong>{totalPoints}/{TOTAL_AVAILABLE_POINTS}</strong>
+          {t("welcome.step2.points")} :
+          <strong>
+            {totalPoints}/{TOTAL_AVAILABLE_POINTS}
+          </strong>
         </div>
 
         {error && (
@@ -280,23 +244,23 @@ function Step2({
           ))}
         </div>
 
-        <motion.button
+        <button
           className="next-button"
           disabled={!allTasksCompleted || loading}
           onClick={handleNext}
         >
           {loading ? (
             <>
-              <FaSpinner className="spin" /> Traitement...
+              <FaSpinner className="spin" /> {t("welcome.step2.processing")}
             </>
           ) : allTasksCompleted ? (
             <>
-              <FaCheck /> Terminer
+              <FaCheck /> {t("welcome.step2.finish")}
             </>
           ) : (
-            "Complétez toutes les tâches"
+            t("welcome.step2.completeAll")
           )}
-        </motion.button>
+        </button>
       </div>
     </motion.div>
   );
@@ -307,6 +271,7 @@ function Step2({
 ============================ */
 
 function TaskItem({ task, completed, loading, onComplete, index }) {
+  const { t } = useTranslation();
   const [visited, setVisited] = useState(false);
   const [delayActive, setDelayActive] = useState(false);
 
@@ -331,13 +296,8 @@ function TaskItem({ task, completed, loading, onComplete, index }) {
     <motion.div
       className={`task-item ${completed ? "completed" : ""}`}
       style={{ borderLeft: `4px solid ${task.color}` }}
-      initial={{ y: 20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: index * 0.1 }}
     >
-      <div className="task-icon" style={{ color: task.color }}>
-        {task.icon}
-      </div>
+      <div className="task-icon">{task.icon}</div>
 
       <div className="task-content">
         <a
@@ -346,10 +306,12 @@ function TaskItem({ task, completed, loading, onComplete, index }) {
           rel="noopener noreferrer"
           onClick={handleVisit}
         >
-          Rejoindre {task.name}
+          {t("welcome.task.join", { name: task.name })}
         </a>
 
-        <span>+{task.points} pts</span>
+        <span>
+          {t("welcome.task.points", { points: task.points })}
+        </span>
       </div>
 
       {completed ? (
@@ -357,15 +319,12 @@ function TaskItem({ task, completed, loading, onComplete, index }) {
           <FaCheck />
         </div>
       ) : (
-        <button
-          onClick={handleValidate}
-          disabled={!delayActive || loading}
-        >
+        <button onClick={handleValidate} disabled={!delayActive || loading}>
           {!visited
-            ? "Visitez d’abord"
+            ? t("welcome.task.visitFirst")
             : !delayActive
-            ? "Patientez 10s..."
-            : "Valider"}
+            ? t("welcome.task.wait")
+            : t("welcome.task.validate")}
         </button>
       )}
     </motion.div>

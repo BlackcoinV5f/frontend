@@ -3,29 +3,45 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
+import { useTranslation } from "react-i18next";
 import "./AuthChoice.css";
+
+const languages = [
+  { code: "en", label: "EN" },
+  { code: "fr", label: "FR" },
+  { code: "es", label: "ES" },
+  { code: "ar", label: "AR" },
+];
 
 const AuthChoice = () => {
   const navigate = useNavigate();
   const { user, loading } = useUser();
+  const { t, i18n } = useTranslation();
 
+  // 🔥 Charger la langue UNE SEULE FOIS
   useEffect(() => {
-    console.log("✅ AuthChoice monté");
+    const savedLang = localStorage.getItem("appLanguage");
+
+    if (savedLang && i18n.language !== savedLang) {
+      i18n.changeLanguage(savedLang);
+    }
+  }, [i18n]);
+
+  // 🔐 Redirection utilisateur connecté
+  useEffect(() => {
     if (!loading && user) {
-      console.log("🔁 Utilisateur connecté, redirection vers /");
-      navigate("/");
+      navigate("/", { replace: true });
     }
   }, [user, loading, navigate]);
 
-  const handleRegister = () => {
-    console.log("➡️ Redirection vers /register");
-    navigate("/register");
+  // 🌍 Changement de langue
+  const handleLanguageChange = (lang) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("appLanguage", lang);
   };
 
-  const handleLogin = () => {
-    console.log("➡️ Redirection vers /login");
-    navigate("/login");
-  };
+  const handleRegister = () => navigate("/register");
+  const handleLogin = () => navigate("/login");
 
   return (
     <motion.div
@@ -34,28 +50,39 @@ const AuthChoice = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      <h1>Bienvenue sur BlackCoin 🪙</h1>
-      <p>Que souhaites-tu faire ?</p>
+      {/* 🌍 LANGUAGE SWITCH */}
+      <div className="language-switch">
+        {languages.map((lang) => {
+          const isActive = i18n.language.startsWith(lang.code);
+
+          return (
+            <button
+              key={lang.code}
+              onClick={() => handleLanguageChange(lang.code)}
+              className={isActive ? "active" : ""}
+            >
+              {lang.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* CONTENT */}
+      <h1>{t("auth.welcome")}</h1>
+      <p>{t("auth.question")}</p>
 
       {loading ? (
         <div className="loading-indicator">
-          <p>Chargement...</p>
+          <p>{t("auth.loading")}</p>
         </div>
       ) : (
         <div className="auth-buttons">
-          <button
-            type="button"
-            onClick={handleRegister}
-            className="auth-btn"
-          >
-            S’inscrire
+          <button onClick={handleRegister} className="auth-btn">
+            {t("auth.register")}
           </button>
-          <button
-            type="button"
-            onClick={handleLogin}
-            className="auth-btn"
-          >
-            Se connecter
+
+          <button onClick={handleLogin} className="auth-btn">
+            {t("auth.login")}
           </button>
         </div>
       )}

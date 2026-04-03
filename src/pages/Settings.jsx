@@ -38,7 +38,7 @@ const Settings = () => {
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
     i18n.changeLanguage(lang);
-    sessionStorage.setItem("appLanguage", lang);
+    localStorage.setItem("appLanguage", lang);
   };
 
   return (

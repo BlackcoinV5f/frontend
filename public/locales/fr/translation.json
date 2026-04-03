@@ -62,6 +62,131 @@
     "completed": "Complétées",
     "inProgress": "En cours",
     "warningIncomplete": "⚠️ Complétez votre profil pour accéder à toutes les fonctionnalités",
-    "actions": { "verifyKYC": "Vérifier mon identité (KYC)", "editProfile": "Modifier le profil", "save": "Sauvegarder", "logout": "Déconnexion" }
+    "actions": {
+      "verifyKYC": "Vérifier mon identité (KYC)",
+      "editProfile": "Modifier le profil",
+      "save": "Sauvegarder",
+      "logout": "Déconnexion"
+    }
+  },
+  "auth": {
+    "welcome": "Bienvenue sur BlackCoin 🪙",
+    "question": "Que souhaites-tu faire ?",
+    "loading": "Chargement...",
+    "register": "S’inscrire",
+    "login": "Se connecter"
+  },
+  "verifyEmail": {
+    "title": "Vérification d'email",
+    "checkAccount": "Vérifiez votre compte associé à",
+    "codeLabel": "Votre code de vérification :",
+    "expiresIn": "Expire dans",
+    "placeholder": "Entrez le code à 6 chiffres",
+    "verifyButton": "Vérifier le code",
+    "error": "Erreur lors de la vérification",
+    "expired": "⏳ Le code a expiré. Veuillez demander un nouveau code."
+  },
+  "welcome": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue.",
+    "step1": {
+      "title": "🎉 Bienvenue {{name}} !",
+      "description": "Merci de rejoindre notre communauté. Votre sécurité est notre priorité.",
+      "warning": "⚠️ Ne partagez jamais vos informations sensibles.",
+      "continue": "Continuer"
+    },
+    "step2": {
+      "title": "📝 Activez votre compte",
+      "points": "🎯 Points",
+      "processing": "Traitement...",
+      "finish": "Terminer",
+      "completeAll": "Complétez toutes les tâches"
+    },
+    "task": {
+      "join": "Rejoindre {{name}}",
+      "points": "+{{points}} pts",
+      "visitFirst": "Visitez d’abord",
+      "wait": "Patientez 10s...",
+      "validate": "Valider"
+    }
+  },
+  "login": {
+    "title": "Connexion",
+    "emailOrUsername": "Email ou nom d’utilisateur",
+    "password": "Mot de passe",
+    "placeholder": {
+      "emailOrUsername": "email@example.com ou nom_utilisateur",
+      "password": "••••••••"
+    },
+    "errors": {
+      "missingEmail": "Veuillez saisir votre email ou nom d’utilisateur.",
+      "missingPassword": "Veuillez saisir votre mot de passe.",
+      "generic": "Échec de la connexion. Vérifiez vos identifiants."
+    },
+    "button": {
+      "login": "Se connecter",
+      "loading": "Connexion en cours..."
+    },
+    "register": {
+      "text": "Pas encore inscrit ?",
+      "link": "Créer un compte"
+    }
+  },
+  "action": {
+    "category": "Catégorie",
+    "type": "Type",
+    "pricePerPart": "Prix par part",
+    "totalParts": "Parts totales",
+    "dailyEarnings": "Gains journaliers",
+    "status": "Statut",
+    "button": {
+      "contribute": "Contribuer",
+      "unavailable": "Indisponible",
+      "start": "Start",
+      "viewTasks": "Voir les tâches",
+      "claim": "Claim",
+      "pending": "En attente ⏳",
+      "completed": "Terminé",
+      "loading": "⏳ En cours..."
+    },
+    "feedback": {
+      "mustLogin": "⚠️ Vous devez être connecté pour agir.",
+      "buySuccess": "✅ Achat du pack \"{{name}}\" réussi !",
+      "startSuccess": "🚀 Pack \"{{name}}\" démarré !",
+      "claimSuccess": "💰 Gains du pack \"{{name}}\" réclamés avec succès !",
+      "error": "❌ Erreur lors de l’action."
+    }
+  },
+  "actions": {
+    "category": {
+      "finance": "Finance",
+      "realEstate": "Immobilier",
+      "opportunities": "Opportunités",
+      "myAssets": "Mes actifs"
+    },
+    "noActions": "Aucune action disponible",
+    "fetchError": "❌ Erreur lors du chargement des actions"
+  },
+  "bonus": {
+    "authRequired": "Connexion requise",
+    "title": "Programme de Bonus",
+    "subtitle": "Réclamez 0.3 BKC toutes les 24h",
+    "loading": "Chargement...",
+    "available": "Disponible",
+    "availableIn": "Disponible dans :",
+    "points": { "title": "Vos Points" },
+    "conditions": {
+      "title": "Conditions",
+      "hasPack": "Pack actif",
+      "hasDeposit": "Dépôt effectué",
+      "friendsCount": "Parrainage ({{count}}/3)"
+    },
+    "claiming": "Réclamation...",
+    "claim": "Réclamer 0.3 BKC",
+    "success": { "claimed": "🎉 Bonus réclamé avec succès !" },
+    "error": { 
+      "generic": "Erreur lors du chargement", 
+      "claim": "Erreur lors de la réclamation" 
+    }
   }
 }

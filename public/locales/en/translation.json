@@ -1,6 +1,6 @@
 {
   "register": {
-    "title": "Create Account",
+    "title": "Create an Account",
     "personalInfo": "Personal Information",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -13,7 +13,7 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "submit": "Create My Account",
-    "loading": "Creating...",
+    "loading": "Creating account...",
     "success": "Registration successful! Please check your email.",
     "criteria": {
       "length": "At least 8 characters",
@@ -43,12 +43,12 @@
     "instagram": "Instagram",
     "tiktok": "TikTok",
     "aboutTitle": "🌍 About the Project",
-    "aboutText1": "BLACKCOIN is an international collaborative initiative launched on March 21, 2024, aiming to build a strong, transparent, and sustainable digital ecosystem.",
+    "aboutText1": "BLACKCOIN is an international collaborative initiative launched on March 21, 2024, aiming to build a solid, transparent, and sustainable digital ecosystem.",
     "aboutText2": "To view the White Paper, Roadmap, and Privacy Policy, please visit our official website:",
     "communicationTitle": "📌 Official Communication",
-    "communicationText1": "All official information, updates, and important announcements regarding BLACKCOIN are published exclusively through our official website and social media channels.",
-    "communicationText2": "We encourage you to always verify information via our official channels to avoid confusion.",
-    "footer": "Thank you for being part of BLACKCOIN's evolution."
+    "communicationText1": "All official information, updates, and important announcements about BLACKCOIN are published exclusively through our official website and social media channels.",
+    "communicationText2": "We invite you to always verify information via our official channels to avoid any confusion.",
+    "footer": "Thank you for being part of BLACKCOIN’s journey."
   },
   "userProfile": {
     "header": { "close": "Close" },
@@ -58,10 +58,135 @@
     "email": "Email",
     "phone": "Phone",
     "country": "Country",
-    "welcomeTasks": "Welcome Tasks",
+    "welcomeTasks": "Onboarding Tasks",
     "completed": "Completed",
     "inProgress": "In Progress",
     "warningIncomplete": "⚠️ Complete your profile to access all features",
-    "actions": { "verifyKYC": "Verify Identity (KYC)", "editProfile": "Edit Profile", "save": "Save", "logout": "Logout" }
+    "actions": {
+      "verifyKYC": "Verify Identity (KYC)",
+      "editProfile": "Edit Profile",
+      "save": "Save",
+      "logout": "Logout"
+    }
+  },
+  "auth": {
+    "welcome": "Welcome to BlackCoin 🪙",
+    "question": "What would you like to do?",
+    "loading": "Loading...",
+    "register": "Sign Up",
+    "login": "Log In"
+  },
+  "verifyEmail": {
+    "title": "Email Verification",
+    "checkAccount": "Check your account associated with",
+    "codeLabel": "Your verification code:",
+    "expiresIn": "Expires in",
+    "placeholder": "Enter the 6-digit code",
+    "verifyButton": "Verify Code",
+    "error": "Error during verification",
+    "expired": "⏳ The code has expired. Please request a new code."
+  },
+  "welcome": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "step1": {
+      "title": "🎉 Welcome {{name}}!",
+      "description": "Thank you for joining our community. Your security is our priority.",
+      "warning": "⚠️ Never share your sensitive information.",
+      "continue": "Continue"
+    },
+    "step2": {
+      "title": "📝 Activate Your Account",
+      "points": "🎯 Points",
+      "processing": "Processing...",
+      "finish": "Finish",
+      "completeAll": "Complete all tasks"
+    },
+    "task": {
+      "join": "Join {{name}}",
+      "points": "+{{points}} pts",
+      "visitFirst": "Visit first",
+      "wait": "Wait 10s...",
+      "validate": "Validate"
+    }
+  },
+  "login": {
+    "title": "Login",
+    "emailOrUsername": "Email or Username",
+    "password": "Password",
+    "placeholder": {
+      "emailOrUsername": "email@example.com or username",
+      "password": "••••••••"
+    },
+    "errors": {
+      "missingEmail": "Please enter your email or username.",
+      "missingPassword": "Please enter your password.",
+      "generic": "Login failed. Check your credentials."
+    },
+    "button": {
+      "login": "Log In",
+      "loading": "Logging in..."
+    },
+    "register": {
+      "text": "Not registered yet?",
+      "link": "Create an Account"
+    }
+  },
+  "action": {
+    "category": "Category",
+    "type": "Type",
+    "pricePerPart": "Price per Part",
+    "totalParts": "Total Parts",
+    "dailyEarnings": "Daily Earnings",
+    "status": "Status",
+    "button": {
+      "contribute": "Contribute",
+      "unavailable": "Unavailable",
+      "start": "Start",
+      "viewTasks": "View Tasks",
+      "claim": "Claim",
+      "pending": "Pending ⏳",
+      "completed": "Completed",
+      "loading": "⏳ In Progress..."
+    },
+    "feedback": {
+      "mustLogin": "⚠️ You must be logged in to act.",
+      "buySuccess": "✅ Pack \"{{name}}\" purchased successfully!",
+      "startSuccess": "🚀 Pack \"{{name}}\" started!",
+      "claimSuccess": "💰 Pack \"{{name}}\" earnings claimed successfully!",
+      "error": "❌ Error during action."
+    }
+  },
+  "actions": {
+    "category": {
+      "finance": "Finance",
+      "realEstate": "Real Estate",
+      "opportunities": "Opportunities",
+      "myAssets": "My Assets"
+    },
+    "noActions": "No actions available",
+    "fetchError": "❌ Error fetching actions"
+  },
+  "bonus": {
+    "authRequired": "Login required",
+    "title": "Bonus Program",
+    "subtitle": "Claim 0.3 BKC every 24h",
+    "loading": "Loading...",
+    "available": "Available",
+    "availableIn": "Available in:",
+    "points": { "title": "Your Points" },
+    "conditions": {
+      "title": "Conditions",
+      "hasPack": "Active pack",
+      "hasDeposit": "Deposit made",
+      "friendsCount": "Referral ({{count}}/3)"
+    },
+    "claiming": "Claiming...",
+    "claim": "Claim 0.3 BKC",
+    "success": { "claimed": "🎉 Bonus claimed successfully!" },
+    "error": { 
+      "generic": "Error loading data", 
+      "claim": "Error claiming bonus" 
+    }
   }
 }

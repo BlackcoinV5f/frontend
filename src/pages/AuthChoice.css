@@ -41,3 +41,37 @@
 .auth-buttons button:hover {
   background-color: #444;
 }
+
+/* ============================
+   LANGUAGE SWITCH
+============================ */
+
+.language-switch {
+  position: absolute;
+  top: 70px; /* 🔥 au lieu de 20px */
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  z-index: 10; /* pour être au-dessus du contenu */
+}
+
+.language-switch button {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.language-switch button:hover {
+  background-color: #eee;
+}
+
+.language-switch button.active {
+  background-color: #2e2e2e;
+  color: #fff;
+  border-color: #2e2e2e;
+}

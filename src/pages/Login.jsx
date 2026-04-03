@@ -2,51 +2,62 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { useTranslation } from "react-i18next";
 import "./Login.css";
 
 const Login = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { loginUser } = useUser();
+
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
-  const { loginUser } = useUser();
-
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    const value = emailOrUsername.trim();
+
     setLoading(true);
     setError("");
 
     try {
-      if (!emailOrUsername.trim()) {
-        throw new Error("Veuillez saisir votre email ou nom d’utilisateur.");
+      // ✅ Validation frontend propre
+      if (!value) {
+        throw new Error(t("login.errors.missingEmail"));
       }
+
       if (!password) {
-        throw new Error("Veuillez saisir votre mot de passe.");
+        throw new Error(t("login.errors.missingPassword"));
       }
 
-      // Déterminer si c'est un email ou un username
-      const isEmail = emailOrUsername.includes("@");
+      const isEmail = value.includes("@");
 
-      // Appel login via UserContext (les cookies sont gérés par le backend)
+      // ✅ Appel API
       await loginUser({
-        email: isEmail ? emailOrUsername.trim() : undefined,
-        username: !isEmail ? emailOrUsername.trim() : undefined,
+        email: isEmail ? value : undefined,
+        username: !isEmail ? value : undefined,
         password,
       });
 
-      // Redirection après succès
+      // ✅ Redirection
       navigate("/home", { replace: true });
-    } catch (err) {
-      console.error("Erreur login :", err);
 
-      // Gestion rigoureuse des messages d'erreur
+    } catch (err) {
+      console.error("Login error:", err);
+
+      // ⚠️ IMPORTANT : on évite d'afficher brut le message backend
+      const backendMessage = err?.response?.data?.detail;
+
       const msg =
-        err.response?.data?.detail ||
-        err.message ||
-        "Échec de la connexion. Vérifiez vos identifiants.";
+        typeof backendMessage === "string"
+          ? backendMessage
+          : err.message || t("login.errors.generic");
+
       setError(msg);
+
     } finally {
       setLoading(false);
     }
@@ -55,40 +66,56 @@ const Login = () => {
   return (
     <div className="login-container">
       <form className="login-form" onSubmit={handleLogin}>
-        <h2>Connexion</h2>
 
-        <label htmlFor="emailOrUsername">Email ou Nom d’utilisateur</label>
+        <h2>{t("login.title")}</h2>
+
+        {/* EMAIL / USERNAME */}
+        <label htmlFor="emailOrUsername">
+          {t("login.emailOrUsername")}
+        </label>
         <input
           id="emailOrUsername"
           type="text"
-          placeholder="email@example.com ou nom_utilisateur"
+          placeholder={t("login.placeholder.emailOrUsername")}
           value={emailOrUsername}
           onChange={(e) => setEmailOrUsername(e.target.value)}
-          required
+          autoComplete="username"
         />
 
-        <label htmlFor="password">Mot de passe</label>
+        {/* PASSWORD */}
+        <label htmlFor="password">
+          {t("login.password")}
+        </label>
         <input
           id="password"
           type="password"
-          placeholder="••••••••"
+          placeholder={t("login.placeholder.password")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
+          autoComplete="current-password"
         />
 
+        {/* ERROR */}
         {error && <p className="error-message">{error}</p>}
 
+        {/* BUTTON */}
         <button type="submit" disabled={loading}>
-          {loading ? "Connexion en cours..." : "Se connecter"}
+          {loading
+            ? t("login.button.loading")
+            : t("login.button.login")}
         </button>
 
+        {/* REGISTER */}
         <p className="register-link">
-          Pas encore inscrit ?{" "}
-          <span className="link" onClick={() => navigate("/register")}>
-            Créer un compte
+          {t("login.register.text")}{" "}
+          <span
+            className="link"
+            onClick={() => navigate("/register")}
+          >
+            {t("login.register.link")}
           </span>
         </p>
+
       </form>
     </div>
   );
