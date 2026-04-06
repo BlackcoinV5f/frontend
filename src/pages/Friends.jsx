@@ -1,6 +1,7 @@
 // src/components/Friends.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useUser } from "../contexts/UserContext";
 import {
   FaUserFriends,
@@ -14,11 +15,12 @@ import { GiPartyPopper } from "react-icons/gi";
 import "./Friends.css";
 
 const Friends = () => {
+  const { t } = useTranslation();
   const [promoCode, setPromoCode] = useState("");
   const [referrals, setReferrals] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const { user, axiosInstance } = useUser(); // ✅ utilise axiosInstance
+  const { user, axiosInstance } = useUser();
   const hasFetched = useRef(false);
 
   // 🔄 Récupère les données (code promo + filleuls)
@@ -32,12 +34,12 @@ const Friends = () => {
         setReferrals([...new Set(res.data.friends || [])]);
         hasFetched.current = true;
       } catch (err) {
-        console.error("❌ Erreur lors du chargement des données:", err);
+        console.error(t("bonus.error.generic"), err);
       }
     }
 
     fetchFriendsData();
-  }, [user?.id, axiosInstance]);
+  }, [user?.id, axiosInstance, t]);
 
   // ⚡ Génération du code promo
   const handleGenerateCode = async () => {
@@ -48,7 +50,7 @@ const Friends = () => {
       const res = await axiosInstance.post("/friends/generate-code");
       setPromoCode(res.data.code || "");
     } catch (err) {
-      console.error("❌ Erreur lors de la génération du code:", err);
+      console.error(t("bonus.error.generic"), err);
     } finally {
       setIsGenerating(false);
     }
@@ -64,7 +66,7 @@ const Friends = () => {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
       })
-      .catch(() => alert("Erreur lors de la copie du code promo."));
+      .catch(() => alert(t("bonus.friends.errors.copy")));
   };
 
   return (
@@ -82,7 +84,7 @@ const Friends = () => {
         transition={{ type: "spring", stiffness: 300 }}
       >
         <FaUserFriends className="header-icon" />
-        <h2>Programme de Parrainage</h2>
+        <h2>{t("bonus.friends.title")}</h2>
         <GiPartyPopper className="header-icon" />
       </motion.div>
 
@@ -93,7 +95,7 @@ const Friends = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        Invitez vos amis et gagnez des récompenses ensemble !
+        {t("bonus.friends.description")}
       </motion.p>
 
       {/* ===== CODE PROMO ===== */}
@@ -105,7 +107,7 @@ const Friends = () => {
       >
         <h3>
           <FaUserPlus className="section-icon" />
-          Votre code promo
+          {t("bonus.friends.yourCode")}
         </h3>
 
         <motion.button
@@ -116,7 +118,9 @@ const Friends = () => {
           whileTap={{ scale: 0.95 }}
         >
           <FaMagic className="button-icon" />
-          {isGenerating ? "Génération..." : "Générer mon code promo"}
+          {isGenerating 
+            ? t("bonus.friends.generating") 
+            : t("bonus.friends.generate")}
         </motion.button>
 
         {promoCode && (
@@ -137,11 +141,11 @@ const Friends = () => {
             >
               {isCopied ? (
                 <>
-                  <FaCheck className="button-icon" /> Copié !
+                  <FaCheck className="button-icon" /> {t("bonus.friends.copied")}
                 </>
               ) : (
                 <>
-                  <FaCopy className="button-icon" /> Copier
+                  <FaCopy className="button-icon" /> {t("bonus.friends.copy")}
                 </>
               )}
             </motion.button>
@@ -157,7 +161,7 @@ const Friends = () => {
         transition={{ delay: 0.5 }}
       >
         <h3>
-          <FaClipboardList className="section-icon" /> Vos filleuls
+          <FaClipboardList className="section-icon" /> {t("bonus.friends.yourReferrals")}
         </h3>
 
         {referrals.length > 0 ? (
@@ -173,7 +177,7 @@ const Friends = () => {
                 >
                   <div className="user-avatar"></div>
                   <span>{friend}</span>
-                  <div className="user-badge">Filleul</div>
+                  <div className="user-badge">{t("bonus.friends.referral")}</div>
                 </motion.li>
               ))}
             </AnimatePresence>
@@ -186,10 +190,10 @@ const Friends = () => {
           >
             <img
               src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png"
-              alt="No friends"
+              alt={t("bonus.friends.empty.title")}
             />
-            <p>Vous n'avez pas encore invité d'amis</p>
-            <p>Partagez votre code promo pour commencer à gagner des récompenses !</p>
+            <p>{t("bonus.friends.empty.title")}</p>
+            <p>{t("bonus.friends.empty.subtitle")}</p>
           </motion.div>
         )}
       </motion.div>

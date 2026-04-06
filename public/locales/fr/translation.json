@@ -1,7 +1,7 @@
 {
   "register": {
     "title": "Créer un compte",
-    "personalInfo": "Informations Personnelles",
+    "personalInfo": "Informations personnelles",
     "firstName": "Prénom",
     "lastName": "Nom",
     "birthDate": "Date de naissance",
@@ -45,16 +45,21 @@
     "aboutTitle": "🌍 À propos du projet",
     "aboutText1": "BLACKCOIN est une initiative collaborative internationale lancée le 21 mars 2024, visant à construire un écosystème numérique solide, transparent et durable.",
     "aboutText2": "Pour consulter le Livre Blanc, la Feuille de route et la Politique de confidentialité, veuillez visiter notre site officiel :",
-    "communicationTitle": "📌 Communication Officielle",
+    "communicationTitle": "📌 Communication officielle",
     "communicationText1": "Toutes les informations officielles, mises à jour et annonces importantes concernant BLACKCOIN sont publiées exclusivement via notre site officiel et nos réseaux sociaux.",
     "communicationText2": "Nous vous invitons à toujours vérifier les informations via nos canaux officiels afin d’éviter toute confusion.",
     "footer": "Merci de faire partie de l’évolution de BLACKCOIN."
   },
   "userProfile": {
-    "header": { "close": "Fermer" },
-    "status": { "verified": "Vérifié", "pending": "En attente" },
+    "header": {
+      "close": "Fermer"
+    },
+    "status": {
+      "verified": "Vérifié",
+      "pending": "En attente"
+    },
     "profileCompletion": "Complétion du profil",
-    "personalInfo": "Informations Personnelles",
+    "personalInfo": "Informations personnelles",
     "email": "Email",
     "phone": "Téléphone",
     "country": "Pays",
@@ -142,9 +147,9 @@
     "button": {
       "contribute": "Contribuer",
       "unavailable": "Indisponible",
-      "start": "Start",
+      "start": "Démarrer",
       "viewTasks": "Voir les tâches",
-      "claim": "Claim",
+      "claim": "Réclamer",
       "pending": "En attente ⏳",
       "completed": "Terminé",
       "loading": "⏳ En cours..."
@@ -174,7 +179,9 @@
     "loading": "Chargement...",
     "available": "Disponible",
     "availableIn": "Disponible dans :",
-    "points": { "title": "Vos Points" },
+    "points": {
+      "title": "Vos Points"
+    },
     "conditions": {
       "title": "Conditions",
       "hasPack": "Pack actif",
@@ -183,10 +190,37 @@
     },
     "claiming": "Réclamation...",
     "claim": "Réclamer 0.3 BKC",
-    "success": { "claimed": "🎉 Bonus réclamé avec succès !" },
-    "error": { 
-      "generic": "Erreur lors du chargement", 
-      "claim": "Erreur lors de la réclamation" 
+    "success": {
+      "claimed": "🎉 Bonus réclamé avec succès !"
+    },
+    "error": {
+      "generic": "Erreur lors du chargement",
+      "claim": "Erreur lors de la réclamation"
+    },
+    "friends": {
+      "title": "Programme de Parrainage",
+      "description": "Invitez vos amis et gagnez des récompenses ensemble !",
+      "yourCode": "Votre code promo",
+      "generate": "Générer mon code promo",
+      "generating": "Génération...",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "yourReferrals": "Vos filleuls",
+      "referral": "Filleul",
+      "empty": {
+        "title": "Vous n'avez pas encore invité d'amis",
+        "subtitle": "Partagez votre code promo pour commencer à gagner des récompenses !"
+      },
+      "errors": {
+        "copy": "Erreur lors de la copie du code promo."
+      }
     }
+  },
+  "wallet": {
+    "title": "Mon Wallet",
+    "loading": "Chargement...",
+    "depositComing": "Dépôt (bientôt)",
+    "withdraw": "Retrait",
+    "history": "Historique"
   }
 }

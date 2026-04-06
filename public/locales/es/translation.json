@@ -1,18 +1,18 @@
 {
   "register": {
-    "title": "Crear una Cuenta",
-    "personalInfo": "Información Personal",
+    "title": "Crear una cuenta",
+    "personalInfo": "Información personal",
     "firstName": "Nombre",
     "lastName": "Apellido",
-    "birthDate": "Fecha de Nacimiento",
-    "contactInfo": "Información de Contacto",
-    "phoneNumber": "Número de Teléfono",
-    "email": "Correo Electrónico",
-    "telegramUsername": "Usuario de Telegram",
+    "birthDate": "Fecha de nacimiento",
+    "contactInfo": "Información de contacto",
+    "phoneNumber": "Número de teléfono",
+    "email": "Correo electrónico",
+    "telegramUsername": "Nombre de usuario de Telegram",
     "security": "Seguridad",
     "password": "Contraseña",
-    "confirmPassword": "Confirmar Contraseña",
-    "submit": "Crear Mi Cuenta",
+    "confirmPassword": "Confirmar contraseña",
+    "submit": "Crear mi cuenta",
     "loading": "Creando cuenta...",
     "success": "¡Registro exitoso! Por favor, verifica tu correo electrónico.",
     "criteria": {
@@ -30,43 +30,48 @@
       "passwordWeak": "La contraseña es demasiado débil.",
       "invalidBirthDate": "Fecha de nacimiento inválida.",
       "ageTooYoung": "Debes tener al menos 13 años para registrarte.",
-      "generic": "Ocurrió un error. Por favor, intenta de nuevo."
+      "generic": "Ocurrió un error. Por favor, inténtalo de nuevo."
     }
   },
   "info": {
     "title": "📢 Información Oficial — BLACKCOIN",
-    "intro": "El equipo de <1>BLACKCOIN</1> está desarrollando activamente el proyecto con muchas funciones importantes en preparación.",
+    "intro": "El equipo de <1>BLACKCOIN</1> está desarrollando activamente el proyecto con muchas características importantes en preparación.",
     "telegram": "Telegram",
     "twitter": "X (Twitter)",
     "facebook": "Facebook",
     "youtube": "YouTube",
     "instagram": "Instagram",
     "tiktok": "TikTok",
-    "aboutTitle": "🌍 Sobre el Proyecto",
-    "aboutText1": "BLACKCOIN es una iniciativa colaborativa internacional lanzada el 21 de marzo de 2024, destinada a construir un ecosistema digital sólido, transparente y sostenible.",
-    "aboutText2": "Para consultar el Libro Blanco, la Hoja de Ruta y la Política de Privacidad, visita nuestro sitio oficial:",
-    "communicationTitle": "📌 Comunicación Oficial",
-    "communicationText1": "Toda la información oficial, actualizaciones y anuncios importantes sobre BLACKCOIN se publican exclusivamente a través de nuestro sitio oficial y redes sociales.",
+    "aboutTitle": "🌍 Acerca del proyecto",
+    "aboutText1": "BLACKCOIN es una iniciativa colaborativa internacional lanzada el 21 de marzo de 2024, que tiene como objetivo construir un ecosistema digital sólido, transparente y sostenible.",
+    "aboutText2": "Para consultar el Libro Blanco, la Hoja de Ruta y la Política de Privacidad, visita nuestro sitio web oficial:",
+    "communicationTitle": "📌 Comunicación oficial",
+    "communicationText1": "Toda la información oficial, actualizaciones y anuncios importantes sobre BLACKCOIN se publican exclusivamente a través de nuestro sitio web oficial y redes sociales.",
     "communicationText2": "Te invitamos a verificar siempre la información a través de nuestros canales oficiales para evitar confusiones.",
     "footer": "Gracias por ser parte de la evolución de BLACKCOIN."
   },
   "userProfile": {
-    "header": { "close": "Cerrar" },
-    "status": { "verified": "Verificado", "pending": "Pendiente" },
-    "profileCompletion": "Completitud del Perfil",
-    "personalInfo": "Información Personal",
-    "email": "Correo Electrónico",
+    "header": {
+      "close": "Cerrar"
+    },
+    "status": {
+      "verified": "Verificado",
+      "pending": "Pendiente"
+    },
+    "profileCompletion": "Completación del perfil",
+    "personalInfo": "Información personal",
+    "email": "Correo electrónico",
     "phone": "Teléfono",
     "country": "País",
-    "welcomeTasks": "Tareas de Inicio",
+    "welcomeTasks": "Tareas de bienvenida",
     "completed": "Completadas",
-    "inProgress": "En Progreso",
+    "inProgress": "En progreso",
     "warningIncomplete": "⚠️ Completa tu perfil para acceder a todas las funciones",
     "actions": {
-      "verifyKYC": "Verificar Identidad (KYC)",
-      "editProfile": "Editar Perfil",
+      "verifyKYC": "Verificar mi identidad (KYC)",
+      "editProfile": "Editar perfil",
       "save": "Guardar",
-      "logout": "Cerrar Sesión"
+      "logout": "Cerrar sesión"
     }
   },
   "auth": {
@@ -74,29 +79,29 @@
     "question": "¿Qué deseas hacer?",
     "loading": "Cargando...",
     "register": "Registrarse",
-    "login": "Iniciar Sesión"
+    "login": "Iniciar sesión"
   },
   "verifyEmail": {
-    "title": "Verificación de Correo",
-    "checkAccount": "Verifica tu cuenta asociada con",
+    "title": "Verificación de correo electrónico",
+    "checkAccount": "Verifica tu cuenta asociada a",
     "codeLabel": "Tu código de verificación:",
     "expiresIn": "Expira en",
     "placeholder": "Ingresa el código de 6 dígitos",
-    "verifyButton": "Verificar Código",
+    "verifyButton": "Verificar código",
     "error": "Error durante la verificación",
-    "expired": "⏳ El código ha expirado. Por favor solicita un nuevo código."
+    "expired": "⏳ El código ha expirado. Por favor, solicita un nuevo código."
   },
   "welcome": {
     "loading": "Cargando...",
     "error": "Ocurrió un error.",
     "step1": {
-      "title": "🎉 ¡Bienvenido {{name}}!",
+      "title": "🎉 Bienvenido {{name}}!",
       "description": "Gracias por unirte a nuestra comunidad. Tu seguridad es nuestra prioridad.",
       "warning": "⚠️ Nunca compartas tu información sensible.",
       "continue": "Continuar"
     },
     "step2": {
-      "title": "📝 Activa tu Cuenta",
+      "title": "📝 Activa tu cuenta",
       "points": "🎯 Puntos",
       "processing": "Procesando...",
       "finish": "Finalizar",
@@ -105,53 +110,53 @@
     "task": {
       "join": "Unirse a {{name}}",
       "points": "+{{points}} pts",
-      "visitFirst": "Visita primero",
+      "visitFirst": "Visitar primero",
       "wait": "Espera 10s...",
       "validate": "Validar"
     }
   },
   "login": {
-    "title": "Iniciar Sesión",
-    "emailOrUsername": "Correo o Usuario",
+    "title": "Iniciar sesión",
+    "emailOrUsername": "Correo electrónico o nombre de usuario",
     "password": "Contraseña",
     "placeholder": {
-      "emailOrUsername": "email@ejemplo.com o usuario",
+      "emailOrUsername": "email@ejemplo.com o nombre_usuario",
       "password": "••••••••"
     },
     "errors": {
-      "missingEmail": "Por favor ingresa tu correo o usuario.",
-      "missingPassword": "Por favor ingresa tu contraseña.",
+      "missingEmail": "Por favor, ingresa tu correo electrónico o nombre de usuario.",
+      "missingPassword": "Por favor, ingresa tu contraseña.",
       "generic": "Error al iniciar sesión. Verifica tus credenciales."
     },
     "button": {
-      "login": "Iniciar Sesión",
+      "login": "Iniciar sesión",
       "loading": "Iniciando sesión..."
     },
     "register": {
-      "text": "¿No estás registrado?",
-      "link": "Crear una Cuenta"
+      "text": "¿Aún no estás registrado?",
+      "link": "Crear una cuenta"
     }
   },
   "action": {
     "category": "Categoría",
     "type": "Tipo",
-    "pricePerPart": "Precio por Parte",
-    "totalParts": "Partes Totales",
-    "dailyEarnings": "Ganancias Diarias",
+    "pricePerPart": "Precio por parte",
+    "totalParts": "Partes totales",
+    "dailyEarnings": "Ganancias diarias",
     "status": "Estado",
     "button": {
       "contribute": "Contribuir",
-      "unavailable": "No Disponible",
-      "start": "Iniciar",
-      "viewTasks": "Ver Tareas",
+      "unavailable": "No disponible",
+      "start": "Comenzar",
+      "viewTasks": "Ver tareas",
       "claim": "Reclamar",
       "pending": "Pendiente ⏳",
       "completed": "Completado",
-      "loading": "⏳ En Proceso..."
+      "loading": "⏳ Cargando..."
     },
     "feedback": {
-      "mustLogin": "⚠️ Debes iniciar sesión para realizar esta acción.",
-      "buySuccess": "✅ ¡Paquete \"{{name}}\" comprado con éxito!",
+      "mustLogin": "⚠️ Debes iniciar sesión para actuar.",
+      "buySuccess": "✅ ¡Compra del paquete \"{{name}}\" exitosa!",
       "startSuccess": "🚀 ¡Paquete \"{{name}}\" iniciado!",
       "claimSuccess": "💰 ¡Ganancias del paquete \"{{name}}\" reclamadas con éxito!",
       "error": "❌ Error durante la acción."
@@ -162,7 +167,7 @@
       "finance": "Finanzas",
       "realEstate": "Bienes Raíces",
       "opportunities": "Oportunidades",
-      "myAssets": "Mis Activos"
+      "myAssets": "Mis activos"
     },
     "noActions": "No hay acciones disponibles",
     "fetchError": "❌ Error al cargar las acciones"
@@ -170,23 +175,52 @@
   "bonus": {
     "authRequired": "Inicio de sesión requerido",
     "title": "Programa de Bonos",
-    "subtitle": "Reclama 0.3 BKC cada 24h",
+    "subtitle": "Reclama 0.3 BKC cada 24 horas",
     "loading": "Cargando...",
     "available": "Disponible",
     "availableIn": "Disponible en:",
-    "points": { "title": "Tus Puntos" },
+    "points": {
+      "title": "Tus Puntos"
+    },
     "conditions": {
       "title": "Condiciones",
       "hasPack": "Paquete activo",
       "hasDeposit": "Depósito realizado",
-      "friendsCount": "Referencias ({{count}}/3)"
+      "friendsCount": "Referidos ({{count}}/3)"
     },
     "claiming": "Reclamando...",
     "claim": "Reclamar 0.3 BKC",
-    "success": { "claimed": "🎉 ¡Bono reclamado con éxito!" },
-    "error": { 
-      "generic": "Error al cargar", 
-      "claim": "Error al reclamar el bono" 
+    "success": {
+      "claimed": "🎉 ¡Bono reclamado con éxito!"
+    },
+    "error": {
+      "generic": "Error al cargar",
+      "claim": "Error al reclamar el bono"
+    },
+    "friends": {
+      "title": "Programa de Referidos",
+      "description": "¡Invita a tus amigos y ganen recompensas juntos!",
+      "yourCode": "Tu código promocional",
+      "generate": "Generar mi código promocional",
+      "generating": "Generando...",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "yourReferrals": "Tus referidos",
+      "referral": "Referido",
+      "empty": {
+        "title": "Aún no has invitado a ningún amigo",
+        "subtitle": "¡Comparte tu código promocional para comenzar a ganar recompensas!"
+      },
+      "errors": {
+        "copy": "Error al copiar el código promocional."
+      }
     }
+  },
+  "wallet": {
+    "title": "Mi Billetera",
+    "loading": "Cargando...",
+    "depositComing": "Depósito (próximamente)",
+    "withdraw": "Retirar",
+    "history": "Historial"
   }
 }

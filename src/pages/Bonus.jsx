@@ -2,9 +2,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useUser } from "../contexts/UserContext";
+import { useTranslation } from "react-i18next";
 import {
   FaSpinner,
-  FaCheck,
   FaExclamationTriangle,
   FaGift,
   FaUsers,
@@ -16,6 +16,7 @@ import "./bonus.css";
 
 export default function Bonus() {
   const { user } = useUser();
+  const { t } = useTranslation();
   const BACKEND = import.meta.env.VITE_BACKEND_URL;
 
   const [bonus, setBonus] = useState(null);
@@ -26,11 +27,9 @@ export default function Bonus() {
   const [success, setSuccess] = useState("");
   const [countdown, setCountdown] = useState("");
 
-  const notifiedRef = useRef(false); // empêche double notification
+  const notifiedRef = useRef(false);
 
-  // ==========================================================
-  // 🔹 FETCH BONUS STATUS
-  // ==========================================================
+  // ================= FETCH =================
   const fetchBonusData = async () => {
     if (!user) return;
 
@@ -46,16 +45,14 @@ export default function Bonus() {
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Erreur lors du chargement"
+          t("bonus.error.generic")
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // ==========================================================
-  // 🔹 CLAIM BONUS
-  // ==========================================================
+  // ================= CLAIM =================
   const handleClaim = async () => {
     if (!bonus || bonus.status !== "eligible") return;
 
@@ -71,29 +68,25 @@ export default function Bonus() {
       );
 
       setBonus(res.data);
-      setSuccess("🎉 Bonus réclamé avec succès !");
+      setSuccess(t("bonus.success.claimed"));
       notifiedRef.current = false;
     } catch (err) {
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Erreur lors de la réclamation"
+          t("bonus.error.claim")
       );
     } finally {
       setClaiming(false);
     }
   };
 
-  // ==========================================================
-  // 🔹 INITIAL LOAD
-  // ==========================================================
+  // ================= LOAD =================
   useEffect(() => {
     fetchBonusData();
   }, [user]);
 
-  // ==========================================================
-  // 🔹 COUNTDOWN + AUTO REACTIVATION
-  // ==========================================================
+  // ================= COUNTDOWN =================
   useEffect(() => {
     if (!bonus?.next_claim_at || bonus.status !== "cooldown") {
       setCountdown("");
@@ -106,14 +99,10 @@ export default function Bonus() {
       const diff = next - now;
 
       if (diff <= 0) {
-        setCountdown("Disponible");
+        setCountdown(t("bonus.available"));
         if (!notifiedRef.current) {
           notifiedRef.current = true;
-
-          // 🔔 notification frontend
           window.dispatchEvent(new CustomEvent("bonus:available"));
-
-          // 🔄 refresh backend
           fetchBonusData();
         }
         return;
@@ -133,39 +122,36 @@ export default function Bonus() {
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [bonus]);
+  }, [bonus, t]);
 
-  // ==========================================================
-  // 🔹 UI HELPERS
-  // ==========================================================
+  // ================= HELPERS =================
   const total = bonus?.total_points || 1;
   const remaining = bonus?.points_restants || 0;
   const progressPercent = Math.min((remaining / total) * 100, 100);
 
+  // ================= AUTH =================
   if (!user) {
     return (
       <div className="bonus-auth-required">
         <FaExclamationTriangle />
-        <h3>Connexion requise</h3>
+        <h3>{t("bonus.authRequired")}</h3>
       </div>
     );
   }
 
-  // ==========================================================
-  // 🔹 RENDER
-  // ==========================================================
+  // ================= RENDER =================
   return (
     <div className="bonus-page">
       <div className="bonus-header">
         <FaGift className="header-icon" />
-        <h1>Programme de Bonus</h1>
-        <p>Réclamez 0.3 BKC toutes les 24h</p>
+        <h1>{t("bonus.title")}</h1>
+        <p>{t("bonus.subtitle")}</p>
       </div>
 
       {loading && (
         <div className="bonus-loading">
           <FaSpinner className="spin" />
-          Chargement...
+          {t("bonus.loading")}
         </div>
       )}
 
@@ -176,7 +162,7 @@ export default function Bonus() {
         <div className="bonus-content">
           {/* POINTS */}
           <div className="points-card">
-            <h3>Vos Points</h3>
+            <h3>{t("bonus.points.title")}</h3>
             <div className="points-value">
               {remaining} / {total}
             </div>
@@ -190,7 +176,7 @@ export default function Bonus() {
 
             {bonus.status === "cooldown" && (
               <div className="cooldown-info">
-                ⏳ Disponible dans :
+                {t("bonus.availableIn")}
                 <br />
                 <strong>{countdown}</strong>
               </div>
@@ -199,14 +185,14 @@ export default function Bonus() {
 
           {/* CONDITIONS */}
           <div className="conditions-card">
-            <h3>Conditions</h3>
+            <h3>{t("bonus.conditions.title")}</h3>
 
             <div className={`condition-item ${conditions.has_pack ? "completed" : ""}`}>
-              <FaGem /> Pack actif
+              <FaGem /> {t("bonus.conditions.hasPack")}
             </div>
 
             <div className={`condition-item ${conditions.has_deposit ? "completed" : ""}`}>
-              <FaTicketAlt /> Dépôt effectué
+              <FaTicketAlt /> {t("bonus.conditions.hasDeposit")}
             </div>
 
             <div
@@ -214,7 +200,10 @@ export default function Bonus() {
                 conditions.friends_count >= 3 ? "completed" : ""
               }`}
             >
-              <FaUsers /> Parrainage ({conditions.friends_count || 0}/3)
+              <FaUsers />{" "}
+              {t("bonus.conditions.friendsCount", {
+                count: conditions.friends_count || 0,
+              })}
             </div>
           </div>
 
@@ -229,11 +218,11 @@ export default function Bonus() {
             >
               {claiming ? (
                 <>
-                  <FaSpinner className="spin" /> Réclamation...
+                  <FaSpinner className="spin" /> {t("bonus.claiming")}
                 </>
               ) : (
                 <>
-                  <FaCoins /> Réclamer 0.3 BKC
+                  <FaCoins /> {t("bonus.claim")}
                 </>
               )}
             </button>

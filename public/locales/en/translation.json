@@ -1,18 +1,18 @@
 {
   "register": {
-    "title": "Create an Account",
-    "personalInfo": "Personal Information",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "birthDate": "Birth Date",
-    "contactInfo": "Contact Information",
-    "phoneNumber": "Phone Number",
+    "title": "Create an account",
+    "personalInfo": "Personal information",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "birthDate": "Date of birth",
+    "contactInfo": "Contact information",
+    "phoneNumber": "Phone number",
     "email": "Email",
-    "telegramUsername": "Telegram Username",
+    "telegramUsername": "Telegram username",
     "security": "Security",
     "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "submit": "Create My Account",
+    "confirmPassword": "Confirm password",
+    "submit": "Create my account",
     "loading": "Creating account...",
     "success": "Registration successful! Please check your email.",
     "criteria": {
@@ -42,29 +42,34 @@
     "youtube": "YouTube",
     "instagram": "Instagram",
     "tiktok": "TikTok",
-    "aboutTitle": "🌍 About the Project",
-    "aboutText1": "BLACKCOIN is an international collaborative initiative launched on March 21, 2024, aiming to build a solid, transparent, and sustainable digital ecosystem.",
-    "aboutText2": "To view the White Paper, Roadmap, and Privacy Policy, please visit our official website:",
-    "communicationTitle": "📌 Official Communication",
-    "communicationText1": "All official information, updates, and important announcements about BLACKCOIN are published exclusively through our official website and social media channels.",
-    "communicationText2": "We invite you to always verify information via our official channels to avoid any confusion.",
-    "footer": "Thank you for being part of BLACKCOIN’s journey."
+    "aboutTitle": "🌍 About the project",
+    "aboutText1": "BLACKCOIN is an international collaborative initiative launched on March 21, 2024, aiming to build a robust, transparent, and sustainable digital ecosystem.",
+    "aboutText2": "To consult the White Paper, Roadmap, and Privacy Policy, please visit our official website:",
+    "communicationTitle": "📌 Official communication",
+    "communicationText1": "All official information, updates, and important announcements regarding BLACKCOIN are published exclusively through our official website and social networks.",
+    "communicationText2": "We invite you to always verify information through our official channels to avoid any confusion.",
+    "footer": "Thank you for being part of BLACKCOIN's evolution."
   },
   "userProfile": {
-    "header": { "close": "Close" },
-    "status": { "verified": "Verified", "pending": "Pending" },
-    "profileCompletion": "Profile Completion",
-    "personalInfo": "Personal Information",
+    "header": {
+      "close": "Close"
+    },
+    "status": {
+      "verified": "Verified",
+      "pending": "Pending"
+    },
+    "profileCompletion": "Profile completion",
+    "personalInfo": "Personal information",
     "email": "Email",
     "phone": "Phone",
     "country": "Country",
-    "welcomeTasks": "Onboarding Tasks",
+    "welcomeTasks": "Welcome tasks",
     "completed": "Completed",
-    "inProgress": "In Progress",
+    "inProgress": "In progress",
     "warningIncomplete": "⚠️ Complete your profile to access all features",
     "actions": {
-      "verifyKYC": "Verify Identity (KYC)",
-      "editProfile": "Edit Profile",
+      "verifyKYC": "Verify my identity (KYC)",
+      "editProfile": "Edit profile",
       "save": "Save",
       "logout": "Logout"
     }
@@ -73,16 +78,16 @@
     "welcome": "Welcome to BlackCoin 🪙",
     "question": "What would you like to do?",
     "loading": "Loading...",
-    "register": "Sign Up",
-    "login": "Log In"
+    "register": "Sign up",
+    "login": "Log in"
   },
   "verifyEmail": {
-    "title": "Email Verification",
+    "title": "Email verification",
     "checkAccount": "Check your account associated with",
     "codeLabel": "Your verification code:",
     "expiresIn": "Expires in",
     "placeholder": "Enter the 6-digit code",
-    "verifyButton": "Verify Code",
+    "verifyButton": "Verify code",
     "error": "Error during verification",
     "expired": "⏳ The code has expired. Please request a new code."
   },
@@ -96,7 +101,7 @@
       "continue": "Continue"
     },
     "step2": {
-      "title": "📝 Activate Your Account",
+      "title": "📝 Activate your account",
       "points": "🎯 Points",
       "processing": "Processing...",
       "finish": "Finish",
@@ -112,7 +117,7 @@
   },
   "login": {
     "title": "Login",
-    "emailOrUsername": "Email or Username",
+    "emailOrUsername": "Email or username",
     "password": "Password",
     "placeholder": {
       "emailOrUsername": "email@example.com or username",
@@ -124,36 +129,36 @@
       "generic": "Login failed. Check your credentials."
     },
     "button": {
-      "login": "Log In",
+      "login": "Log in",
       "loading": "Logging in..."
     },
     "register": {
       "text": "Not registered yet?",
-      "link": "Create an Account"
+      "link": "Create an account"
     }
   },
   "action": {
     "category": "Category",
     "type": "Type",
-    "pricePerPart": "Price per Part",
-    "totalParts": "Total Parts",
-    "dailyEarnings": "Daily Earnings",
+    "pricePerPart": "Price per share",
+    "totalParts": "Total shares",
+    "dailyEarnings": "Daily earnings",
     "status": "Status",
     "button": {
       "contribute": "Contribute",
       "unavailable": "Unavailable",
       "start": "Start",
-      "viewTasks": "View Tasks",
+      "viewTasks": "View tasks",
       "claim": "Claim",
       "pending": "Pending ⏳",
       "completed": "Completed",
-      "loading": "⏳ In Progress..."
+      "loading": "⏳ Loading..."
     },
     "feedback": {
-      "mustLogin": "⚠️ You must be logged in to act.",
-      "buySuccess": "✅ Pack \"{{name}}\" purchased successfully!",
-      "startSuccess": "🚀 Pack \"{{name}}\" started!",
-      "claimSuccess": "💰 Pack \"{{name}}\" earnings claimed successfully!",
+      "mustLogin": "⚠️ You must be logged in to take action.",
+      "buySuccess": "✅ Successfully purchased \"{{name}}\" pack!",
+      "startSuccess": "🚀 \"{{name}}\" pack started!",
+      "claimSuccess": "💰 \"{{name}}\" pack earnings claimed successfully!",
       "error": "❌ Error during action."
     }
   },
@@ -162,31 +167,60 @@
       "finance": "Finance",
       "realEstate": "Real Estate",
       "opportunities": "Opportunities",
-      "myAssets": "My Assets"
+      "myAssets": "My assets"
     },
     "noActions": "No actions available",
-    "fetchError": "❌ Error fetching actions"
+    "fetchError": "❌ Error loading actions"
   },
   "bonus": {
     "authRequired": "Login required",
     "title": "Bonus Program",
-    "subtitle": "Claim 0.3 BKC every 24h",
+    "subtitle": "Claim 0.3 BKC every 24 hours",
     "loading": "Loading...",
     "available": "Available",
     "availableIn": "Available in:",
-    "points": { "title": "Your Points" },
+    "points": {
+      "title": "Your Points"
+    },
     "conditions": {
       "title": "Conditions",
       "hasPack": "Active pack",
       "hasDeposit": "Deposit made",
-      "friendsCount": "Referral ({{count}}/3)"
+      "friendsCount": "Referrals ({{count}}/3)"
     },
     "claiming": "Claiming...",
     "claim": "Claim 0.3 BKC",
-    "success": { "claimed": "🎉 Bonus claimed successfully!" },
-    "error": { 
-      "generic": "Error loading data", 
-      "claim": "Error claiming bonus" 
+    "success": {
+      "claimed": "🎉 Bonus claimed successfully!"
+    },
+    "error": {
+      "generic": "Error loading",
+      "claim": "Error claiming bonus"
+    },
+    "friends": {
+      "title": "Referral Program",
+      "description": "Invite your friends and earn rewards together!",
+      "yourCode": "Your promo code",
+      "generate": "Generate my promo code",
+      "generating": "Generating...",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "yourReferrals": "Your referrals",
+      "referral": "Referral",
+      "empty": {
+        "title": "You haven't invited any friends yet",
+        "subtitle": "Share your promo code to start earning rewards!"
+      },
+      "errors": {
+        "copy": "Error copying promo code."
+      }
     }
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "loading": "Loading...",
+    "depositComing": "Deposit (coming soon)",
+    "withdraw": "Withdraw",
+    "history": "History"
   }
 }

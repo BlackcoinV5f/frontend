@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { useTranslation } from "react-i18next";
 
 import { FaWallet } from "react-icons/fa";
 import { GiReceiveMoney, GiTakeMyMoney } from "react-icons/gi";
@@ -15,9 +16,10 @@ import "./Wallet.css";
 const Wallet = () => {
   const { user, loading } = useUser();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (loading || !user) {
-    return <div>Chargement...</div>;
+    return <div>{t('wallet.loading')}</div>;
   }
 
   return (
@@ -32,7 +34,7 @@ const Wallet = () => {
         whileHover={{ scale: 1.05 }}
       >
         <FaWallet className="wallet-icon" />
-        <h2>Mon Wallet</h2>
+        <h2>{t('wallet.title')}</h2>
         <FaWallet className="wallet-icon" />
       </motion.div>
 
@@ -48,7 +50,7 @@ const Wallet = () => {
           whileTap={{ scale: 1 }}
         >
           <GiReceiveMoney />
-          <span>Dépôt (bientôt)</span>
+          <span>{t('wallet.depositComing')}</span>
         </motion.button>
 
         {/* ✅ RETRAIT */}
@@ -60,7 +62,7 @@ const Wallet = () => {
           onClick={() => navigate("/retrait-methode")}
         >
           <GiTakeMyMoney />
-          <span>Retrait</span>
+          <span>{t('wallet.withdraw')}</span>
         </motion.button>
 
         {/* ✅ HISTORIQUE */}
@@ -72,7 +74,7 @@ const Wallet = () => {
           onClick={() => navigate("/historic")}
         >
           <AiOutlineHistory />
-          <span>Historique</span>
+          <span>{t('wallet.history')}</span>
         </motion.button>
 
       </div>
