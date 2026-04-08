@@ -1,9 +1,11 @@
 // src/components/MiningCircle.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { useUser } from "../contexts/UserContext";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 import "react-circular-progressbar/dist/styles.css";
 import "./MiningCircle.css";
-import { useUser } from "../contexts/UserContext";
 
 import level1 from "../assets/level1.png";
 import level2 from "../assets/level2.png";
@@ -28,20 +30,21 @@ const levelImages = {
 };
 
 const MiningCircle = () => {
-  const { user } = useUser();
+  const { user, axiosInstance } = useUser();
+  const queryClient = useQueryClient();
 
+  const intervalRef = useRef(null);
+
+  // 🔥 STATE LOCAL (temps réel)
   const [progress, setProgress] = useState(0);
-  const [status, setStatus] = useState("idle"); // idle | running | ready
+  const [status, setStatus] = useState("idle");
   const [buttonText, setButtonText] = useState("START");
-
   const [level, setLevel] = useState(1);
   const [timeLeft, setTimeLeft] = useState(0);
   const [cycleMs, setCycleMs] = useState(0);
 
-  const intervalRef = useRef(null);
-
   // -------------------------
-  // Format time
+  // FORMAT TIME
   // -------------------------
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -52,119 +55,97 @@ const MiningCircle = () => {
   };
 
   // -------------------------
-  // Fetch mining status (SOURCE UNIQUE)
+  // 🔥 QUERY (SOURCE BACKEND)
   // -------------------------
-  const fetchMiningStatus = async () => {
-    if (!user?.id) return;
-
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/mining/status/${user.id}`,
-        { credentials: "include" }
-      );
-
-      const data = await res.json();
-
-      // 🔥 LEVEL DIRECTEMENT DU BACKEND
-      setLevel(data.level || 1);
-
-      clearInterval(intervalRef.current);
-
-      if (data.status === "running") {
-        setStatus("running");
-        setTimeLeft(data.remaining_time_ms);
-        setCycleMs(data.total_cycle_ms);
-
-        setButtonText(formatTime(data.remaining_time_ms));
-
-        intervalRef.current = setInterval(() => {
-          setTimeLeft((prev) => {
-            if (prev <= 1000) {
-              clearInterval(intervalRef.current);
-              setProgress(100);
-              setStatus("ready");
-              setButtonText("CLAIM");
-              return 0;
-            }
-
-            const updated = prev - 1000;
-
-            const progressValue =
-              ((data.total_cycle_ms - updated) / data.total_cycle_ms) * 100;
-
-            setProgress(progressValue);
-            setButtonText(formatTime(updated));
-
-            return updated;
-          });
-        }, 1000);
-      } else if (data.status === "ready_to_claim") {
-        setProgress(100);
-        setStatus("ready");
-        setButtonText("CLAIM");
-      } else {
-        setProgress(0);
-        setStatus("idle");
-        setButtonText("START");
-      }
-    } catch (err) {
-      console.error("Erreur statut :", err);
-    }
-  };
+  const { data } = useQuery({
+    queryKey: ["mining", user?.id],
+    queryFn: async () => {
+      const res = await axiosInstance.get(`/mining/status/${user.id}`);
+      return res.data;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 15, // 15 min
+    refetchOnWindowFocus: false,
+  });
 
   // -------------------------
-  // Start mining
-  // -------------------------
-  const startMining = async () => {
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/mining/start/${user.id}`,
-        { method: "POST", credentials: "include" }
-      );
-
-      const data = await res.json();
-
-      if (data.status === "authorized") {
-        fetchMiningStatus();
-      }
-    } catch (err) {
-      console.error("Erreur start :", err);
-    }
-  };
-
-  // -------------------------
-  // Claim
-  // -------------------------
-  const claimPoints = async () => {
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/mining/claim/${user.id}`,
-        { method: "POST", credentials: "include" }
-      );
-
-      const data = await res.json();
-
-      if (data.status === "success") {
-        setProgress(0);
-        setStatus("idle");
-        setButtonText("START");
-
-        // 🔥 refresh mining status (pas fetchStats)
-        await fetchMiningStatus();
-      }
-    } catch (err) {
-      console.error("Erreur claim :", err);
-    }
-  };
-
-  // -------------------------
-  // INIT
+  // SYNC DATA → LOCAL STATE
   // -------------------------
   useEffect(() => {
-    fetchMiningStatus();
+    if (!data) return;
+
+    setLevel(data.level || 1);
+    clearInterval(intervalRef.current);
+
+    if (data.status === "running") {
+      setStatus("running");
+      setTimeLeft(data.remaining_time_ms);
+      setCycleMs(data.total_cycle_ms);
+      setButtonText(formatTime(data.remaining_time_ms));
+
+      intervalRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1000) {
+            clearInterval(intervalRef.current);
+            setProgress(100);
+            setStatus("ready");
+            setButtonText("CLAIM");
+            return 0;
+          }
+
+          const updated = prev - 1000;
+
+          const progressValue =
+            ((data.total_cycle_ms - updated) / data.total_cycle_ms) * 100;
+
+          setProgress(progressValue);
+          setButtonText(formatTime(updated));
+
+          return updated;
+        });
+      }, 1000);
+    } else if (data.status === "ready_to_claim") {
+      setProgress(100);
+      setStatus("ready");
+      setButtonText("CLAIM");
+    } else {
+      setProgress(0);
+      setStatus("idle");
+      setButtonText("START");
+    }
 
     return () => clearInterval(intervalRef.current);
-  }, [user]);
+  }, [data]);
+
+  // -------------------------
+  // 🚀 START
+  // -------------------------
+  const { mutate: startMining } = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post(`/mining/start/${user.id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["mining", user?.id]);
+    },
+  });
+
+  // -------------------------
+  // 🎁 CLAIM
+  // -------------------------
+  const { mutate: claimPoints } = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post(`/mining/claim/${user.id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      setProgress(0);
+      setStatus("idle");
+      setButtonText("START");
+
+      queryClient.invalidateQueries(["mining", user?.id]);
+    },
+  });
 
   return (
     <div className="mining-wrapper">
@@ -190,7 +171,9 @@ const MiningCircle = () => {
       <button
         className="mining-button"
         disabled={status === "running" && buttonText !== "CLAIM"}
-        onClick={status === "idle" ? startMining : claimPoints}
+        onClick={() =>
+          status === "idle" ? startMining() : claimPoints()
+        }
       >
         {buttonText}
       </button>

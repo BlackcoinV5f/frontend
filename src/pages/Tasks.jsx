@@ -1,53 +1,58 @@
 // src/pages/Tasks.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTrophy, FaExternalLinkAlt, FaClock } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import "./Tasks.css";
 
 const Tasks = () => {
   const { user, axiosInstance } = useUser();
-  const [loading, setLoading] = useState(true);
-  const [tasks, setTasks] = useState([]);
-  const [completedCount, setCompletedCount] = useState(0);
   const navigate = useNavigate();
 
-  // Charger les tâches depuis l’API
-  const fetchTasks = async () => {
-    if (!user) return;
-    setLoading(true);
+  const [tasks, setTasks] = useState([]);
 
-    try {
+  // ✅ React Query (même logique que Check.jsx)
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["tasks", user?.id],
+    queryFn: async () => {
       const [tasksRes, completedRes] = await Promise.all([
         axiosInstance.get("/tasks/me/pending"),
         axiosInstance.get("/tasks/me/completed-count"),
       ]);
 
-      const styledTasks = tasksRes.data.map((t) => ({
-  ...t,
-  icon: t.logo ? `/${t.logo}` : "/default.png", // ✅ chemin public
-  color: "#ccc",
-  time_left: t.time_left || 0,
-}));
+      return {
+        tasks: tasksRes.data,
+        completedCount: completedRes.data.completed_tasks || 0,
+      };
+    },
+    enabled: !!user,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
-      setTasks(styledTasks);
-      setCompletedCount(completedRes.data.completed_tasks || 0);
-    } catch (err) {
-      console.error("❌ Erreur chargement des tâches :", err);
-      setTasks([]);
-      setCompletedCount(0);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Charger les tâches au montage et quand l’utilisateur change
+  // ✅ Transformer les tâches quand data arrive
   useEffect(() => {
-    fetchTasks();
-  }, [user?.id]);
+    if (!data?.tasks) return;
 
-  // Décrémenter les timers chaque seconde
+    const styledTasks = data.tasks.map((t) => ({
+      ...t,
+      icon: t.logo ? `/${t.logo}` : "/default.png",
+      color: "#ccc",
+      time_left: t.time_left || 0,
+    }));
+
+    setTasks(styledTasks);
+  }, [data]);
+
+  // ✅ Timer local (comme avant)
   useEffect(() => {
     const interval = setInterval(() => {
       setTasks((prev) =>
@@ -56,14 +61,47 @@ const Tasks = () => {
         )
       );
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
+
+  if (!user) {
+    return (
+      <div className="tasks-container">
+        ⚠️ Connecte-toi pour voir les tâches
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="loading-spinner">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="tasks-container">
+        ❌ Erreur chargement des tâches
+      </div>
+    );
+  }
+
+  const completedCount = data?.completedCount || 0;
+  const totalTasks = tasks.length + completedCount;
+  const progress =
+    totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
   const handleTaskClick = async (task) => {
     try {
       await axiosInstance.post(`/tasks/${task.id}/start`);
       window.open(task.link, "_blank");
-      fetchTasks();
+      refetch(); // ✅ refresh propre React Query
     } catch (err) {
       console.error("❌ Erreur démarrage tâche :", err);
     }
@@ -82,9 +120,6 @@ const Tasks = () => {
       .padStart(2, "0")}`;
   };
 
-  const totalTasks = tasks.length + completedCount;
-  const progress = totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
-
   return (
     <motion.div
       className="tasks-container"
@@ -99,6 +134,7 @@ const Tasks = () => {
         transition={{ delay: 0.2 }}
       >
         <h2>📋 Tâches à accomplir</h2>
+
         <div className="progress-container">
           <div className="progress-bar">
             <motion.div
@@ -112,104 +148,80 @@ const Tasks = () => {
         </div>
       </motion.div>
 
-      {loading ? (
-        <div className="loading-spinner">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          />
-          
-        </div>
-      ) : (
-        <motion.div
-          className="tasks-list"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <AnimatePresence>
-            {tasks.map((task, index) => (
-              <motion.div
-                key={task.id}
-                className="task-item"
-                style={{ borderLeft: `4px solid ${task.color}` }}
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.1 * index, type: "spring" }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="task-content">
-                  <div className="task-info">
-                    <div className="task-platform">
-                      <img
-                        src={task.icon}
-                        alt={task.title}
-                        className="platform-icon"
-                      />
-                      <span>{task.title}</span>
-                    </div>
-                    <div className="task-points">
-                      <FaTrophy className="trophy-icon" />
-                      <span>{task.reward_points} pts</span>
-                    </div>
+      <motion.div
+        className="tasks-list"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+      >
+        <AnimatePresence>
+          {tasks.map((task, index) => (
+            <motion.div
+              key={task.id}
+              className="task-item"
+              style={{ borderLeft: `4px solid ${task.color}` }}
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.1 * index, type: "spring" }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="task-content">
+                <div className="task-info">
+                  <div className="task-platform">
+                    <img
+                      src={task.icon}
+                      alt={task.title}
+                      className="platform-icon"
+                    />
+                    <span>{task.title}</span>
                   </div>
 
-                  {/* --- Logique d'état des tâches --- */}
-                  {task.completed ? (
-                    <motion.div
-                      className="completed-badge"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      ✅ Complétée
-                    </motion.div>
-                  ) : task.started_at && task.time_left > 0 ? (
-                    <motion.div
-                      className="cooldown-container"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <div className="cooldown-timer">
-                        <FaClock className="clock-icon" />
-                        <span>{formatTime(task.time_left)}</span>
-                      </div>
-                      <button className="validate-button disabled" disabled>
-                        <FaCheck /> Valider
-                      </button>
-                    </motion.div>
-                  ) : task.started_at && task.time_left === 0 ? (
-                    <motion.button
-                      onClick={() => handleValidateClick(task)}
-                      className="validate-button"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <FaCheck /> Valider
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      onClick={() => handleTaskClick(task)}
-                      className="task-button"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <FaExternalLinkAlt /> Commencer
-                    </motion.button>
-                  )}
+                  <div className="task-points">
+                    <FaTrophy className="trophy-icon" />
+                    <span>{task.reward_points} pts</span>
+                  </div>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {tasks.length === 0 && !loading && (
-            <div className="no-tasks">
-              🎉 Vous avez terminé toutes les tâches !
-            </div>
-          )}
-        </motion.div>
-      )}
+
+                {/* LOGIQUE */}
+                {task.completed ? (
+                  <div className="completed-badge">✅ Complétée</div>
+                ) : task.started_at && task.time_left > 0 ? (
+                  <div className="cooldown-container">
+                    <div className="cooldown-timer">
+                      <FaClock />
+                      <span>{formatTime(task.time_left)}</span>
+                    </div>
+                    <button className="validate-button disabled" disabled>
+                      <FaCheck /> Valider
+                    </button>
+                  </div>
+                ) : task.started_at && task.time_left === 0 ? (
+                  <button
+                    onClick={() => handleValidateClick(task)}
+                    className="validate-button"
+                  >
+                    <FaCheck /> Valider
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleTaskClick(task)}
+                    className="task-button"
+                  >
+                    <FaExternalLinkAlt /> Commencer
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {tasks.length === 0 && (
+          <div className="no-tasks">
+            🎉 Vous avez terminé toutes les tâches !
+          </div>
+        )}
+      </motion.div>
     </motion.div>
   );
 };

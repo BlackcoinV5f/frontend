@@ -1,112 +1,87 @@
-import React, { useEffect, useState } from "react";
+// src/pages/Historic.jsx
+import React from "react";
 import { useAdm } from "../contexts/AdmContext";
+import { useQuery } from "@tanstack/react-query";
 import "./Historic.css";
 
-const Historic = () => {
+export default function Historic() {
   const { user, axiosDeposit } = useAdm();
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      if (!user?.id) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError("");
-        const res = await axiosDeposit.get(`/history/${user.id}`);
-        setHistory(res.data);
-      } catch (err) {
-        console.error("Erreur récupération historique:", err);
-        setError("Impossible de charger l'historique des transactions");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHistory();
-  }, [user, axiosDeposit]);
+  const { data: history = [], isLoading, isError } = useQuery({
+    queryKey: ["history", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const res = await axiosDeposit.get(`/history/${user.id}`);
+      return res.data;
+    },
+    enabled: !!user?.id,
+    staleTime: 15 * 60 * 1000, // 15 minutes
+    cacheTime: 15 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   const getStatusBadge = (status) => {
-    const statusLower = status?.toLowerCase() || "";
-    if (statusLower.includes("approved") || statusLower.includes("approuvé")) {
-      return <span className="status approved">✓ Approuvé</span>;
-    } else if (statusLower.includes("rejected") || statusLower.includes("rejeté")) {
-      return <span className="status rejected">✗ Rejeté</span>;
-    } else if (statusLower.includes("pending") || statusLower.includes("attente")) {
-      return <span className="status pending">⏳ En attente</span>;
-    } else {
-      return <span className="status unknown">{status || "Inconnu"}</span>;
-    }
+    const s = (status || "").toLowerCase();
+    if (s.includes("approved") || s.includes("approuvé")) return <span className="status approved">✓ Approuvé</span>;
+    if (s.includes("rejected") || s.includes("rejeté")) return <span className="status rejected">✗ Rejeté</span>;
+    if (s.includes("pending") || s.includes("attente")) return <span className="status pending">⏳ En attente</span>;
+    return <span className="status unknown">{status || "Inconnu"}</span>;
   };
 
-  const getMethodIcon = (methodName) => {
-    if (!methodName) return "💳";
-    const name = methodName.toLowerCase();
-    if (name.includes("mtn")) return "📱";
-    if (name.includes("orange")) return "🟠";
-    if (name.includes("moov")) return "🔵";
-    if (name.includes("wave")) return "🌊";
-    if (name.includes("card") || name.includes("carte")) return "💳";
+  const getMethodIcon = (name) => {
+    if (!name) return "💳";
+    const n = name.toLowerCase();
+    if (n.includes("mtn")) return "📱";
+    if (n.includes("orange")) return "🟠";
+    if (n.includes("moov")) return "🔵";
+    if (n.includes("wave")) return "🌊";
+    if (n.includes("card") || n.includes("carte")) return "💳";
     return "💳";
   };
 
   const formatDate = (value) => {
     if (!value) return "-";
-    if (!isNaN(Date.parse(value))) {
-      const dateObj = new Date(value);
-      return dateObj.toLocaleString("fr-FR", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    }
-    return value;
+    const d = new Date(value);
+    return !isNaN(d) ? d.toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }) : value;
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="historic-page">
         <h1 className="historic-title">HISTORIQUE</h1>
-        <div className="historic-container">
-          <div className="loading-state">
-            <div className="loading-spinner"></div>
-            <p>Chargement de l'historique...</p>
-          </div>
+        <div className="historic-container loading-state">
+          <div className="loading-spinner"></div>
+          <p>Chargement de l'historique...</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="historic-page">
         <h1 className="historic-title">HISTORIQUE</h1>
-        <div className="historic-container">
-          <div className="error-message">
-            <span className="error-icon">⚠️</span> {error}
-          </div>
+        <div className="historic-container error-message">
+          <span className="error-icon">⚠️</span> Impossible de charger l'historique des transactions
         </div>
       </div>
     );
   }
 
-  if (history.length === 0) {
+  if (!history.length) {
     return (
       <div className="historic-page">
         <h1 className="historic-title">HISTORIQUE</h1>
-        <div className="historic-container">
-          <div className="empty-state">
-            <div className="empty-icon">📊</div>
-            <h3>Aucune transaction trouvée</h3>
-            <p>Vos transactions apparaîtront ici</p>
-          </div>
+        <div className="historic-container empty-state">
+          <div className="empty-icon">📊</div>
+          <h3>Aucune transaction trouvée</h3>
+          <p>Vos transactions apparaîtront ici</p>
         </div>
       </div>
     );
@@ -134,17 +109,15 @@ const Historic = () => {
               </tr>
             </thead>
             <tbody>
-              {history.map((transaction, index) => (
-                <tr key={transaction.id || index}>
+              {history.map((t, i) => (
+                <tr key={t.id || i}>
                   <td>
-                    <span className="method-icon">{getMethodIcon(transaction.method_name)}</span>{" "}
-                    {transaction.method_name || "Non spécifié"}
+                    <span className="method-icon">{getMethodIcon(t.method_name)}</span>{" "}
+                    {t.method_name || "Non spécifié"}
                   </td>
-                  <td>
-                    {transaction.amount} <span className="currency">$BKC</span>
-                  </td>
-                  <td>{getStatusBadge(transaction.status)}</td>
-                  <td>{formatDate(transaction.created_at || transaction.date)}</td>
+                  <td>{t.amount} <span className="currency">$BKC</span></td>
+                  <td>{getStatusBadge(t.status)}</td>
+                  <td>{formatDate(t.created_at || t.date)}</td>
                 </tr>
               ))}
             </tbody>
@@ -153,6 +126,4 @@ const Historic = () => {
       </div>
     </div>
   );
-};
-
-export default Historic;
+}

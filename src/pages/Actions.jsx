@@ -1,19 +1,37 @@
-import React, { useState, useEffect } from "react";
+// src/pages/Actions.jsx
+import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext.jsx";
 import ActionCard from "../components/ActionCard.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { useTranslation } from "react-i18next";
 import "./Actions.css";
 
-// Icônes Lucide
 import { DollarSign, Building2, Sparkles, User2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 const Actions = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("finance");
-  const [actions, setActions] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { axiosInstance, user } = useUser();
+
+  // -----------------------------
+  // React Query v5 (signature objet)
+  // -----------------------------
+  const { data: actions = [], isLoading, refetch } = useQuery({
+    queryKey: ["actions", activeTab, user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      if (activeTab === "myactif") {
+        const res = await axiosInstance.get("/actions/my-packs");
+        return res.data || [];
+      } else {
+        const res = await axiosInstance.get(`/actions/category/${activeTab}`);
+        return res.data || [];
+      }
+    },
+    enabled: !!user?.id,
+    keepPreviousData: true,
+  });
 
   const categories = [
     { id: "finance", label: t("actions.category.finance"), icon: <DollarSign size={18} /> },
@@ -22,34 +40,13 @@ const Actions = () => {
     { id: "myactif", label: t("actions.category.myAssets"), icon: <User2 size={18} /> },
   ];
 
-  const fetchActions = async () => {
-    setLoading(true);
-    try {
-      let response;
-      if (activeTab === "myactif") {
-        response = await axiosInstance.get("/actions/my-packs");
-      } else {
-        response = await axiosInstance.get(`/actions/category/${activeTab}`);
-      }
-      setActions(response.data || []);
-    } catch (error) {
-      console.error(t("actions.fetchError"), error);
-      setActions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchActions();
-  }, [activeTab, user]);
-
-  if (loading) return <LoadingSpinner fullScreen />;
-
   const cardContext = activeTab === "myactif" ? "owned" : "available";
+
+  if (isLoading) return <LoadingSpinner fullScreen />;
 
   return (
     <div className="actions-page">
+      {/* ===== Barres de catégories ===== */}
       <div className="categories-bar">
         {categories.map(({ id, label, icon }) => (
           <button
@@ -63,6 +60,7 @@ const Actions = () => {
         ))}
       </div>
 
+      {/* ===== Contenu des actions ===== */}
       <div className="actions-content">
         {actions.length === 0 ? (
           <p className="no-actions">{t("actions.noActions")}</p>
@@ -77,6 +75,7 @@ const Actions = () => {
                   pack_status: action.pack_status || action.status,
                 }}
                 context={cardContext}
+                onActionComplete={() => refetch()}
               />
             ))}
           </div>

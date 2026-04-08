@@ -1,40 +1,38 @@
 // src/pages/RetraitMethode.jsx
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAdm } from "../contexts/AdmContext";
+import { useQuery } from "@tanstack/react-query";
 import "./RetraitMethode.css";
 
-const RetraitMethode = () => {
+export default function RetraitMethode() {
   const { axiosDeposit } = useAdm();
-  const [methods, setMethods] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchMethods = async () => {
-      try {
-        const response = await axiosDeposit.get("/withdraw-methods");
-        setMethods(response.data);
-      } catch (err) {
-        console.error("Erreur lors du chargement des méthodes de retrait :", err);
-        setError("Impossible de charger les méthodes de retrait pour le moment.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMethods();
-  }, [axiosDeposit]);
+  // ✅ React Query pour récupérer les méthodes de retrait
+  const {
+    data: methods,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["withdrawMethods"],
+    queryFn: async () => {
+      const res = await axiosDeposit.get("/withdraw-methods");
+      return res.data || [];
+    },
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
   const handleSelectMethod = (method) => {
     navigate("/retrait", { state: { selectedMethod: method } });
   };
 
-  if (loading) return <p className="withdraw-loading">Chargement des méthodes...</p>;
-  if (error) return <p className="withdraw-error">{error}</p>;
-  if (methods.length === 0) return <p className="withdraw-empty">Aucune méthode de retrait disponible.</p>;
+  if (isLoading) return <p className="withdraw-loading">Chargement des méthodes...</p>;
+  if (isError) return <p className="withdraw-error">❌ Impossible de charger les méthodes de retrait</p>;
+  if (!methods || methods.length === 0) return <p className="withdraw-empty">Aucune méthode de retrait disponible.</p>;
 
   return (
     <div className="withdraw-container">
@@ -63,6 +61,4 @@ const RetraitMethode = () => {
       </div>
     </div>
   );
-};
-
-export default RetraitMethode;
+}

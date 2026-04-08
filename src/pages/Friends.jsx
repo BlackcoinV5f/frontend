@@ -1,8 +1,10 @@
 // src/components/Friends.jsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useUser } from "../contexts/UserContext";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 import {
   FaUserFriends,
   FaCopy,
@@ -16,47 +18,44 @@ import "./Friends.css";
 
 const Friends = () => {
   const { t } = useTranslation();
-  const [promoCode, setPromoCode] = useState("");
-  const [referrals, setReferrals] = useState([]);
-  const [isCopied, setIsCopied] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
   const { user, axiosInstance } = useUser();
-  const hasFetched = useRef(false);
+  const queryClient = useQueryClient();
 
-  // 🔄 Récupère les données (code promo + filleuls)
-  useEffect(() => {
-    if (!user?.id || hasFetched.current) return;
+  const [isCopied, setIsCopied] = useState(false);
 
-    async function fetchFriendsData() {
-      try {
-        const res = await axiosInstance.get("/friends/me");
-        setPromoCode(res.data.promo_code || "");
-        setReferrals([...new Set(res.data.friends || [])]);
-        hasFetched.current = true;
-      } catch (err) {
-        console.error(t("bonus.error.generic"), err);
-      }
-    }
+  // ✅ QUERY PRINCIPALE
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["friends", user?.id],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/friends/me/");
+      return res.data;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 15, // 15 min cache
+    refetchOnWindowFocus: false,
+  });
 
-    fetchFriendsData();
-  }, [user?.id, axiosInstance, t]);
+  // ✅ MUTATION (generate code)
+  const { mutate: generateCode, isPending: isGenerating } = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post("/friends/generate-code/");
+      return res.data;
+    },
+    onSuccess: () => {
+      // 🔥 refresh automatique des données
+      queryClient.invalidateQueries(["friends", user?.id]);
+    },
+  });
 
-  // ⚡ Génération du code promo
-  const handleGenerateCode = async () => {
-    if (!user?.id) return;
+  // ✅ extraction
+  const promoCode = data?.promo_code || "";
+  const referrals = [...new Set(data?.friends || [])];
 
-    setIsGenerating(true);
-    try {
-      const res = await axiosInstance.post("/friends/generate-code");
-      setPromoCode(res.data.code || "");
-    } catch (err) {
-      console.error(t("bonus.error.generic"), err);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // 📋 Copier le code promo
+  // 📋 copier
   const handleCopyCode = () => {
     if (!promoCode) return;
 
@@ -69,6 +68,15 @@ const Friends = () => {
       .catch(() => alert(t("bonus.friends.errors.copy")));
   };
 
+  if (isLoading) return <div className="friends-container">Loading...</div>;
+
+  if (isError)
+    return (
+      <div className="friends-container">
+        ❌ {t("bonus.error.generic")}
+      </div>
+    );
+
   return (
     <motion.div
       className="friends-container"
@@ -76,35 +84,24 @@ const Friends = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* ===== HEADER ===== */}
+      {/* HEADER */}
       <motion.div
         className="friends-header"
         initial={{ y: -20 }}
         animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 300 }}
       >
         <FaUserFriends className="header-icon" />
         <h2>{t("bonus.friends.title")}</h2>
         <GiPartyPopper className="header-icon" />
       </motion.div>
 
-      {/* ===== DESCRIPTION ===== */}
-      <motion.p
-        className="friends-description"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
+      {/* DESCRIPTION */}
+      <motion.p className="friends-description">
         {t("bonus.friends.description")}
       </motion.p>
 
-      {/* ===== CODE PROMO ===== */}
-      <motion.div
-        className="referral-section"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3 }}
-      >
+      {/* CODE PROMO */}
+      <motion.div className="referral-section">
         <h3>
           <FaUserPlus className="section-icon" />
           {t("bonus.friends.yourCode")}
@@ -112,14 +109,12 @@ const Friends = () => {
 
         <motion.button
           className="generate-code-button"
-          onClick={handleGenerateCode}
+          onClick={() => generateCode()}
           disabled={isGenerating}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
           <FaMagic className="button-icon" />
-          {isGenerating 
-            ? t("bonus.friends.generating") 
+          {isGenerating
+            ? t("bonus.friends.generating")
             : t("bonus.friends.generate")}
         </motion.button>
 
@@ -132,20 +127,18 @@ const Friends = () => {
               className="referral-link-input"
               onClick={(e) => e.target.select()}
             />
+
             <motion.button
               className={`copy-button ${isCopied ? "copied" : ""}`}
               onClick={handleCopyCode}
-              disabled={!promoCode}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               {isCopied ? (
                 <>
-                  <FaCheck className="button-icon" /> {t("bonus.friends.copied")}
+                  <FaCheck /> {t("bonus.friends.copied")}
                 </>
               ) : (
                 <>
-                  <FaCopy className="button-icon" /> {t("bonus.friends.copy")}
+                  <FaCopy /> {t("bonus.friends.copy")}
                 </>
               )}
             </motion.button>
@@ -153,48 +146,31 @@ const Friends = () => {
         )}
       </motion.div>
 
-      {/* ===== LISTE DES FILLEULS ===== */}
-      <motion.div
-        className="invited-section"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
+      {/* LISTE */}
+      <motion.div className="invited-section">
         <h3>
-          <FaClipboardList className="section-icon" /> {t("bonus.friends.yourReferrals")}
+          <FaClipboardList /> {t("bonus.friends.yourReferrals")}
         </h3>
 
         {referrals.length > 0 ? (
           <motion.ul className="invited-list">
             <AnimatePresence>
               {referrals.map((friend, index) => (
-                <motion.li
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
-                >
+                <motion.li key={index}>
                   <div className="user-avatar"></div>
                   <span>{friend}</span>
-                  <div className="user-badge">{t("bonus.friends.referral")}</div>
+                  <div className="user-badge">
+                    {t("bonus.friends.referral")}
+                  </div>
                 </motion.li>
               ))}
             </AnimatePresence>
           </motion.ul>
         ) : (
-          <motion.div
-            className="empty-invites"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/4076/4076478.png"
-              alt={t("bonus.friends.empty.title")}
-            />
+          <div className="empty-invites">
             <p>{t("bonus.friends.empty.title")}</p>
             <p>{t("bonus.friends.empty.subtitle")}</p>
-          </motion.div>
+          </div>
         )}
       </motion.div>
     </motion.div>

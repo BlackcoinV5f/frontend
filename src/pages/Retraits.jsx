@@ -1,3 +1,4 @@
+// src/pages/Retraits.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,7 +12,7 @@ const Retraits = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Méthode reçue depuis la page précédente
+  // Récupère la méthode sélectionnée depuis la page précédente
   const method = location.state?.selectedMethod;
 
   const [form, setForm] = useState({
@@ -63,7 +64,9 @@ const Retraits = () => {
       setForm({ address: "", amount: "" });
     } catch (err) {
       console.error(err);
-      setMessage("❌ Une erreur est survenue lors du retrait.");
+      setMessage(
+        err.response?.data?.detail || "❌ Une erreur est survenue lors du retrait."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -88,14 +91,18 @@ const Retraits = () => {
   return (
     <motion.div
       className="withdraw-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="withdraw-header">
-        <img src={method.icon_url} alt={method.name} className="withdraw-method-icon" />
+        <img
+          src={method.icon_url}
+          alt={method.name}
+          className="withdraw-method-icon"
+        />
         <h2>{method.name}</h2>
-        <p className="withdraw-country">Pays : {method.country}</p>
+        <p className="withdraw-country">Pays : {method.country || "Non spécifié"}</p>
       </div>
 
       <div className="withdraw-form">

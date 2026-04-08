@@ -1,40 +1,46 @@
+// src/components/CashMoney.jsx
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
+import { useQuery } from "@tanstack/react-query";
 import { GiCash } from "react-icons/gi";
 import "./CashMoney.css";
 
 const CashMoney = () => {
-  const { user, axiosInstance } = useUser(); // récupération de l'utilisateur connecté
+  const { user, axiosInstance } = useUser();
   const controls = useAnimation();
 
-  const [cashBalance, setCashBalance] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
 
-  // 🔄 Charger le solde d'argent réel
+  // ✅ React Query
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["cashBalance", user?.id],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/wallet/realcash/");
+      return res.data;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 15, // 15 min cache
+    refetchOnWindowFocus: false,
+  });
+
+  // ✅ extraction propre
+  const cashBalance = data?.cash_balance ?? 0;
+
+  // ✅ animation déclenchée quand valeur change
   useEffect(() => {
-    const loadCashBalance = async () => {
-      if (!user?.id) return; // si utilisateur non connecté, rien faire
+    if (!isLoading && data) {
+      setAnimate(true);
+      const timer = setTimeout(() => setAnimate(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [cashBalance, isLoading, data]);
 
-      setIsLoading(true);
-      try {
-        const res = await axiosInstance.get("/wallet/realcash");
-        setCashBalance(res.data.cash_balance ?? 0);
-        setAnimate(true);
-        setTimeout(() => setAnimate(false), 800);
-      } catch (error) {
-        console.error("Erreur chargement solde USDT :", error);
-        setCashBalance(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadCashBalance();
-  }, [user, axiosInstance]);
-
-  // ⚡ Animation légère lors du clic ou du chargement
+  // ⚡ animation
   useEffect(() => {
     if (animate) {
       controls.start({
@@ -43,6 +49,14 @@ const CashMoney = () => {
       });
     }
   }, [animate, controls]);
+
+  if (isError) {
+    return (
+      <div className="cashmoney-card">
+        ❌ Erreur chargement solde
+      </div>
+    );
+  }
 
   return (
     <motion.div

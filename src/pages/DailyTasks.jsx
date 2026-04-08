@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "../components/LoadingSpinner";
 import "./DailyTasks.css";
 
@@ -11,105 +12,133 @@ export default function DailyTasks() {
   const navigate = useNavigate();
 
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
   const [rewardInfo, setRewardInfo] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // 🔹 Récupère les tâches depuis le backend
-  const fetchTasks = async () => {
-    if (!user) return;
-    setLoading(true);
-    setMessage(null);
-    try {
-      const res = await axiosInstance.get(`/actions/packs/${packId}/daily-tasks`);
-      setTasks(res.data || []);
-    } catch (error) {
-      console.error(error);
-      setMessage("❌ Impossible de récupérer les tâches.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ✅ React Query (comme les autres pages)
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["dailyTasks", packId, user?.id],
+    queryFn: async () => {
+      const res = await axiosInstance.get(
+        `/actions/packs/${packId}/daily-tasks`
+      );
+      return res.data || [];
+    },
+    enabled: !!user && !!packId,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
+  // ✅ Sync data → state local (pour timer)
   useEffect(() => {
-    fetchTasks();
-  }, [packId, user]);
+    if (!data) return;
+    setTasks(data);
+  }, [data]);
 
-  // 🔹 Démarrer une tâche
-  const startTask = async (taskId, url) => {
-    try {
-      await axiosInstance.post(`/actions/packs/daily-tasks/${taskId}/start`);
-      window.open(url, "_blank");
-      await fetchTasks();
-    } catch (error) {
-      console.error(error);
-      setMessage("❌ Impossible de démarrer la tâche.");
-    }
-  };
-
-  // 🔹 Vérifie si une tâche peut être complétée
-  const canCompleteTask = (task) => {
-    return task.time_left <= 0 && task.started_at && !task.completed;
-  };
-
-  // 🔹 Formate le compte à rebours à partir de time_left
-  const formatCountdown = (seconds) => {
-    if (!seconds || seconds <= 0) return null;
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-  };
-
-  // 🔹 Compléter une tâche
-  const completeTask = async (taskId) => {
-    setMessage(null);
-    try {
-      await axiosInstance.post(`/actions/packs/daily-tasks/${taskId}/complete`);
-      await fetchTasks();
-      setMessage("✅ Tâche complétée !");
-    } catch (error) {
-      console.error(error);
-      setMessage(error.response?.data?.detail || "❌ Impossible de compléter la tâche.");
-    }
-  };
-
-  // 🔹 Réclamer la récompense
-  const claimReward = async () => {
-    setLoading(true);
-    setMessage(null);
-    try {
-      const res = await axiosInstance.post(`/actions/claim/${packId}`);
-      setRewardInfo(res.data);
-      setModalVisible(true);
-      await fetchTasks();
-    } catch (error) {
-      console.error(error);
-      setMessage(error.response?.data?.detail || "❌ Impossible de réclamer la récompense.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const allCompleted = tasks.length > 0 && tasks.every((t) => t.completed);
-
-  // 🔹 Décrémente time_left chaque seconde pour le compte à rebours
+  // ✅ Timer (inchangé)
   useEffect(() => {
     const interval = setInterval(() => {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => {
-          if (task.time_left > 0) {
-            return { ...task, time_left: task.time_left - 1 };
-          }
-          return task;
-        })
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.time_left > 0
+            ? { ...task, time_left: task.time_left - 1 }
+            : task
+        )
       );
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (!user) {
+    return (
+      <div className="daily-tasks-container">
+        ⚠️ Connecte-toi pour voir les tâches
+      </div>
+    );
+  }
+
+  if (isLoading) return <LoadingSpinner />;
+
+  if (isError) {
+    return (
+      <div className="daily-tasks-container">
+        ❌ Impossible de récupérer les tâches.
+      </div>
+    );
+  }
+
+  // 🔹 Actions
+  const startTask = async (taskId, url) => {
+    try {
+      await axiosInstance.post(
+        `/actions/packs/daily-tasks/${taskId}/start`
+      );
+      window.open(url, "_blank");
+      refetch(); // ✅ refresh React Query
+    } catch (error) {
+      console.error(error);
+      setMessage("❌ Impossible de démarrer la tâche.");
+    }
+  };
+
+  const canCompleteTask = (task) => {
+    return task.time_left <= 0 && task.started_at && !task.completed;
+  };
+
+  const formatCountdown = (seconds) => {
+    if (!seconds || seconds <= 0) return null;
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m.toString().padStart(2, "0")}:${s
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const completeTask = async (taskId) => {
+    setMessage(null);
+    try {
+      await axiosInstance.post(
+        `/actions/packs/daily-tasks/${taskId}/complete`
+      );
+      refetch(); // ✅ refresh
+      setMessage("✅ Tâche complétée !");
+    } catch (error) {
+      console.error(error);
+      setMessage(
+        error.response?.data?.detail ||
+          "❌ Impossible de compléter la tâche."
+      );
+    }
+  };
+
+  const claimReward = async () => {
+    setMessage(null);
+    try {
+      const res = await axiosInstance.post(
+        `/actions/claim/${packId}`
+      );
+      setRewardInfo(res.data);
+      setModalVisible(true);
+      refetch(); // ✅ refresh
+    } catch (error) {
+      console.error(error);
+      setMessage(
+        error.response?.data?.detail ||
+          "❌ Impossible de réclamer la récompense."
+      );
+    }
+  };
+
+  const allCompleted =
+    tasks.length > 0 && tasks.every((t) => t.completed);
 
   return (
     <div className="daily-tasks-container">
@@ -118,7 +147,9 @@ export default function DailyTasks() {
       {message && (
         <p
           style={{
-            color: message.startsWith("✅") ? "#16a34a" : "#ef4444",
+            color: message.startsWith("✅")
+              ? "#16a34a"
+              : "#ef4444",
             fontWeight: 500,
             marginBottom: "12px",
           }}
@@ -127,34 +158,58 @@ export default function DailyTasks() {
         </p>
       )}
 
-      {tasks.length === 0 && <p>Aucune tâche disponible pour ce pack.</p>}
+      {tasks.length === 0 && (
+        <p>Aucune tâche disponible pour ce pack.</p>
+      )}
 
       {tasks.length > 0 && (
         <ul className="tasks-list">
           {tasks.map((task) => (
-            <li key={task.id} className={`task-item ${task.completed ? "completed" : ""}`}>
-              <span>{task.description} ({task.platform})</span>
+            <li
+              key={task.id}
+              className={`task-item ${
+                task.completed ? "completed" : ""
+              }`}
+            >
+              <span>
+                {task.description} ({task.platform})
+              </span>
 
               {!task.completed && (
                 <div className="task-buttons">
                   <button
-                    className={`action-btn ${task.started_at ? "countdown-btn" : "play-btn"}`}
+                    className={`action-btn ${
+                      task.started_at
+                        ? "countdown-btn"
+                        : "play-btn"
+                    }`}
                     onClick={async () => {
                       if (!task.started_at) {
-                        await startTask(task.id, task.video_url);
+                        await startTask(
+                          task.id,
+                          task.video_url
+                        );
                       } else if (canCompleteTask(task)) {
                         await completeTask(task.id);
                       }
                     }}
                   >
                     {!task.started_at && "▶️ Play"}
-                    {task.started_at && !canCompleteTask(task) && formatCountdown(task.time_left)}
-                    {task.started_at && canCompleteTask(task) && "✅ Valider"}
+                    {task.started_at &&
+                      !canCompleteTask(task) &&
+                      formatCountdown(task.time_left)}
+                    {task.started_at &&
+                      canCompleteTask(task) &&
+                      "✅ Valider"}
                   </button>
                 </div>
               )}
 
-              {task.completed && <span className="status-completed">Complétée ✔️</span>}
+              {task.completed && (
+                <span className="status-completed">
+                  Complétée ✔️
+                </span>
+              )}
             </li>
           ))}
         </ul>
@@ -162,7 +217,7 @@ export default function DailyTasks() {
 
       {allCompleted && (
         <div className="all-completed-msg">
-          🎉 Toutes les tâches sont terminées ! Vous pouvez maintenant réclamer votre récompense.
+          🎉 Toutes les tâches sont terminées !
           <button className="claim-btn" onClick={claimReward}>
             Réclamer
           </button>
@@ -174,14 +229,17 @@ export default function DailyTasks() {
           <div className="modal-content">
             <h3>🎉 Récompense Réclamée !</h3>
             <p>{rewardInfo.message}</p>
-            <p>💰 Montant: {rewardInfo.claimed_amount} BKC</p>
-            <p>💼 Solde wallet: {rewardInfo.wallet_balance}</p>
+            <p>💰 {rewardInfo.claimed_amount} BKC</p>
+            <p>💼 {rewardInfo.wallet_balance}</p>
             <p>
-              ⏳ Prochaine réclamation:{" "}
+              ⏳{" "}
               {rewardInfo.next_claim_available
-                ? new Date(rewardInfo.next_claim_available).toLocaleString()
+                ? new Date(
+                    rewardInfo.next_claim_available
+                  ).toLocaleString()
                 : "—"}
             </p>
+
             <button
               className="ok-btn"
               onClick={() => {

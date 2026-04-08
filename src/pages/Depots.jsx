@@ -1,17 +1,21 @@
-import React, { useEffect, useState, useRef } from "react";
+// src/pages/Depots.jsx
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAdm } from "../contexts/AdmContext";
 import { useUser } from "../contexts/UserContext";
+import { useQuery } from "@tanstack/react-query";
 import "./Depots.css";
 
-const Depots = () => {
+export default function Depots() {
   const { id } = useParams();
   const { axiosDeposit } = useAdm();
   const { user } = useUser();
   const navigate = useNavigate();
 
-  const [method, setMethod] = useState(null);
+  const dropdownRef = useRef(null);
+  const currencies = ["FCFA", "USDT", "PI", "EURO", "USD"];
+
   const [form, setForm] = useState({
     username: user?.username || "",
     phone: user?.phone || "",
@@ -19,31 +23,30 @@ const Depots = () => {
     transaction_id: "",
     currency: "FCFA",
   });
+
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
 
-  const dropdownRef = useRef(null);
-
-  const currencies = ["FCFA", "USDT", "PI", "EURO", "USD"];
-
-  useEffect(() => {
-    const fetchMethod = async () => {
-      try {
-        const res = await axiosDeposit.get(`/transaction-methods/${id}`);
-        setMethod(res.data);
-      } catch (err) {
-        console.error("Erreur chargement méthode:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMethod();
-  }, [axiosDeposit, id]);
+  // ✅ React Query pour récupérer la méthode de dépôt
+  const {
+    data: method,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["depositMethod", id],
+    queryFn: async () => {
+      const res = await axiosDeposit.get(`/transaction-methods/${id}`);
+      return res.data;
+    },
+    enabled: !!id,
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
   // Fermer le menu au clic en dehors
-  useEffect(() => {
+  React.useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setCurrencyOpen(false);
@@ -53,9 +56,7 @@ const Depots = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async () => {
     if (!form.username || !form.phone || !form.amount || !form.transaction_id) {
@@ -103,7 +104,8 @@ const Depots = () => {
     }
   };
 
-  if (loading) return <p>Chargement...</p>;
+  if (isLoading) return <p>Chargement...</p>;
+  if (isError) return <p>❌ Impossible de charger la méthode de dépôt</p>;
   if (!method) return <p>Méthode non trouvée</p>;
 
   return (
@@ -114,11 +116,7 @@ const Depots = () => {
       transition={{ duration: 0.5 }}
     >
       <div className="deposit-header">
-        <img
-          src={method.icon_url}
-          alt={method.name}
-          className="deposit-method-icon"
-        />
+        <img src={method.icon_url} alt={method.name} className="deposit-method-icon" />
         <h2>{method.name}</h2>
       </div>
 
@@ -128,34 +126,12 @@ const Depots = () => {
       </p>
 
       <div className="deposit-form">
-        <input
-          name="username"
-          placeholder="Nom d'utilisateur"
-          value={form.username}
-          onChange={handleChange}
-        />
-        <input
-          name="phone"
-          placeholder="Numéro de téléphone"
-          value={form.phone}
-          onChange={handleChange}
-        />
+        <input name="username" placeholder="Nom d'utilisateur" value={form.username} onChange={handleChange} />
+        <input name="phone" placeholder="Numéro de téléphone" value={form.phone} onChange={handleChange} />
 
-        {/* Montant + devise */}
         <div className="amount-container">
-          <input
-            name="amount"
-            type="number"
-            placeholder="Montant"
-            value={form.amount}
-            onChange={handleChange}
-          />
-
-          <div
-            className="currency-dropdown"
-            ref={dropdownRef}
-            onClick={() => setCurrencyOpen(!currencyOpen)}
-          >
+          <input name="amount" type="number" placeholder="Montant" value={form.amount} onChange={handleChange} />
+          <div className="currency-dropdown" ref={dropdownRef} onClick={() => setCurrencyOpen(!currencyOpen)}>
             <div className="currency-selected">{form.currency}</div>
             {currencyOpen && (
               <div className="currency-list">
@@ -206,6 +182,4 @@ const Depots = () => {
       </motion.button>
     </motion.div>
   );
-};
-
-export default Depots;
+}

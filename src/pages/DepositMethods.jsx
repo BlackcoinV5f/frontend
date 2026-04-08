@@ -1,36 +1,45 @@
-import React, { useEffect, useState } from "react";
+// src/pages/DepositMethods.jsx
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useAdm } from "../contexts/AdmContext"; // ✅ utiliser AdmContext maintenant
+import { useAdm } from "../contexts/AdmContext"; // ✅ serveur dépôt/retrait
 import { FaMoneyBillWave } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
 import "./DepositMethods.css";
 
-const DepositMethods = () => {
-  const { axiosDeposit } = useAdm(); // ✅ serveur dépôt/retrait
+export default function DepositMethods() {
+  const { axiosDeposit } = useAdm();
   const navigate = useNavigate();
-  const [methods, setMethods] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchMethods = async () => {
-      try {
-        const res = await axiosDeposit.get("/transaction-methods/"); // ✅ serveur dépôt
-        setMethods(res.data || []);
-      } catch (err) {
-        console.error("Erreur lors du chargement des méthodes :", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // ✅ React Query
+  const {
+    data: methods,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["depositMethods"],
+    queryFn: async () => {
+      const res = await axiosDeposit.get("/transaction-methods/");
+      return res.data || [];
+    },
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
-    fetchMethods();
-  }, [axiosDeposit]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="methods-loading">
         <div className="spinner" />
         <p>Chargement des méthodes de dépôt...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="methods-loading">
+        ❌ Impossible de charger les méthodes de dépôt
       </div>
     );
   }
@@ -85,6 +94,4 @@ const DepositMethods = () => {
       </motion.button>
     </motion.div>
   );
-};
-
-export default DepositMethods;
+}

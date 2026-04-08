@@ -1,6 +1,8 @@
+// src/components/RewardPoints.jsx
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
+import { useQuery } from "@tanstack/react-query";
 import { RiCoinsFill } from "react-icons/ri";
 import "./RewardPoints.css";
 
@@ -8,33 +10,37 @@ const RewardPoints = () => {
   const { user, axiosInstance } = useUser();
   const controls = useAnimation();
 
-  const [rewardPoints, setRewardPoints] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
 
-  // 🔄 Charger les points BKC (récompenses)
+  // ✅ React Query
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["rewardPoints", user?.id],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/wallet/");
+      return res.data;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 15,
+    refetchOnWindowFocus: false,
+  });
+
+  // ✅ extraction correcte
+  const rewardPoints = data?.balance ?? 0;
+
+  // ✅ animation quand données changent
   useEffect(() => {
-    const loadRewardPoints = async () => {
-      if (!user?.id) return;
+    if (!isLoading && data) {
+      setAnimate(true);
+      const timer = setTimeout(() => setAnimate(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [rewardPoints, isLoading, data]);
 
-      setIsLoading(true);
-      try {
-        const res = await axiosInstance.get("/wallet/");
-        setRewardPoints(res.data.balance ?? 0);
-        setAnimate(true);
-        setTimeout(() => setAnimate(false), 800);
-      } catch (error) {
-        console.error("Erreur récupération points BKC :", error);
-        setRewardPoints(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadRewardPoints();
-  }, [user, axiosInstance]);
-
-  // ⚡ Animation légère
+  // ⚡ animation
   useEffect(() => {
     if (animate) {
       controls.start({
@@ -43,6 +49,14 @@ const RewardPoints = () => {
       });
     }
   }, [animate, controls]);
+
+  if (isError) {
+    return (
+      <div className="rewardpoints-card">
+        ❌ Erreur chargement points
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -68,7 +82,8 @@ const RewardPoints = () => {
           <span className="loading">Chargement...</span>
         ) : (
           <>
-            {rewardPoints.toLocaleString()} <span className="unit">BKC</span>
+            {rewardPoints.toLocaleString()}{" "}
+            <span className="unit">BKC</span>
           </>
         )}
       </motion.div>

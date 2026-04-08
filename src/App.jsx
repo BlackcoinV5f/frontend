@@ -4,6 +4,9 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./i18n";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 import { UserProvider, useUser } from "./contexts/UserContext";
 import { AdmProvider } from "./contexts/AdmContext";
 
@@ -11,6 +14,17 @@ import LuckyDistributorGame from "./pages/LuckyDistributorGame";
 import Historic from "./pages/Historic";
 import backgroundImage from "./assets/background.png";
 import "./App.css";
+
+// 🧠 Query Client global
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 15, // 15 minutes
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 // 🧩 Composants
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
@@ -82,7 +96,6 @@ function AppContent() {
   const location = useLocation();
   const [showSplash, setShowSplash] = useState(true);
 
-  // Scroll top à chaque navigation
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -138,63 +151,29 @@ function AppContent() {
               <Route path="/profile" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
               <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
-
-              {/* Dépôts */}
-              <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
-              <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
-
-              {/* Retraits */}
-              <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
-              <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
-
-              {/* Autres */}
               <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/lucky-game" element={<LuckyDistributorGame />} />
               <Route path="/trade-game" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
               <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
               <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
 
-              {/* ✅ AIRDROP */}
-<Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+              {/* Airdrop */}
+              <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+              <Route path="/check" element={<ProtectedRoute><Check /></ProtectedRoute>} />
+              <Route path="/airdrop/:platformId" element={<ProtectedRoute><AirdropClaim /></ProtectedRoute>} />
+              <Route path="/kyc" element={<ProtectedRoute><Kyc /></ProtectedRoute>} />
+              <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
 
-<Route
-  path="/check"
-  element={
-    <ProtectedRoute>
-      <Check />
-    </ProtectedRoute>
-  }
-/>
+              {/* Dépôts / Retraits */}
+              <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
+              <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
+              <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
+              <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
 
-<Route
-  path="/airdrop/:platformId"
-  element={
-    <ProtectedRoute>
-      <AirdropClaim />
-    </ProtectedRoute>
-  }
-/>
-
-              <Route
-  path="/kyc"
-  element={
-    <ProtectedRoute>
-      <Kyc />
-    </ProtectedRoute>
-  }
-/>
-
-<Route
-  path="/black-ai"
-  element={
-    <ProtectedRoute>
-      <BlackAI />
-    </ProtectedRoute>
-  }
-/>
+              {/* Autres */}
+              <Route path="/lucky-game" element={<LuckyDistributorGame />} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
@@ -213,13 +192,18 @@ function AppContent() {
   );
 }
 
-// 🚀 App racine
+// 🚀 App racine (CORRIGÉE)
 export default function App() {
   return (
-    <UserProvider>
-      <AdmProvider>
-        <AppContent />
-      </AdmProvider>
-    </UserProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <AdmProvider>
+          <AppContent />
+        </AdmProvider>
+      </UserProvider>
+
+      {/* Devtools */}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }

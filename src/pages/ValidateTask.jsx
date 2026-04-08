@@ -1,3 +1,4 @@
+// src/pages/ValidateTask.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +10,7 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
+import { useQuery } from "@tanstack/react-query";
 import "./ValidateTask.css";
 
 const platformIcons = {
@@ -21,34 +23,34 @@ const platformIcons = {
 const ValidateTask = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
-  const { axiosInstance } = useUser(); // ✅ CLIENT AUTHENTIFIÉ
+  const { axiosInstance, user } = useUser();
 
-  const [task, setTask] = useState(null);
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [rewardDetails, setRewardDetails] = useState(null);
 
-  // Charger la tâche
-  useEffect(() => {
-    const fetchTask = async () => {
-      try {
-        const res = await axiosInstance.get("/tasks/");
-        const foundTask = res.data.find(
-          (t) => String(t.id) === String(taskId)
-        );
-        setTask(foundTask || null);
-      } catch (err) {
-        console.error("❌ Erreur fetch task :", err);
-        setTask(null);
-      }
-    };
+  // ✅ React Query (comme Check.jsx)
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["task", taskId],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/tasks/");
+      return res.data.find(
+        (t) => String(t.id) === String(taskId)
+      );
+    },
+    enabled: !!user && !!taskId,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+  });
 
-    fetchTask();
-  }, [taskId, axiosInstance]);
-
-  // Redirection après succès
+  // ✅ Redirection après succès
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
@@ -73,10 +75,11 @@ const ValidateTask = () => {
         { code }
       );
 
-      setRewardDetails(res.data.reward); // ✅ STRUCTURE BACKEND
+      setRewardDetails(res.data.reward);
       setIsSuccess(true);
     } catch (err) {
       console.error("❌ Erreur validation :", err);
+
       if (err.response?.status === 400) {
         setError(err.response.data?.detail || "Code invalide");
       } else if (err.response?.status === 401) {
@@ -89,7 +92,26 @@ const ValidateTask = () => {
     }
   };
 
-  if (!task) {
+  // ❌ Pas connecté
+  if (!user) {
+    return (
+      <div className="validate-container">
+        ⚠️ Connecte-toi pour valider une tâche
+      </div>
+    );
+  }
+
+  // ⏳ Loading
+  if (isLoading) {
+    return (
+      <div className="validate-container">
+        Chargement...
+      </div>
+    );
+  }
+
+  // ❌ Erreur
+  if (isError || !data) {
     return (
       <motion.div
         className="validate-container error"
@@ -103,6 +125,8 @@ const ValidateTask = () => {
       </motion.div>
     );
   }
+
+  const task = data;
 
   return (
     <motion.div
@@ -145,13 +169,13 @@ const ValidateTask = () => {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="reward-item">
-                <FaCoins color="#FFD700" /> +{rewardDetails.balance} pts (Balance)
+                <FaCoins color="#FFD700" /> +{rewardDetails?.balance} pts
               </div>
               <div className="reward-item">
-                <FaWallet color="#4CAF50" /> +{rewardDetails.bonus} pts (Bonus)
+                <FaWallet color="#4CAF50" /> +{rewardDetails?.bonus} pts
               </div>
               <div className="reward-total">
-                Total gagné : {rewardDetails.total} pts
+                Total gagné : {rewardDetails?.total} pts
               </div>
             </motion.div>
           </motion.div>

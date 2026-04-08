@@ -5,37 +5,44 @@ import { FaBalanceScale } from "react-icons/fa";
 import { GiCash } from "react-icons/gi";
 import { RiCoinsFill } from "react-icons/ri";
 import { useUser } from "../contexts/UserContext";
+import { useQuery } from "@tanstack/react-query";
 import "./BalancePage.css";
 
 const BalancePage = () => {
-  const { user, fetchBalance } = useUser();
-  const [points, setPoints] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [animateBalance, setAnimateBalance] = useState(false);
+  const { user, axiosInstance } = useUser();
+
   const controls = useAnimation();
+  const [animateBalance, setAnimateBalance] = useState(false);
 
-  // 🔄 Récupération du solde
+  // ✅ React Query corrigé
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["balance", user?.id],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/balance/");
+      return res.data;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 15,
+    refetchOnWindowFocus: false,
+  });
+
+  // ✅ EXTRACTION CORRECTE
+  const points = data?.points ?? 0;
+
+  // ✅ Animation quand points change
   useEffect(() => {
-    const loadBalance = async () => {
-      if (!user?.id) return;
-      setIsLoading(true);
+    if (!isLoading && data) {
+      setAnimateBalance(true);
+      const timer = setTimeout(() => setAnimateBalance(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [points, isLoading, data]);
 
-      try {
-        const balance = await fetchBalance();
-        setPoints(balance || 0);
-        setAnimateBalance(true);
-        setTimeout(() => setAnimateBalance(false), 1000);
-      } catch (err) {
-        console.error("❌ Erreur récupération balance:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadBalance();
-  }, [user, fetchBalance]);
-
-  // ✨ Animation du montant
+  // ✨ Animation visuelle
   useEffect(() => {
     if (animateBalance) {
       controls.start({
@@ -50,6 +57,14 @@ const BalancePage = () => {
     return <div className="page-container balance-container">Chargement...</div>;
   }
 
+  if (isError) {
+    return (
+      <div className="page-container balance-container">
+        ❌ Erreur chargement balance
+      </div>
+    );
+  }
+
   return (
     <motion.div
       className="page-container balance-container"
@@ -57,14 +72,14 @@ const BalancePage = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* 🔹 En-tête */}
+      {/* Header */}
       <motion.div className="balance-header" whileHover={{ scale: 1.05 }}>
         <FaBalanceScale className="balance-icon" />
         <motion.h2>Ma Balance</motion.h2>
         <FaBalanceScale className="balance-icon" />
       </motion.div>
 
-      {/* 🔹 Carte principale */}
+      {/* Card */}
       <motion.div
         className="balance-card"
         initial={{ scale: 0.9 }}
@@ -80,6 +95,7 @@ const BalancePage = () => {
           >
             <RiCoinsFill className="rotating-coin rotating-coin-1" />
           </motion.div>
+
           <motion.div
             animate={{
               rotate: [360, 0],
