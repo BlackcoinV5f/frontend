@@ -12,44 +12,54 @@ const RewardPoints = () => {
 
   const [animate, setAnimate] = useState(false);
 
-  // ✅ React Query
+  // ✅ React Query optimisé
   const {
     data,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["rewardPoints", user?.id],
+    queryKey: ["rewardPoints"], // ✅ stable (plus de user.id)
+
     queryFn: async () => {
       const res = await axiosInstance.get("/wallet/");
       return res.data;
     },
-    enabled: !!user?.id,
-    staleTime: 1000 * 60 * 15,
+
+    enabled: !!user, // ✅ évite bug au démarrage
+
+    // 🔥 CONFIG CACHE
+    staleTime: 1000 * 60 * 15, // 15 min
+    cacheTime: 1000 * 60 * 30,
+
+    // 🔥 stop refetch inutile
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // ✅ extraction correcte
+  // ✅ extraction sécurisée
   const rewardPoints = data?.balance ?? 0;
 
-  // ✅ animation quand données changent
+  // ✅ animation déclenchée sur changement
   useEffect(() => {
     if (!isLoading && data) {
       setAnimate(true);
-      const timer = setTimeout(() => setAnimate(false), 800);
+      const timer = setTimeout(() => setAnimate(false), 600);
       return () => clearTimeout(timer);
     }
   }, [rewardPoints, isLoading, data]);
 
-  // ⚡ animation
+  // ✅ animation framer
   useEffect(() => {
     if (animate) {
       controls.start({
-        scale: [1, 1.15, 1],
-        transition: { duration: 0.6 },
+        scale: [1, 1.12, 1],
+        transition: { duration: 0.5 },
       });
     }
   }, [animate, controls]);
 
+  // ❌ gestion erreur
   if (isError) {
     return (
       <div className="rewardpoints-card">
@@ -66,10 +76,15 @@ const RewardPoints = () => {
       transition={{ duration: 0.4 }}
       onClick={() => setAnimate(true)}
     >
+      {/* 🔄 animation rotation */}
       <div className="coins-animation">
         <motion.div
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear",
+          }}
         >
           <RiCoinsFill className="rotating-coin" />
         </motion.div>

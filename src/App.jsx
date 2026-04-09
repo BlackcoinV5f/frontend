@@ -19,14 +19,14 @@ import "./App.css";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 15, // 15 minutes
+      staleTime: 1000 * 60 * 15, // 15 min
       refetchOnWindowFocus: false,
       retry: 1,
     },
   },
 });
 
-// 🧩 Composants
+// 🧩 Lazy components
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
@@ -34,7 +34,7 @@ const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
-// 🧭 Pages publiques
+// 🧭 Public pages
 const AuthChoice = lazy(() => import("./pages/AuthChoice"));
 const RegisterForm = lazy(() => import("./pages/RegisterForm"));
 const Login = lazy(() => import("./pages/Login"));
@@ -42,7 +42,7 @@ const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const LandingRedirect = lazy(() => import("./pages/LandingRedirect"));
 
-// 🔒 Pages protégées
+// 🔒 Protected pages
 const Home = lazy(() => import("./pages/Home"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Friends = lazy(() => import("./pages/Friends"));
@@ -63,13 +63,13 @@ const Kyc = lazy(() => import("./pages/Kyc"));
 const BlackAI = lazy(() => import("./pages/BlackAI"));
 const Check = lazy(() => import("./pages/Check"));
 
-// 💰 Dépôts / Retraits
+// 💰 Finance
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
 const Depots = lazy(() => import("./pages/Depots"));
 const Retraits = lazy(() => import("./pages/Retraits"));
 const RetraitMethode = lazy(() => import("./pages/RetraitMethode"));
 
-// 🔐 Route protégée
+// 🔐 Protected Route
 const ProtectedRoute = ({ children }) => {
   const {
     isAuthenticated,
@@ -90,7 +90,7 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// ⭐ Contenu principal
+// ⭐ Main App Content
 function AppContent() {
   const { user, loading } = useUser();
   const location = useLocation();
@@ -128,7 +128,7 @@ function AppContent() {
         </Suspense>
       </ErrorBoundary>
 
-      {/* Pages */}
+      {/* Routes */}
       <main className="content">
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
@@ -166,7 +166,7 @@ function AppContent() {
               <Route path="/kyc" element={<ProtectedRoute><Kyc /></ProtectedRoute>} />
               <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
 
-              {/* Dépôts / Retraits */}
+              {/* Finance */}
               <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
               <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
               <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
@@ -192,7 +192,7 @@ function AppContent() {
   );
 }
 
-// 🚀 App racine (CORRIGÉE)
+// 🚀 Root App
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -202,8 +202,10 @@ export default function App() {
         </AdmProvider>
       </UserProvider>
 
-      {/* Devtools */}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* ✅ Devtools seulement en DEV */}
+      {import.meta.env.DEV && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
     </QueryClientProvider>
   );
 }

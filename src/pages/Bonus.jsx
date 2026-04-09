@@ -1,5 +1,5 @@
 // src/pages/Bonus.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -22,36 +22,60 @@ export default function Bonus() {
   const [countdown, setCountdown] = useState("");
   const notifiedRef = useRef(false);
 
-  // ================= GET BONUS (CACHE GLOBAL) =================
+  // ================= QUERY =================
   const {
     data: bonus,
     isLoading,
-    error,
+    isError,
   } = useQuery({
     queryKey: ["bonus", user?.id],
+
     queryFn: async () => {
       const res = await axiosInstance.get(`/bonus/${user.id}/status`);
       return res.data;
     },
-    enabled: !!user?.id,
-    staleTime: Infinity, // 🔥 cache jusqu’au refresh app
+
+    enabled: !!user?.id && !!axiosInstance,
+
+    staleTime: Infinity,
+    gcTime: Infinity,
+
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
   });
 
-  const conditions = bonus?.conditions || {};
-
-  // ================= CLAIM (MUTATION) =================
-  const { mutate: claimBonus, isLoading: claiming } = useMutation({
+  // ================= MUTATION =================
+  const claimMutation = useMutation({
     mutationFn: async () => {
       const res = await axiosInstance.post(`/bonus/${user.id}/claim`);
       return res.data;
     },
+
     onSuccess: (data) => {
-      // 🔥 met à jour le cache directement
       queryClient.setQueryData(["bonus", user?.id], data);
       notifiedRef.current = false;
     },
+
+    onError: () => {
+      console.error("Erreur claim bonus");
+    },
   });
+
+  const handleClaim = useCallback(() => {
+    if (!claimMutation.isPending) {
+      claimMutation.mutate();
+    }
+  }, [claimMutation]);
+
+  // ================= MEMO =================
+  const conditions = useMemo(() => bonus?.conditions || {}, [bonus]);
+
+  const progressPercent = useMemo(() => {
+    const total = bonus?.total_points || 1;
+    const remaining = bonus?.points_restants || 0;
+    return Math.min((remaining / total) * 100, 100);
+  }, [bonus]);
 
   // ================= COUNTDOWN =================
   useEffect(() => {
@@ -60,7 +84,7 @@ export default function Bonus() {
       return;
     }
 
-    const tick = () => {
+    const interval = setInterval(() => {
       const now = new Date();
       const next = new Date(bonus.next_claim_at);
       const diff = next - now;
@@ -70,10 +94,12 @@ export default function Bonus() {
 
         if (!notifiedRef.current) {
           notifiedRef.current = true;
+
           window.dispatchEvent(new CustomEvent("bonus:available"));
 
-          // 🔥 refetch propre
-          queryClient.invalidateQueries(["bonus", user?.id]);
+          queryClient.invalidateQueries({
+            queryKey: ["bonus", user?.id],
+          });
         }
         return;
       }
@@ -87,12 +113,10 @@ export default function Bonus() {
         `${m.toString().padStart(2, "0")}m ` +
         `${s.toString().padStart(2, "0")}s`
       );
-    };
+    }, 1000);
 
-    tick();
-    const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [bonus, t, queryClient, user?.id]);
+  }, [bonus?.next_claim_at, bonus?.status, t, queryClient, user?.id]);
 
   // ================= AUTH =================
   if (!user) {
@@ -103,11 +127,6 @@ export default function Bonus() {
       </div>
     );
   }
-
-  // ================= HELPERS =================
-  const total = bonus?.total_points || 1;
-  const remaining = bonus?.points_restants || 0;
-  const progressPercent = Math.min((remaining / total) * 100, 100);
 
   // ================= RENDER =================
   return (
@@ -125,7 +144,11 @@ export default function Bonus() {
         </div>
       )}
 
-      {error && <div className="bonus-error">{t("bonus.error.generic")}</div>}
+      {isError && (
+        <div className="bonus-error">
+          {t("bonus.error.generic")}
+        </div>
+      )}
 
       {!isLoading && bonus && (
         <div className="bonus-content">
@@ -134,7 +157,7 @@ export default function Bonus() {
             <h3>{t("bonus.points.title")}</h3>
 
             <div className="points-value">
-              {remaining} / {total}
+              {bonus.points_restants} / {bonus.total_points}
             </div>
 
             <div className="progress-bar-wrapper">
@@ -165,11 +188,7 @@ export default function Bonus() {
               <FaTicketAlt /> {t("bonus.conditions.hasDeposit")}
             </div>
 
-            <div
-              className={`condition-item ${
-                conditions.friends_count >= 3 ? "completed" : ""
-              }`}
-            >
+            <div className={`condition-item ${conditions.friends_count >= 3 ? "completed" : ""}`}>
               <FaUsers />{" "}
               {t("bonus.conditions.friendsCount", {
                 count: conditions.friends_count || 0,
@@ -180,13 +199,13 @@ export default function Bonus() {
           {/* ACTION */}
           <div className="action-section">
             <button
-              onClick={() => claimBonus()}
-              disabled={claiming || bonus.status !== "eligible"}
+              onClick={handleClaim}
+              disabled={claimMutation.isPending || bonus.status !== "eligible"}
               className={`convert-btn ${
                 bonus.status === "eligible" ? "eligible" : "disabled"
               }`}
             >
-              {claiming ? (
+              {claimMutation.isPending ? (
                 <>
                   <FaSpinner className="spin" /> {t("bonus.claiming")}
                 </>

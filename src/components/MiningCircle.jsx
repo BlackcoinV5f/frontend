@@ -17,25 +17,13 @@ import level7 from "../assets/level7.png";
 import level8 from "../assets/level8.png";
 import level9 from "../assets/level9.png";
 
-const levelImages = {
-  1: level1,
-  2: level2,
-  3: level3,
-  4: level4,
-  5: level5,
-  6: level6,
-  7: level7,
-  8: level8,
-  9: level9,
-};
+const levelImages = { 1: level1, 2: level2, 3: level3, 4: level4, 5: level5, 6: level6, 7: level7, 8: level8, 9: level9 };
 
 const MiningCircle = () => {
   const { user, axiosInstance } = useUser();
   const queryClient = useQueryClient();
-
   const intervalRef = useRef(null);
 
-  // 🔥 STATE LOCAL (temps réel)
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("idle");
   const [buttonText, setButtonText] = useState("START");
@@ -43,9 +31,6 @@ const MiningCircle = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [cycleMs, setCycleMs] = useState(0);
 
-  // -------------------------
-  // FORMAT TIME
-  // -------------------------
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
     const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
@@ -54,23 +39,26 @@ const MiningCircle = () => {
     return `${h}:${m}:${s}`;
   };
 
-  // -------------------------
-  // 🔥 QUERY (SOURCE BACKEND)
-  // -------------------------
+  // ✅ QUERY PROPRE (aucun refetch inutile)
   const { data } = useQuery({
-    queryKey: ["mining", user?.id],
+    queryKey: ["mining"], // ✅ stable
+
     queryFn: async () => {
       const res = await axiosInstance.get(`/mining/status/${user.id}`);
       return res.data;
     },
-    enabled: !!user?.id,
-    staleTime: 1000 * 15, // 15 min
+
+    enabled: !!user,
+
+    staleTime: 1000 * 60 * 15, // ✅ 15 min réel
+    cacheTime: 1000 * 60 * 30,
+
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // -------------------------
-  // SYNC DATA → LOCAL STATE
-  // -------------------------
+  // ✅ SYNC LOCAL (ZÉRO API ici)
   useEffect(() => {
     if (!data) return;
 
@@ -94,7 +82,6 @@ const MiningCircle = () => {
           }
 
           const updated = prev - 1000;
-
           const progressValue =
             ((data.total_cycle_ms - updated) / data.total_cycle_ms) * 100;
 
@@ -117,33 +104,26 @@ const MiningCircle = () => {
     return () => clearInterval(intervalRef.current);
   }, [data]);
 
-  // -------------------------
-  // 🚀 START
-  // -------------------------
+  // 🚀 START (SANS invalidate)
   const { mutate: startMining } = useMutation({
     mutationFn: async () => {
       const res = await axiosInstance.post(`/mining/start/${user.id}`);
       return res.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["mining", user?.id]);
+    onSuccess: (newData) => {
+      // ✅ mise à jour directe du cache (pas de refetch)
+      queryClient.setQueryData(["mining"], newData);
     },
   });
 
-  // -------------------------
-  // 🎁 CLAIM
-  // -------------------------
+  // 🎁 CLAIM (SANS invalidate)
   const { mutate: claimPoints } = useMutation({
     mutationFn: async () => {
       const res = await axiosInstance.post(`/mining/claim/${user.id}`);
       return res.data;
     },
-    onSuccess: () => {
-      setProgress(0);
-      setStatus("idle");
-      setButtonText("START");
-
-      queryClient.invalidateQueries(["mining", user?.id]);
+    onSuccess: (newData) => {
+      queryClient.setQueryData(["mining"], newData);
     },
   });
 

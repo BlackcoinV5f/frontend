@@ -23,31 +23,46 @@ const Friends = () => {
 
   const [isCopied, setIsCopied] = useState(false);
 
-  // ✅ QUERY PRINCIPALE
+  // ✅ QUERY OPTIMISÉE
   const {
     data,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["friends", user?.id],
+    queryKey: ["friends"], // ✅ stable
+
     queryFn: async () => {
       const res = await axiosInstance.get("/friends/me/");
       return res.data;
     },
-    enabled: !!user?.id,
-    staleTime: 1000 * 60 * 15, // 15 min cache
+
+    enabled: !!user,
+
+    // 🔥 CACHE PRO
+    staleTime: 1000 * 60 * 15,
+    cacheTime: 1000 * 60 * 30,
+
+    // 🔥 STOP refetch auto
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+
+    retry: false, // ⚠️ évite spam si erreur
   });
 
-  // ✅ MUTATION (generate code)
+  // ✅ MUTATION PRO (SANS invalidate)
   const { mutate: generateCode, isPending: isGenerating } = useMutation({
     mutationFn: async () => {
       const res = await axiosInstance.post("/friends/generate-code/");
       return res.data;
     },
-    onSuccess: () => {
-      // 🔥 refresh automatique des données
-      queryClient.invalidateQueries(["friends", user?.id]);
+
+    onSuccess: (newData) => {
+      // ✅ mise à jour directe du cache
+      queryClient.setQueryData(["friends"], (oldData) => ({
+        ...oldData,
+        promo_code: newData.promo_code,
+      }));
     },
   });
 
@@ -68,14 +83,17 @@ const Friends = () => {
       .catch(() => alert(t("bonus.friends.errors.copy")));
   };
 
-  if (isLoading) return <div className="friends-container">Loading...</div>;
+  if (isLoading) {
+    return <div className="friends-container">Loading...</div>;
+  }
 
-  if (isError)
+  if (isError) {
     return (
       <div className="friends-container">
         ❌ {t("bonus.error.generic")}
       </div>
     );
+  }
 
   return (
     <motion.div

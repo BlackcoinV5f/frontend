@@ -12,44 +12,54 @@ const CashMoney = () => {
 
   const [animate, setAnimate] = useState(false);
 
-  // ✅ React Query
+  // ✅ React Query optimisé
   const {
     data,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["cashBalance", user?.id],
+    queryKey: ["cashBalance"], // ✅ stable (plus de user.id ici)
+    
     queryFn: async () => {
       const res = await axiosInstance.get("/wallet/realcash/");
       return res.data;
     },
-    enabled: !!user?.id,
-    staleTime: 1000 * 60 * 15, // 15 min cache
+
+    enabled: !!user, // ✅ évite bug au démarrage
+
+    // 🔥 CONFIG CACHE PRO
+    staleTime: 1000 * 60 * 15, // 15 min sans refetch
+    cacheTime: 1000 * 60 * 30, // garde en mémoire 30 min
+
+    // 🔥 bloque les refetch automatiques
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // ✅ extraction propre
+  // ✅ extraction sécurisée
   const cashBalance = data?.cash_balance ?? 0;
 
-  // ✅ animation déclenchée quand valeur change
+  // ✅ animation quand valeur change
   useEffect(() => {
     if (!isLoading && data) {
       setAnimate(true);
-      const timer = setTimeout(() => setAnimate(false), 800);
+      const timer = setTimeout(() => setAnimate(false), 600);
       return () => clearTimeout(timer);
     }
   }, [cashBalance, isLoading, data]);
 
-  // ⚡ animation
+  // ✅ animation framer
   useEffect(() => {
     if (animate) {
       controls.start({
         scale: [1, 1.1, 1],
-        transition: { duration: 0.6 },
+        transition: { duration: 0.5 },
       });
     }
   }, [animate, controls]);
 
+  // ❌ erreur
   if (isError) {
     return (
       <div className="cashmoney-card">

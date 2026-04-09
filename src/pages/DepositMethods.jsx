@@ -1,8 +1,8 @@
 // src/pages/DepositMethods.jsx
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useAdm } from "../contexts/AdmContext"; // ✅ serveur dépôt/retrait
+import { useAdm } from "../contexts/AdmContext";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import "./DepositMethods.css";
@@ -11,22 +11,45 @@ export default function DepositMethods() {
   const { axiosDeposit } = useAdm();
   const navigate = useNavigate();
 
-  // ✅ React Query
+  // ================= QUERY =================
   const {
-    data: methods,
+    data,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["depositMethods"],
+
     queryFn: async () => {
       const res = await axiosDeposit.get("/transaction-methods/");
       return res.data || [];
     },
+
+    enabled: !!axiosDeposit,
+
     staleTime: Infinity,
-    cacheTime: Infinity,
+    gcTime: Infinity,
+
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1,
   });
 
+  // 🔥 Memo (évite recalcul)
+  const methods = useMemo(() => data || [], [data]);
+
+  // 🔥 Navigation optimisée
+  const goToDeposit = useCallback(
+    (id) => {
+      navigate(`/deposits/${id}`);
+    },
+    [navigate]
+  );
+
+  const goBack = useCallback(() => {
+    navigate("/wallet");
+  }, [navigate]);
+
+  // ================= LOADING =================
   if (isLoading) {
     return (
       <div className="methods-loading">
@@ -36,6 +59,7 @@ export default function DepositMethods() {
     );
   }
 
+  // ================= ERROR =================
   if (isError) {
     return (
       <div className="methods-loading">
@@ -44,12 +68,22 @@ export default function DepositMethods() {
     );
   }
 
+  // ================= EMPTY =================
+  if (!methods.length) {
+    return (
+      <div className="methods-loading">
+        ⚠️ Aucune méthode disponible
+      </div>
+    );
+  }
+
+  // ================= RENDER =================
   return (
     <motion.div
       className="methods-container"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.4 }}
     >
       <div className="methods-header">
         <FaMoneyBillWave className="methods-header-icon" />
@@ -63,22 +97,26 @@ export default function DepositMethods() {
             className="method-card"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => navigate(`/deposits/${method.id}`)}
+            onClick={() => goToDeposit(method.id)}
           >
             <div className="method-image-wrapper">
               <img
                 src={method.icon_url}
                 alt={method.name}
                 className="method-icon"
+                loading="lazy" // 🔥 perf image
               />
+
               {method.flag_url && (
                 <img
                   src={method.flag_url}
                   alt={method.country}
                   className="country-flag"
+                  loading="lazy"
                 />
               )}
             </div>
+
             <p className="method-name">{method.name}</p>
           </motion.div>
         ))}
@@ -88,7 +126,7 @@ export default function DepositMethods() {
         className="back-button"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => navigate("/wallet")}
+        onClick={goBack}
       >
         ⬅ Retour au Wallet
       </motion.button>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
@@ -18,8 +18,31 @@ const Wallet = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  if (loading || !user) {
-    return <div>{t('wallet.loading')}</div>;
+  // 🔥 Navigation optimisée (évite re-render inutile)
+  const goWithdraw = useCallback(() => {
+    navigate("/retrait-methode");
+  }, [navigate]);
+
+  const goHistory = useCallback(() => {
+    navigate("/historic");
+  }, [navigate]);
+
+  // ⏳ Loading propre
+  if (loading) {
+    return (
+      <div className="wallet-loading">
+        {t("wallet.loading")}
+      </div>
+    );
+  }
+
+  // 🚫 Sécurité (si user absent)
+  if (!user) {
+    return (
+      <div className="wallet-error">
+        {t("wallet.errorUser")}
+      </div>
+    );
   }
 
   return (
@@ -27,6 +50,7 @@ const Wallet = () => {
       className="wallet-container"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
     >
       {/* ===== HEADER ===== */}
       <motion.div
@@ -34,23 +58,21 @@ const Wallet = () => {
         whileHover={{ scale: 1.05 }}
       >
         <FaWallet className="wallet-icon" />
-        <h2>{t('wallet.title')}</h2>
+        <h2>{t("wallet.title")}</h2>
         <FaWallet className="wallet-icon" />
       </motion.div>
 
       {/* ===== ACTIONS ===== */}
       <div className="wallet-actions">
 
-        {/* ❌ DEPOT DESACTIVE */}
+        {/* ❌ DEPOT (désactivé) */}
         <motion.button
           type="button"
           className="wallet-button deposit-button disabled"
           disabled
-          whileHover={{ scale: 1 }}
-          whileTap={{ scale: 1 }}
         >
           <GiReceiveMoney />
-          <span>{t('wallet.depositComing')}</span>
+          <span>{t("wallet.depositComing")}</span>
         </motion.button>
 
         {/* ✅ RETRAIT */}
@@ -59,10 +81,10 @@ const Wallet = () => {
           className="wallet-button withdraw-button"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/retrait-methode")}
+          onClick={goWithdraw}
         >
           <GiTakeMyMoney />
-          <span>{t('wallet.withdraw')}</span>
+          <span>{t("wallet.withdraw")}</span>
         </motion.button>
 
         {/* ✅ HISTORIQUE */}
@@ -71,10 +93,10 @@ const Wallet = () => {
           className="wallet-button history-button"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/historic")}
+          onClick={goHistory}
         >
           <AiOutlineHistory />
-          <span>{t('wallet.history')}</span>
+          <span>{t("wallet.history")}</span>
         </motion.button>
 
       </div>
@@ -88,4 +110,4 @@ const Wallet = () => {
   );
 };
 
-export default Wallet;
+export default React.memo(Wallet);
