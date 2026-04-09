@@ -1,179 +1,228 @@
 import React, { useEffect, useState, useRef } from "react";
-import BlackAiLogo from "../assets/BlackAiLogo.png";
 import "./BlackAI.css";
 
 const BlackAI = () => {
-  const [particles, setParticles] = useState([]);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const logoRef = useRef(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
-  // Générer des particules
-  useEffect(() => {
-    const newParticles = [];
-    for (let i = 0; i < 50; i++) {
-      newParticles.push({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`
-      });
-    }
-    setParticles(newParticles);
-  }, []);
+  // Scroll automatique
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  // Défilement automatique sur toute la page
   useEffect(() => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    scrollToBottom();
   }, [messages, isTyping]);
 
   // Message de bienvenue
   useEffect(() => {
     setMessages([
       {
+        id: 1,
         sender: "ai",
-        text: "👋 Bonjour ! Je suis BlackAi. Comment puis-je vous aider aujourd'hui ?",
+        text: "👋 Salut ! Je suis ton assistant IA. Comment puis-je t'aider aujourd'hui ?",
         timestamp: new Date().toLocaleTimeString()
       }
     ]);
   }, []);
 
-  // Simulation de réponse IA
+  // Simulation réponse IA améliorée
   const generateAIResponse = async (userMessage) => {
     setIsTyping(true);
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    const lowerMsg = userMessage.toLowerCase();
+    
     const responses = {
-      "bonjour": "Bonjour ! Comment allez-vous ?",
-      "comment ça va": "Je vais très bien, merci ! Et vous ?",
-      "aide": "Je suis là pour vous aider ! Posez-moi n'importe quelle question.",
-      "merci": "Avec plaisir ! N'hésitez pas si vous avez d'autres questions.",
-      "au revoir": "Au revoir ! À bientôt sur BlackAi !"
+      "bonjour": "Bonjour ! 😊 Comment allez-vous aujourd'hui ?",
+      "salut": "Salut ! 👋 Comment puis-je t'aider ?",
+      "ça va": "Je vais très bien, merci ! 🌟 Et toi ?",
+      "comment ça va": "Je vais très bien, merci ! 🌟 Et toi ?",
+      "aide": "Bien sûr ! Je peux t'aider avec :\n• Des questions générales\n• Des explications\n• Des conseils\n• Et bien plus ! Que veux-tu savoir ?",
+      "merci": "Avec plaisir ! 🙏 N'hésite pas si tu as d'autres questions.",
+      "au revoir": "À bientôt ! 👋 Passe une excellente journée !",
+      "bye": "À bientôt ! 👋 Prends soin de toi !",
+      "quoi de neuf": "Pas grand-chose ! Je suis là pour discuter avec toi. 😄",
+      "bien": "Tant mieux ! 😊 Je suis content de l'entendre.",
+      "pas bien": "Oh désolé de l'apprendre 😕 Veux-tu en parler ? Je suis là pour t'écouter."
     };
 
-    const lowerMsg = userMessage.toLowerCase();
-    let response = "Je suis désolé, je n'ai pas encore de réponse à cette question.";
-
-    for (const [key, value] of Object.entries(responses)) {
+    // Recherche de mots-clés
+    for (const key in responses) {
       if (lowerMsg.includes(key)) {
-        response = value;
-        break;
+        setIsTyping(false);
+        return responses[key];
       }
     }
 
+    // Réponse par défaut plus intelligente
+    if (lowerMsg.length > 10) {
+      setIsTyping(false);
+      return "Intéressant ! 🤔 Pourrais-tu m'en dire plus ? Je veux bien t'aider à approfondir ce sujet.";
+    }
+
     setIsTyping(false);
-    return response;
+    return "Je ne comprends pas encore tout à fait 🤔 Peux-tu reformuler ou me poser une autre question ?";
   };
 
-  // Envoyer un message
+  // Envoyer message
   const handleSend = async () => {
     if (!inputValue.trim() || isTyping) return;
 
     const userMessage = {
+      id: Date.now(),
       sender: "user",
       text: inputValue,
       timestamp: new Date().toLocaleTimeString()
     };
+
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
 
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
+
     const aiText = await generateAIResponse(inputValue);
+
     const aiMessage = {
+      id: Date.now() + 1,
       sender: "ai",
       text: aiText,
       timestamp: new Date().toLocaleTimeString()
     };
+
     setMessages(prev => [...prev, aiMessage]);
   };
 
-  const handleKeyPress = (e) => {
+  // Entrée clavier
+  const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
-  const handleLogoClick = () => {
-    if (logoRef.current) {
-      logoRef.current.style.transform = "scale(1.1)";
-      setTimeout(() => (logoRef.current.style.transform = "scale(1)"), 300);
-    }
-  };
-
-  const clearChat = () => {
-    setMessages([
-      {
-        sender: "ai",
-        text: "💬 Chat réinitialisé ! Comment puis-je vous aider ?",
-        timestamp: new Date().toLocaleTimeString()
-      }
-    ]);
+  // Resize textarea
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    e.target.style.height = "auto";
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
   };
 
   return (
-    <div className="blackai-page">
-      {/* Particules */}
-      <div className="particles">
-        {particles.map(p => (
-          <div key={p.id} className="particle" style={{ left: p.left, top: p.top }} />
-        ))}
+    <div className="blackai-container">
+      {/* HEADER AVEC PARAMÈTRES */}
+      <div className="chat-header">
+        <div className="header-left">
+          <div className="ai-icon">🤖</div>
+          <div className="header-info">
+            <h2>Black AI Assistant</h2>
+            <span className="online-status">● En ligne</span>
+          </div>
+        </div>
+        <div className="header-right">
+          <button 
+            className="settings-button"
+            onClick={() => setShowSettings(!showSettings)}
+            title="Paramètres"
+          >
+            ⚙️
+          </button>
+        </div>
       </div>
 
-      {/* Logo */}
-      <img
-        ref={logoRef}
-        src={BlackAiLogo}
-        alt="BlackAi Logo"
-        className="blackai-logo-top"
-        onClick={handleLogoClick}
-      />
-
-      {/* Chat */}
-      <div className="chat-container">
-        <div className="chat-header">
-          <h2>BlackAi Assistant</h2>
-          <button onClick={clearChat} className="clear-button">🗑️ Effacer</button>
+      {/* MENU PARAMÈTRES */}
+      {showSettings && (
+        <div className="settings-menu">
+          <div className="settings-item">
+            <span>🌙 Mode sombre</span>
+            <label className="switch">
+              <input type="checkbox" />
+              <span className="slider"></span>
+            </label>
+          </div>
+          <div className="settings-item">
+            <span>🔔 Notifications</span>
+            <label className="switch">
+              <input type="checkbox" defaultChecked />
+              <span className="slider"></span>
+            </label>
+          </div>
+          <div className="settings-item">
+            <span>💬 Son des messages</span>
+            <label className="switch">
+              <input type="checkbox" />
+              <span className="slider"></span>
+            </label>
+          </div>
+          <div className="settings-divider"></div>
+          <button className="settings-close" onClick={() => setShowSettings(false)}>
+            Fermer
+          </button>
         </div>
+      )}
 
-        <div className="messages">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`message ${msg.sender}`}>
-              <div className="message-header">
-                <span className="message-sender">{msg.sender === "user" ? "👤 Vous" : "🤖 BlackAi"}</span>
-                <span className="message-time">{msg.timestamp}</span>
-              </div>
-              <div className="message-text">{msg.text}</div>
+      {/* MESSAGES */}
+      <div className="messages-container">
+        {messages.map((msg) => (
+          <div key={msg.id} className={`message-wrapper ${msg.sender}`}>
+            <div className="message-avatar">
+              {msg.sender === "ai" ? "🤖" : "👤"}
             </div>
-          ))}
-
-          {isTyping && (
-            <div className="message ai typing">
-              <div className="message-header">
-                <span className="message-sender">🤖 BlackAi</span>
-              </div>
-              <div className="typing-indicator">
-                <span></span><span></span><span></span>
+            <div className="message-content">
+              <div className="message-bubble">
+                <div className="message-text">{msg.text}</div>
+                <div className="message-time">{msg.timestamp}</div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        ))}
 
+        {isTyping && (
+          <div className="message-wrapper ai">
+            <div className="message-avatar">🤖</div>
+            <div className="message-content">
+              <div className="message-bubble typing-bubble">
+                <div className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* INPUT ZONE */}
+      <div className="input-wrapper">
         <div className="input-container">
           <textarea
-            placeholder="Tapez votre question... (Shift+Enter pour nouvelle ligne)"
+            ref={inputRef}
+            placeholder="Écris ton message ici..."
             value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
             rows={1}
             className="message-input"
           />
           <button
-            className="send-button"
+            className={`send-button ${!inputValue.trim() || isTyping ? "disabled" : ""}`}
             onClick={handleSend}
             disabled={!inputValue.trim() || isTyping}
           >
-            📤
+            ✨
           </button>
+        </div>
+        <div className="input-hint">
+          Appuie sur Entrée pour envoyer, Maj+Entrée pour sauter une ligne
         </div>
       </div>
     </div>
