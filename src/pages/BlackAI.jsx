@@ -1,105 +1,110 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./BlackAI.css";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import { useMutation } from "@tanstack/react-query";
+
+// 🔥 Backend URL
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://127.0.0.1:8001/api/blackai";
 
 const BlackAI = () => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Scroll automatique
+  // ✅ Scroll auto
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages]);
 
-  // Message de bienvenue
+  // ✅ Message de bienvenue
   useEffect(() => {
     setMessages([
       {
-        id: 1,
+        id: Date.now(),
         sender: "ai",
-        text: "👋 Salut ! Je suis ton assistant IA. Comment puis-je t'aider aujourd'hui ?",
-        timestamp: new Date().toLocaleTimeString()
-      }
+        text: "👋 Salut ! Je suis BlackAI. Pose-moi une question.",
+        timestamp: new Date().toLocaleTimeString(),
+      },
     ]);
   }, []);
 
-  // Simulation réponse IA améliorée
-  const generateAIResponse = async (userMessage) => {
-    setIsTyping(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  // 🔥 Mutation (appel API)
+  const mutation = useMutation({
+    mutationFn: async (question) => {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question }),
+      });
 
-    const lowerMsg = userMessage.toLowerCase();
-    
-    const responses = {
-      "bonjour": "Bonjour ! 😊 Comment allez-vous aujourd'hui ?",
-      "salut": "Salut ! 👋 Comment puis-je t'aider ?",
-      "ça va": "Je vais très bien, merci ! 🌟 Et toi ?",
-      "comment ça va": "Je vais très bien, merci ! 🌟 Et toi ?",
-      "aide": "Bien sûr ! Je peux t'aider avec :\n• Des questions générales\n• Des explications\n• Des conseils\n• Et bien plus ! Que veux-tu savoir ?",
-      "merci": "Avec plaisir ! 🙏 N'hésite pas si tu as d'autres questions.",
-      "au revoir": "À bientôt ! 👋 Passe une excellente journée !",
-      "bye": "À bientôt ! 👋 Prends soin de toi !",
-      "quoi de neuf": "Pas grand-chose ! Je suis là pour discuter avec toi. 😄",
-      "bien": "Tant mieux ! 😊 Je suis content de l'entendre.",
-      "pas bien": "Oh désolé de l'apprendre 😕 Veux-tu en parler ? Je suis là pour t'écouter."
-    };
-
-    // Recherche de mots-clés
-    for (const key in responses) {
-      if (lowerMsg.includes(key)) {
-        setIsTyping(false);
-        return responses[key];
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err);
       }
-    }
 
-    // Réponse par défaut plus intelligente
-    if (lowerMsg.length > 10) {
-      setIsTyping(false);
-      return "Intéressant ! 🤔 Pourrais-tu m'en dire plus ? Je veux bien t'aider à approfondir ce sujet.";
-    }
+      const data = await res.json();
+      return data?.answer || "❌ Réponse vide";
+    },
 
-    setIsTyping(false);
-    return "Je ne comprends pas encore tout à fait 🤔 Peux-tu reformuler ou me poser une autre question ?";
-  };
+    onSuccess: (aiText) => {
+      const aiMessage = {
+        id: Date.now() + 1,
+        sender: "ai",
+        text: aiText,
+        timestamp: new Date().toLocaleTimeString(),
+      };
 
-  // Envoyer message
-  const handleSend = async () => {
-    if (!inputValue.trim() || isTyping) return;
+      setMessages((prev) => [...prev, aiMessage]);
+    },
+
+    onError: () => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: "ai",
+          text: "❌ Erreur serveur",
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ]);
+    },
+  });
+
+  // ✅ Envoi message
+  const handleSend = () => {
+    if (!inputValue.trim() || mutation.isPending) return;
+
+    const userText = inputValue.trim();
 
     const userMessage = {
       id: Date.now(),
       sender: "user",
-      text: inputValue,
-      timestamp: new Date().toLocaleTimeString()
+      text: userText,
+      timestamp: new Date().toLocaleTimeString(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
 
-    if (inputRef.current) {
-      inputRef.current.style.height = "auto";
-    }
+    if (inputRef.current) inputRef.current.style.height = "auto";
 
-    const aiText = await generateAIResponse(inputValue);
-
-    const aiMessage = {
-      id: Date.now() + 1,
-      sender: "ai",
-      text: aiText,
-      timestamp: new Date().toLocaleTimeString()
-    };
-
-    setMessages(prev => [...prev, aiMessage]);
+    mutation.mutate(userText);
   };
 
-  // Entrée clavier
+  // ✅ Entrée clavier
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -107,61 +112,59 @@ const BlackAI = () => {
     }
   };
 
-  // Resize textarea
+  // ✅ Resize textarea
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
     e.target.style.height = "auto";
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
   };
 
+  // Fonction pour nettoyer le texte Markdown
+  const cleanMarkdown = (text) => {
+    // Supprimer les lignes vides multiples
+    let cleaned = text.replace(/\n\s*\n\s*\n/g, '\n\n');
+    // Supprimer les espaces en début/fin de ligne
+    cleaned = cleaned.replace(/[ \t]+$/gm, '');
+    // Supprimer les retours à la ligne multiples dans les paragraphes
+    cleaned = cleaned.replace(/([.!?])\n\n/g, '$1\n');
+    return cleaned;
+  };
+
   return (
     <div className="blackai-container">
-      {/* HEADER AVEC PARAMÈTRES */}
+      {/* HEADER */}
       <div className="chat-header">
         <div className="header-left">
           <div className="ai-icon">🤖</div>
           <div className="header-info">
-            <h2>Black AI Assistant</h2>
+            <h2>Black AI</h2>
             <span className="online-status">● En ligne</span>
           </div>
         </div>
-        <div className="header-right">
-          <button 
-            className="settings-button"
-            onClick={() => setShowSettings(!showSettings)}
-            title="Paramètres"
-          >
-            ⚙️
-          </button>
-        </div>
+
+        <button
+          className="settings-button"
+          onClick={() => setShowSettings((prev) => !prev)}
+        >
+          ⚙️
+        </button>
       </div>
 
-      {/* MENU PARAMÈTRES */}
+      {/* SETTINGS */}
       {showSettings && (
         <div className="settings-menu">
           <div className="settings-item">
-            <span>🌙 Mode sombre</span>
-            <label className="switch">
-              <input type="checkbox" />
-              <span className="slider"></span>
-            </label>
+            🌙 Mode sombre <input type="checkbox" />
           </div>
+
           <div className="settings-item">
-            <span>🔔 Notifications</span>
-            <label className="switch">
-              <input type="checkbox" defaultChecked />
-              <span className="slider"></span>
-            </label>
+            🔔 Notifications <input type="checkbox" defaultChecked />
           </div>
-          <div className="settings-item">
-            <span>💬 Son des messages</span>
-            <label className="switch">
-              <input type="checkbox" />
-              <span className="slider"></span>
-            </label>
-          </div>
-          <div className="settings-divider"></div>
-          <button className="settings-close" onClick={() => setShowSettings(false)}>
+
+          <button
+            className="settings-close"
+            onClick={() => setShowSettings(false)}
+          >
             Fermer
           </button>
         </div>
@@ -174,25 +177,88 @@ const BlackAI = () => {
             <div className="message-avatar">
               {msg.sender === "ai" ? "🤖" : "👤"}
             </div>
-            <div className="message-content">
-              <div className="message-bubble">
-                <div className="message-text">{msg.text}</div>
-                <div className="message-time">{msg.timestamp}</div>
+
+            <div className="message-bubble">
+              <div className="message-text">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    // Contrôle des paragraphes
+                    p: ({ children, ...props }) => {
+                      const text = children?.[0];
+
+                      // Progress bar special
+                      if (
+                        typeof text === "string" &&
+                        text.includes("[progress:")
+                      ) {
+                        const match = text.match(/\[progress:(\d+)\]/);
+                        const value = match ? parseInt(match[1]) : 0;
+
+                        return (
+                          <div className="progress-container">
+                            <div
+                              className="progress-bar"
+                              style={{ width: `${value}%` }}
+                            />
+                            <span className="progress-text">{value}%</span>
+                          </div>
+                        );
+                      }
+
+                      return <p className="markdown-paragraph" {...props}>{children}</p>;
+                    },
+                    
+                    // Headings avec espacement réduit
+                    h1: ({ children }) => <h1 className="markdown-h1">{children}</h1>,
+                    h2: ({ children }) => <h2 className="markdown-h2">{children}</h2>,
+                    h3: ({ children }) => <h3 className="markdown-h3">{children}</h3>,
+                    h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
+                    
+                    // Listes
+                    ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
+                    ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
+                    li: ({ children }) => <li className="markdown-li">{children}</li>,
+                    
+                    // Code blocks
+                    pre: ({ children }) => <pre className="markdown-pre">{children}</pre>,
+                    code: ({ children }) => <code className="markdown-code">{children}</code>,
+                    
+                    // Blockquote
+                    blockquote: ({ children }) => <blockquote className="markdown-blockquote">{children}</blockquote>,
+                    
+                    // Tableaux
+                    table: ({ children }) => (
+                      <table className="custom-table">
+                        {children}
+                      </table>
+                    ),
+                    th: ({ children }) => <th className="table-header">{children}</th>,
+                    td: ({ children }) => <td className="table-cell">{children}</td>,
+                    
+                    // Éviter les sauts de ligne excessifs
+                    br: () => <br className="markdown-br" />,
+                  }}
+                >
+                  {cleanMarkdown(msg.text)}
+                </ReactMarkdown>
               </div>
+
+              <div className="message-time">{msg.timestamp}</div>
             </div>
           </div>
         ))}
 
-        {isTyping && (
+        {/* Typing indicator */}
+        {mutation.isPending && (
           <div className="message-wrapper ai">
             <div className="message-avatar">🤖</div>
-            <div className="message-content">
-              <div className="message-bubble typing-bubble">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
+            <div className="message-bubble">
+              <div className="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
             </div>
           </div>
@@ -201,28 +267,32 @@ const BlackAI = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* INPUT ZONE */}
+      {/* INPUT */}
       <div className="input-wrapper">
         <div className="input-container">
           <textarea
             ref={inputRef}
-            placeholder="Écris ton message ici..."
+            placeholder="Écris ton message..."
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             rows={1}
             className="message-input"
           />
+
           <button
-            className={`send-button ${!inputValue.trim() || isTyping ? "disabled" : ""}`}
             onClick={handleSend}
-            disabled={!inputValue.trim() || isTyping}
+            disabled={!inputValue.trim() || mutation.isPending}
+            className={`send-button ${
+              !inputValue.trim() || mutation.isPending ? "disabled" : ""
+            }`}
           >
             ✨
           </button>
         </div>
+
         <div className="input-hint">
-          Appuie sur Entrée pour envoyer, Maj+Entrée pour sauter une ligne
+          Entrée = envoyer • Shift+Entrée = ligne
         </div>
       </div>
     </div>
