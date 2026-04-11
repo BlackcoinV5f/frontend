@@ -15,11 +15,11 @@ import Historic from "./pages/Historic";
 import backgroundImage from "./assets/background.png";
 import "./App.css";
 
-// 🧠 Query Client global
+// 🧠 Query Client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 15, // 15 min
+      staleTime: 1000 * 60 * 15,
       refetchOnWindowFocus: false,
       retry: 1,
     },
@@ -34,7 +34,7 @@ const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
-// 🧭 Public pages
+// 🧭 Public
 const AuthChoice = lazy(() => import("./pages/AuthChoice"));
 const RegisterForm = lazy(() => import("./pages/RegisterForm"));
 const Login = lazy(() => import("./pages/Login"));
@@ -42,7 +42,7 @@ const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const LandingRedirect = lazy(() => import("./pages/LandingRedirect"));
 
-// 🔒 Protected pages
+// 🔒 Protected
 const Home = lazy(() => import("./pages/Home"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Friends = lazy(() => import("./pages/Friends"));
@@ -90,11 +90,14 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// ⭐ Main App Content
+// ⭐ App Content
 function AppContent() {
   const { user, loading } = useUser();
   const location = useLocation();
   const [showSplash, setShowSplash] = useState(true);
+
+  // ✅ cacher navbar + footer pour BlackAI
+  const hideBars = location.pathname.startsWith("/black-ai");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -122,17 +125,20 @@ function AppContent() {
       )}
 
       {/* Navbar */}
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Navbar user={user} />
-        </Suspense>
-      </ErrorBoundary>
+      {!hideBars && (
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Navbar user={user} />
+          </Suspense>
+        </ErrorBoundary>
+      )}
 
       {/* Routes */}
       <main className="content">
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
+
               {/* Public */}
               <Route path="/" element={<LandingRedirect />} />
               <Route path="/auth-choice" element={<AuthChoice />} />
@@ -164,6 +170,8 @@ function AppContent() {
               <Route path="/check" element={<ProtectedRoute><Check /></ProtectedRoute>} />
               <Route path="/airdrop/:platformId" element={<ProtectedRoute><AirdropClaim /></ProtectedRoute>} />
               <Route path="/kyc" element={<ProtectedRoute><Kyc /></ProtectedRoute>} />
+
+              {/* ✅ BlackAI fullscreen */}
               <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
 
               {/* Finance */}
@@ -183,11 +191,13 @@ function AppContent() {
       </main>
 
       {/* Footer */}
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Footer />
-        </Suspense>
-      </ErrorBoundary>
+      {!hideBars && (
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Footer />
+          </Suspense>
+        </ErrorBoundary>
+      )}
     </div>
   );
 }
@@ -202,7 +212,6 @@ export default function App() {
         </AdmProvider>
       </UserProvider>
 
-      {/* ✅ Devtools seulement en DEV */}
       {import.meta.env.DEV && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}
