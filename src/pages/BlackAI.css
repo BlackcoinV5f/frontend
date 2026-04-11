@@ -1,4 +1,4 @@
-/* GLOBAL APP WRAPPER (IMPORTANT 🔥) */
+/* GLOBAL APP WRAPPER */
 .blackai-container {
   display: flex;
   flex-direction: column;
@@ -90,7 +90,7 @@
   cursor: pointer;
 }
 
-/* MESSAGES */
+/* MESSAGES CONTAINER */
 .messages-container {
   flex: 1;
   overflow-y: auto;
@@ -102,7 +102,7 @@
   scroll-behavior: smooth;
 }
 
-/* SCROLL */
+/* SCROLLBAR */
 .messages-container::-webkit-scrollbar {
   width: 6px;
 }
@@ -116,14 +116,11 @@
   border-radius: 10px;
 }
 
-.messages-container::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
-}
-
-/* MESSAGE */
+/* MESSAGE WRAPPER */
 .message-wrapper {
   display: flex;
   gap: 8px;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 .message-wrapper.user {
@@ -147,20 +144,18 @@
   flex-shrink: 0;
 }
 
-/* BULLE */
+/* MESSAGE BUBBLE */
 .message-bubble {
-  max-width: 75%;
+  max-width: 85%;
   background: #1f2937;
   padding: 12px 14px;
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.5;
-  white-space: pre-wrap;
   word-break: break-word;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* USER BUBBLE */
 .message-wrapper.user .message-bubble {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
@@ -170,81 +165,91 @@
 .message-time {
   font-size: 10px;
   opacity: 0.5;
-  margin-top: 5px;
+  margin-top: 8px;
   text-align: right;
 }
 
-/* ==================== */
-/* MARKDOWN STYLES (ESPACEMENT CORRIGÉ) */
-/* ==================== */
+/* ============================================ */
+/* 🔥 CORRECTION TEXTE ALIGNÉ GAUCHE 🔥 */
+/* ============================================ */
 
 .message-text {
   line-height: 1.5;
+  text-align: left;
+  width: 100%;
 }
 
-/* Paragraphes - espacement réduit */
-.markdown-paragraph {
+.message-text * {
+  text-align: left;
+}
+
+/* Paragraphes */
+.message-text p {
   margin: 0 0 0.5rem 0;
+  line-height: 1.5;
 }
 
-.markdown-paragraph:last-child {
+.message-text p:last-child {
   margin-bottom: 0;
 }
 
-.markdown-paragraph:first-child {
-  margin-top: 0;
-}
-
-/* Headings - espacement compact */
-.markdown-h1 {
+/* Titres */
+.message-text h1 {
   font-size: 1.5rem;
   margin: 0.75rem 0 0.5rem 0;
   font-weight: 600;
   color: #38bdf8;
 }
 
-.markdown-h2 {
-  font-size: 1.3rem;
+.message-text h2 {
+  font-size: 1.2rem;
   margin: 0.6rem 0 0.4rem 0;
   font-weight: 600;
   color: #38bdf8;
 }
 
-.markdown-h3 {
+.message-text h3 {
   font-size: 1.1rem;
   margin: 0.5rem 0 0.3rem 0;
   font-weight: 600;
   color: #60a5fa;
 }
 
-.markdown-h4 {
+.message-text h4 {
   font-size: 1rem;
   margin: 0.4rem 0 0.2rem 0;
   font-weight: 600;
   color: #60a5fa;
 }
 
-.markdown-h1:first-child,
-.markdown-h2:first-child,
-.markdown-h3:first-child,
-.markdown-h4:first-child {
+/* Empêcher les marges en trop sur le premier élément */
+.message-text h1:first-child,
+.message-text h2:first-child,
+.message-text h3:first-child,
+.message-text h4:first-child,
+.message-text p:first-child {
   margin-top: 0;
 }
 
-/* Listes - espacement compact */
-.markdown-ul,
-.markdown-ol {
+/* Listes */
+.message-text ul,
+.message-text ol {
   margin: 0.25rem 0 0.25rem 0;
   padding-left: 1.5rem;
 }
 
-.markdown-li {
+.message-text li {
   margin: 0.15rem 0;
   line-height: 1.4;
 }
 
+/* Puces spécifiques */
+.message-text ul li::marker {
+  color: #60a5fa;
+}
+
 /* Blockquotes */
-.markdown-blockquote {
+.message-text blockquote {
   margin: 0.5rem 0;
   padding: 0.5rem 0 0.5rem 1rem;
   border-left: 3px solid #2563eb;
@@ -252,8 +257,8 @@
   border-radius: 0 8px 8px 0;
 }
 
-/* Code blocks */
-.markdown-pre {
+/* Code */
+.message-text pre {
   margin: 0.5rem 0;
   padding: 0.75rem;
   background: #0b0f19;
@@ -262,7 +267,7 @@
   font-size: 0.85rem;
 }
 
-.markdown-code {
+.message-text code {
   background: #0b0f19;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
@@ -270,68 +275,33 @@
   font-family: 'Courier New', monospace;
 }
 
-/* Tables */
-.custom-table {
+/* Tableaux */
+.message-text table {
   width: 100%;
   border-collapse: collapse;
   margin: 0.5rem 0;
   font-size: 0.85rem;
 }
 
-.custom-table th,
-.custom-table td {
+.message-text th,
+.message-text td {
   border: 1px solid #374151;
   padding: 0.5rem;
   text-align: left;
 }
 
-.custom-table th {
+.message-text th {
   background: #1f2937;
   font-weight: 600;
 }
 
-/* Progress bar */
-.progress-container {
-  background: #374151;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 0.5rem 0;
-  position: relative;
-  height: 24px;
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #00f5a0, #00d9f5);
-  transition: width 0.3s ease;
-}
-
-.progress-text {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 11px;
-  font-weight: bold;
-  color: white;
-  text-shadow: 0 0 2px black;
-}
-
-/* Sauts de ligne */
-.markdown-br {
-  display: none;
-}
-
-/* Éléments inline */
+/* Texte en gras */
 .message-text strong {
   color: #60a5fa;
   font-weight: 600;
 }
 
-.message-text em {
-  font-style: italic;
-}
-
+/* Liens */
 .message-text a {
   color: #60a5fa;
   text-decoration: none;
@@ -341,7 +311,7 @@
   text-decoration: underline;
 }
 
-/* INPUT FIXE MAIS CENTRÉ 🔥 */
+/* INPUT */
 .input-wrapper {
   position: absolute;
   bottom: 0;
@@ -352,7 +322,6 @@
   padding: 10px;
 }
 
-/* INPUT */
 .input-container {
   display: flex;
   gap: 10px;
@@ -381,7 +350,6 @@
   color: #6b7280;
 }
 
-/* BUTTON */
 .send-button {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   border: none;
@@ -403,7 +371,6 @@
   cursor: not-allowed;
 }
 
-/* HINT */
 .input-hint {
   font-size: 10px;
   opacity: 0.5;
@@ -426,18 +393,11 @@
   animation: typing 1.4s infinite ease-in-out;
 }
 
-.typing-indicator span:nth-child(1) {
-  animation-delay: 0s;
-}
+.typing-indicator span:nth-child(1) { animation-delay: 0s; }
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
+/* BACK BUTTON */
 .back-button {
   background: transparent;
   border: none;
@@ -452,6 +412,7 @@
   transform: scale(1.1);
 }
 
+/* ANIMATIONS */
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }

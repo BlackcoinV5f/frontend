@@ -7,18 +7,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
-// =========================
-// 🔥 BACKEND URL (PROPRE)
-// =========================
 const BASE_URL = import.meta.env.VITE_DEPOSIT_API_URL;
-
-if (!BASE_URL) {
-  console.error("❌ VITE_DEPOSIT_API_URL manquant dans .env");
-}
-
 const API_URL = `${BASE_URL}/api/blackai`;
-
-// =========================
 
 const BlackAI = () => {
   const navigate = useNavigate();
@@ -31,7 +21,6 @@ const BlackAI = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // ✅ Scroll auto
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -40,7 +29,6 @@ const BlackAI = () => {
     scrollToBottom();
   }, [messages]);
 
-  // ✅ Greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bonjour";
@@ -48,15 +36,10 @@ const BlackAI = () => {
     return "Bonsoir";
   };
 
-  // ✅ Welcome message
   useEffect(() => {
     if (!user) return;
 
-    const userName =
-      user?.username ||
-      user?.name ||
-      user?.firstName ||
-      "Utilisateur";
+    const userName = user?.username || user?.name || user?.firstName || "Utilisateur";
 
     setMessages([
       {
@@ -68,9 +51,6 @@ const BlackAI = () => {
     ]);
   }, [user]);
 
-  // =========================
-  // 🔥 API CALL
-  // =========================
   const mutation = useMutation({
     mutationFn: async (question) => {
       const res = await fetch(API_URL, {
@@ -113,9 +93,6 @@ const BlackAI = () => {
     },
   });
 
-  // =========================
-  // ✉️ SEND MESSAGE
-  // =========================
   const handleSend = () => {
     if (!inputValue.trim() || mutation.isPending) return;
 
@@ -133,11 +110,9 @@ const BlackAI = () => {
 
     setInputValue("");
     if (inputRef.current) inputRef.current.style.height = "auto";
-
     mutation.mutate(userText);
   };
 
-  // Enter key
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -145,31 +120,30 @@ const BlackAI = () => {
     }
   };
 
-  // textarea resize
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
     e.target.style.height = "auto";
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
   };
 
-  // markdown cleanup
-  const cleanMarkdown = (text) => {
-    return text
-      .replace(/\n\s*\n\s*\n/g, "\n\n")
-      .replace(/[ \t]+$/gm, "")
-      .replace(/([.!?])\n\n/g, "$1\n");
+  // Composants personnalisés pour ReactMarkdown
+  const markdownComponents = {
+    h1: ({ children }) => <h1>{children}</h1>,
+    h2: ({ children }) => <h2>{children}</h2>,
+    h3: ({ children }) => <h3>{children}</h3>,
+    h4: ({ children }) => <h4>{children}</h4>,
+    ul: ({ children }) => <ul>{children}</ul>,
+    ol: ({ children }) => <ol>{children}</ol>,
+    li: ({ children }) => <li>{children}</li>,
+    p: ({ children }) => <p>{children}</p>,
+    strong: ({ children }) => <strong>{children}</strong>,
   };
 
-  // =========================
-  // 🎨 UI
-  // =========================
   return (
     <div className="blackai-container">
-
       {/* HEADER */}
       <div className="chat-header">
         <div className="header-left">
-
           <button
             className="back-button"
             onClick={() => {
@@ -188,15 +162,12 @@ const BlackAI = () => {
               />
             </svg>
           </button>
-
           <div className="ai-icon">🤖</div>
-
           <div className="header-info">
             <h2>Black AI</h2>
             <span className="online-status">● En ligne</span>
           </div>
         </div>
-
         <button
           className="settings-button"
           onClick={() => setShowSettings((prev) => !prev)}
@@ -211,11 +182,9 @@ const BlackAI = () => {
           <div className="settings-item">
             🌙 Mode sombre <input type="checkbox" />
           </div>
-
           <div className="settings-item">
             🔔 Notifications <input type="checkbox" defaultChecked />
           </div>
-
           <button
             className="settings-close"
             onClick={() => setShowSettings(false)}
@@ -232,23 +201,21 @@ const BlackAI = () => {
             <div className="message-avatar">
               {msg.sender === "ai" ? "🤖" : "👤"}
             </div>
-
             <div className="message-bubble fade-in">
               <div className="message-text">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
+                  components={markdownComponents}
                 >
-                  {cleanMarkdown(msg.text)}
+                  {msg.text}
                 </ReactMarkdown>
               </div>
-
               <div className="message-time">{msg.timestamp}</div>
             </div>
           </div>
         ))}
 
-        {/* typing */}
         {mutation.isPending && (
           <div className="message-wrapper ai">
             <div className="message-avatar">🤖</div>
@@ -261,7 +228,6 @@ const BlackAI = () => {
             </div>
           </div>
         )}
-
         <div ref={messagesEndRef} />
       </div>
 
@@ -277,7 +243,6 @@ const BlackAI = () => {
             rows={1}
             className="message-input"
           />
-
           <button
             onClick={handleSend}
             disabled={!inputValue.trim() || mutation.isPending}
@@ -288,7 +253,6 @@ const BlackAI = () => {
             ✨
           </button>
         </div>
-
         <div className="input-hint">
           Entrée = envoyer • Shift+Entrée = ligne
         </div>
