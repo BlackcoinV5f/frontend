@@ -5,16 +5,24 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../contexts/UserContext"; // ✅ IMPORTANT
+import { useUser } from "../contexts/UserContext";
 
-// 🔥 Backend URL
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://127.0.0.1:8001/api/blackai";
+// =========================
+// 🔥 BACKEND URL (PROPRE)
+// =========================
+const BASE_URL = import.meta.env.VITE_DEPOSIT_API_URL;
+
+if (!BASE_URL) {
+  console.error("❌ VITE_DEPOSIT_API_URL manquant dans .env");
+}
+
+const API_URL = `${BASE_URL}/api/blackai`;
+
+// =========================
 
 const BlackAI = () => {
   const navigate = useNavigate();
-  const { user } = useUser(); // ✅ récupérer user
+  const { user } = useUser();
 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
@@ -32,7 +40,7 @@ const BlackAI = () => {
     scrollToBottom();
   }, [messages]);
 
-  // ✅ Fonction salutation intelligente
+  // ✅ Greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Bonjour";
@@ -40,7 +48,7 @@ const BlackAI = () => {
     return "Bonsoir";
   };
 
-  // ✅ Message de bienvenue personnalisé
+  // ✅ Welcome message
   useEffect(() => {
     if (!user) return;
 
@@ -60,7 +68,9 @@ const BlackAI = () => {
     ]);
   }, [user]);
 
+  // =========================
   // 🔥 API CALL
+  // =========================
   const mutation = useMutation({
     mutationFn: async (question) => {
       const res = await fetch(API_URL, {
@@ -69,7 +79,10 @@ const BlackAI = () => {
         body: JSON.stringify({ question }),
       });
 
-      if (!res.ok) throw new Error("Erreur serveur");
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Erreur serveur");
+      }
 
       const data = await res.json();
       return data?.answer || "❌ Réponse vide";
@@ -100,7 +113,9 @@ const BlackAI = () => {
     },
   });
 
-  // ✅ Envoyer message
+  // =========================
+  // ✉️ SEND MESSAGE
+  // =========================
   const handleSend = () => {
     if (!inputValue.trim() || mutation.isPending) return;
 
@@ -122,7 +137,7 @@ const BlackAI = () => {
     mutation.mutate(userText);
   };
 
-  // ✅ Enter key
+  // Enter key
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -130,14 +145,14 @@ const BlackAI = () => {
     }
   };
 
-  // ✅ Resize textarea
+  // textarea resize
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
     e.target.style.height = "auto";
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
   };
 
-  // ✅ Nettoyage markdown
+  // markdown cleanup
   const cleanMarkdown = (text) => {
     return text
       .replace(/\n\s*\n\s*\n/g, "\n\n")
@@ -145,6 +160,9 @@ const BlackAI = () => {
       .replace(/([.!?])\n\n/g, "$1\n");
   };
 
+  // =========================
+  // 🎨 UI
+  // =========================
   return (
     <div className="blackai-container">
 
@@ -152,7 +170,6 @@ const BlackAI = () => {
       <div className="chat-header">
         <div className="header-left">
 
-          {/* 🔥 BOUTON RETOUR */}
           <button
             className="back-button"
             onClick={() => {
@@ -231,7 +248,7 @@ const BlackAI = () => {
           </div>
         ))}
 
-        {/* Typing */}
+        {/* typing */}
         {mutation.isPending && (
           <div className="message-wrapper ai">
             <div className="message-avatar">🤖</div>
