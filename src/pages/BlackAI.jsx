@@ -39,7 +39,8 @@ const BlackAI = () => {
   useEffect(() => {
     if (!user) return;
 
-    const userName = user?.username || user?.name || user?.firstName || "Utilisateur";
+    const userName =
+      user?.username || user?.name || user?.firstName || "Utilisateur";
 
     setMessages([
       {
@@ -123,10 +124,10 @@ const BlackAI = () => {
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
     e.target.style.height = "auto";
-    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+    e.target.style.height =
+      Math.min(e.target.scrollHeight, 120) + "px";
   };
 
-  // Composants personnalisés pour ReactMarkdown
   const markdownComponents = {
     h1: ({ children }) => <h1>{children}</h1>,
     h2: ({ children }) => <h2>{children}</h2>,
@@ -162,12 +163,15 @@ const BlackAI = () => {
               />
             </svg>
           </button>
-          <div className="ai-icon">🤖</div>
+
+          {/* ❌ robot supprimé */}
+
           <div className="header-info">
             <h2>Black AI</h2>
             <span className="online-status">● En ligne</span>
           </div>
         </div>
+
         <button
           className="settings-button"
           onClick={() => setShowSettings((prev) => !prev)}
@@ -198,9 +202,12 @@ const BlackAI = () => {
       <div className="messages-container">
         {messages.map((msg) => (
           <div key={msg.id} className={`message-wrapper ${msg.sender}`}>
-            <div className="message-avatar">
-              {msg.sender === "ai" ? "🤖" : "👤"}
-            </div>
+            
+            {/* ✅ avatar UNIQUEMENT pour user */}
+            {msg.sender === "user" && (
+              <div className="message-avatar">👤</div>
+            )}
+
             <div className="message-bubble fade-in">
               <div className="message-text">
                 <ReactMarkdown
@@ -218,7 +225,7 @@ const BlackAI = () => {
 
         {mutation.isPending && (
           <div className="message-wrapper ai">
-            <div className="message-avatar">🤖</div>
+            {/* ❌ plus d’avatar ici */}
             <div className="message-bubble">
               <div className="typing-indicator">
                 <span></span>
@@ -228,6 +235,7 @@ const BlackAI = () => {
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
 

@@ -144,16 +144,15 @@
   flex-shrink: 0;
 }
 
-/* MESSAGE BUBBLE */
 .message-bubble {
   max-width: 85%;
-  background: #1f2937;
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-size: 14px;
-  line-height: 1.5;
+  background: transparent; /* 🔥 plus de fond */
+  padding: 8px 4px; /* réduit car plus de "bulle" */
+  border-radius: 0; /* inutile sans fond */
+  font-size: 16px; /* 🔥 texte plus grand */
+  line-height: 1.6;
   word-break: break-word;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: none; /* supprime l'effet carte */
 }
 
 .message-wrapper.user .message-bubble {
