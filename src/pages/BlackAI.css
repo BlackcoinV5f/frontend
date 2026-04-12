@@ -437,3 +437,11 @@
     opacity: 1;
   }
 }
+
+.blackai-container {
+  height: 100dvh; /* 🔥 très important pour mobile */
+  display: flex;
+  flex-direction: column;
+  background-color: #0A0F2C; /* même fond */
+  overflow: hidden;
+}
