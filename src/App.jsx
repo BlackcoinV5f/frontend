@@ -4,6 +4,8 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./i18n";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { UserProvider, useUser } from "./contexts/UserContext";
 import { AdmProvider } from "./contexts/AdmContext";
 
@@ -12,7 +14,18 @@ import Historic from "./pages/Historic";
 import backgroundImage from "./assets/background.png";
 import "./App.css";
 
-// 🧩 Composants
+// 🧠 Query Client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 15,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
+
+// 🧩 Lazy components
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
@@ -20,7 +33,7 @@ const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
-// 🧭 Pages publiques
+// 🧭 Public
 const AuthChoice = lazy(() => import("./pages/AuthChoice"));
 const RegisterForm = lazy(() => import("./pages/RegisterForm"));
 const Login = lazy(() => import("./pages/Login"));
@@ -28,7 +41,7 @@ const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const LandingRedirect = lazy(() => import("./pages/LandingRedirect"));
 
-// 🔒 Pages protégées
+// 🔒 Protected
 const Home = lazy(() => import("./pages/Home"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Friends = lazy(() => import("./pages/Friends"));
@@ -49,13 +62,13 @@ const Kyc = lazy(() => import("./pages/Kyc"));
 const BlackAI = lazy(() => import("./pages/BlackAI"));
 const Check = lazy(() => import("./pages/Check"));
 
-// 💰 Dépôts / Retraits
+// 💰 Finance
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
 const Depots = lazy(() => import("./pages/Depots"));
 const Retraits = lazy(() => import("./pages/Retraits"));
 const RetraitMethode = lazy(() => import("./pages/RetraitMethode"));
 
-// 🔐 Route protégée
+// 🔐 Protected Route
 const ProtectedRoute = ({ children }) => {
   const {
     isAuthenticated,
@@ -76,13 +89,15 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// ⭐ Contenu principal
+// ⭐ App Content
 function AppContent() {
   const { user, loading } = useUser();
   const location = useLocation();
   const [showSplash, setShowSplash] = useState(true);
 
-  // Scroll top à chaque navigation
+  // ✅ cacher navbar + footer pour BlackAI
+  const hideBars = location.pathname.startsWith("/black-ai");
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -109,17 +124,20 @@ function AppContent() {
       )}
 
       {/* Navbar */}
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Navbar user={user} />
-        </Suspense>
-      </ErrorBoundary>
+      {!hideBars && (
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Navbar user={user} />
+          </Suspense>
+        </ErrorBoundary>
+      )}
 
-      {/* Pages */}
+      {/* Routes */}
       <main className="content">
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
+
               {/* Public */}
               <Route path="/" element={<LandingRedirect />} />
               <Route path="/auth-choice" element={<AuthChoice />} />
@@ -138,63 +156,31 @@ function AppContent() {
               <Route path="/profile" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
               <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
               <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
-
-              {/* Dépôts */}
-              <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
-              <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
-
-              {/* Retraits */}
-              <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
-              <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
-
-              {/* Autres */}
               <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
               <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
               <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/lucky-game" element={<LuckyDistributorGame />} />
               <Route path="/trade-game" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
               <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
               <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
 
-              {/* ✅ AIRDROP */}
-<Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+              {/* Airdrop */}
+              <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+              <Route path="/check" element={<ProtectedRoute><Check /></ProtectedRoute>} />
+              <Route path="/airdrop/:platformId" element={<ProtectedRoute><AirdropClaim /></ProtectedRoute>} />
+              <Route path="/kyc" element={<ProtectedRoute><Kyc /></ProtectedRoute>} />
 
-<Route
-  path="/check"
-  element={
-    <ProtectedRoute>
-      <Check />
-    </ProtectedRoute>
-  }
-/>
+              {/* ✅ BlackAI fullscreen */}
+              <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
 
-<Route
-  path="/airdrop/:platformId"
-  element={
-    <ProtectedRoute>
-      <AirdropClaim />
-    </ProtectedRoute>
-  }
-/>
+              {/* Finance */}
+              <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
+              <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
+              <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
+              <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
 
-              <Route
-  path="/kyc"
-  element={
-    <ProtectedRoute>
-      <Kyc />
-    </ProtectedRoute>
-  }
-/>
-
-<Route
-  path="/black-ai"
-  element={
-    <ProtectedRoute>
-      <BlackAI />
-    </ProtectedRoute>
-  }
-/>
+              {/* Autres */}
+              <Route path="/lucky-game" element={<LuckyDistributorGame />} />
 
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
@@ -204,22 +190,27 @@ function AppContent() {
       </main>
 
       {/* Footer */}
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Footer />
-        </Suspense>
-      </ErrorBoundary>
+      {!hideBars && (
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Footer />
+          </Suspense>
+        </ErrorBoundary>
+      )}
     </div>
   );
 }
 
-// 🚀 App racine
+// 🚀 Root App
 export default function App() {
   return (
-    <UserProvider>
-      <AdmProvider>
-        <AppContent />
-      </AdmProvider>
-    </UserProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <AdmProvider>
+          <AppContent />
+        </AdmProvider>
+      </UserProvider>
+
+    </QueryClientProvider>
   );
 }
