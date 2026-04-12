@@ -226,3 +226,10 @@ body, html {
 .auth-options button:hover {
   background-color: #e6c200;
 }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0A0F2C; /* même couleur que ton app */
+}
