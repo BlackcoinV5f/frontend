@@ -1,21 +1,23 @@
-// src/components/ActionCard.jsx
 import React, { useState, useMemo } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useActionMutations } from "../hooks/useActionMutations"; // ✅ IMPORTANT
 import "./ActionCard.css";
 
 const ActionCard = ({ action: rawAction, context = "available" }) => {
-  const { user, axiosInstance } = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const { buy, start, claim } = useActionMutations(); // ✅ centralisation
 
   const [action, setAction] = useState(rawAction);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
   // =========================
-  // 🔧 NORMALISATION DES DONNÉES
+  // 🔧 NORMALISATION
   // =========================
   const pack = useMemo(
     () => ({
@@ -27,13 +29,15 @@ const ActionCard = ({ action: rawAction, context = "available" }) => {
       price: Number(action?.price_usdt ?? 0),
       totalParts: action?.total_parts ?? "—",
       status: action?.pack_status ?? action?.status ?? "disponible",
-      dailyEarnings: Number(action?.daily_earnings ?? action?.estimated_daily_bkc ?? 0),
+      dailyEarnings: Number(
+        action?.daily_earnings ?? action?.estimated_daily_bkc ?? 0
+      ),
     }),
     [action, t]
   );
 
   // =========================
-  // 🎨 COULEUR STATUT
+  // 🎨 STATUS COLOR
   // =========================
   const statusColor = {
     disponible: "#16a34a",
@@ -45,7 +49,7 @@ const ActionCard = ({ action: rawAction, context = "available" }) => {
   }[pack.status] || "#ef4444";
 
   // =========================
-  // 🎯 LABEL BOUTON
+  // 🎯 BUTTON LABEL
   // =========================
   const getButtonLabel = () => {
     if (context === "available") {
@@ -68,7 +72,7 @@ const ActionCard = ({ action: rawAction, context = "available" }) => {
     loading || ["terminé", "retiré", "épuisé", "en_attente"].includes(pack.status);
 
   // =========================
-  // ⚙️ ACTIONS
+  // ⚙️ ACTION HANDLER (FIXED)
   // =========================
   const handleClick = async () => {
     if (!user) {
@@ -81,25 +85,39 @@ const ActionCard = ({ action: rawAction, context = "available" }) => {
 
     try {
       if (context === "available" && pack.status === "disponible") {
-        await axiosInstance.post(`/actions/buy/${pack.id}`);
+        await buy.mutateAsync(pack.id);
+
+        // ⚡ UX instantané
         setAction((prev) => ({ ...prev, pack_status: "payé" }));
+
         setMessage(t("action.feedback.buySuccess", { name: pack.name }));
-      } else if (context === "owned" && pack.status === "payé") {
-        await axiosInstance.post(`/actions/start/${pack.id}`);
+      }
+
+      else if (context === "owned" && pack.status === "payé") {
+        await start.mutateAsync(pack.id);
+
         setAction((prev) => ({ ...prev, pack_status: "en_cours" }));
+
         setMessage(t("action.feedback.startSuccess", { name: pack.name }));
-      } else if (context === "owned" && pack.status === "en_cours") {
+      }
+
+      else if (context === "owned" && pack.status === "en_cours") {
         navigate(`/daily-tasks/${pack.id}`);
         return;
-      } else if (context === "owned" && pack.status === "à_reclamer") {
-        await axiosInstance.post(`/actions/claim/${pack.id}`);
+      }
+
+      else if (context === "owned" && pack.status === "à_reclamer") {
+        await claim.mutateAsync(pack.id);
+
         setMessage(t("action.feedback.claimSuccess", { name: pack.name }));
       }
+
     } catch (error) {
       const msg =
         error.response?.data?.detail ||
         error.message ||
         t("action.feedback.error");
+
       setMessage(`❌ ${msg}`);
     } finally {
       setLoading(false);
@@ -107,7 +125,7 @@ const ActionCard = ({ action: rawAction, context = "available" }) => {
   };
 
   // =========================
-  // 🧱 RENDU
+  // 🧱 RENDER
   // =========================
   return (
     <div className="action-card">
@@ -129,17 +147,14 @@ const ActionCard = ({ action: rawAction, context = "available" }) => {
       </div>
 
       <div className="card-body">
-        <p>
-          {t("action.category")} : <span>{pack.category}</span>
-        </p>
-        <p>
-          {t("action.type")} : <span>{pack.type}</span>
-        </p>
+        <p>{t("action.category")} : <span>{pack.category}</span></p>
+        <p>{t("action.type")} : <span>{pack.type}</span></p>
 
         {context === "available" && (
           <>
             <p>
-              {t("action.pricePerPart")} : <strong>{pack.price.toFixed(2)} USDT</strong>
+              {t("action.pricePerPart")} :{" "}
+              <strong>{pack.price.toFixed(2)} USDT</strong>
             </p>
             <p>
               {t("action.totalParts")} : <span>{pack.totalParts}</span>
@@ -148,12 +163,15 @@ const ActionCard = ({ action: rawAction, context = "available" }) => {
         )}
 
         <p>
-          {t("action.dailyEarnings")} : <strong>{pack.dailyEarnings.toFixed(5)} $BKC</strong>
+          {t("action.dailyEarnings")} :{" "}
+          <strong>{pack.dailyEarnings.toFixed(5)} $BKC</strong>
         </p>
 
         <p>
           {t("action.status")} :{" "}
-          <span style={{ color: statusColor, fontWeight: "bold" }}>{pack.status}</span>
+          <span style={{ color: statusColor, fontWeight: "bold" }}>
+            {pack.status}
+          </span>
         </p>
       </div>
 

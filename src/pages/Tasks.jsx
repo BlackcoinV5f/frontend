@@ -1,44 +1,20 @@
-// src/pages/Tasks.jsx
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTrophy, FaExternalLinkAlt, FaClock } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useTasks } from "../hooks/useTasks";
 import "./Tasks.css";
 
 const Tasks = () => {
-  const { user, axiosInstance } = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
+
+  const { data, isLoading, isError, startTask } = useTasks();
 
   const [tasks, setTasks] = useState([]);
 
-  // ✅ React Query (même logique que Check.jsx)
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["tasks", user?.id],
-    queryFn: async () => {
-      const [tasksRes, completedRes] = await Promise.all([
-        axiosInstance.get("/tasks/me/pending"),
-        axiosInstance.get("/tasks/me/completed-count"),
-      ]);
-
-      return {
-        tasks: tasksRes.data,
-        completedCount: completedRes.data.completed_tasks || 0,
-      };
-    },
-    enabled: !!user,
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnWindowFocus: false,
-  });
-
-  // ✅ Transformer les tâches quand data arrive
+  // ✅ mapping IDENTIQUE
   useEffect(() => {
     if (!data?.tasks) return;
 
@@ -52,7 +28,7 @@ const Tasks = () => {
     setTasks(styledTasks);
   }, [data]);
 
-  // ✅ Timer local (comme avant)
+  // ✅ timer IDENTIQUE
   useEffect(() => {
     const interval = setInterval(() => {
       setTasks((prev) =>
@@ -97,14 +73,10 @@ const Tasks = () => {
   const progress =
     totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
-  const handleTaskClick = async (task) => {
-    try {
-      await axiosInstance.post(`/tasks/${task.id}/start`);
-      window.open(task.link, "_blank");
-      refetch(); // ✅ refresh propre React Query
-    } catch (err) {
-      console.error("❌ Erreur démarrage tâche :", err);
-    }
+  // ✅ START TASK FIX
+  const handleTaskClick = (task) => {
+    startTask.mutate(task.id);
+    window.open(task.link, "_blank");
   };
 
   const handleValidateClick = (task) => {
@@ -183,7 +155,6 @@ const Tasks = () => {
                   </div>
                 </div>
 
-                {/* LOGIQUE */}
                 {task.completed ? (
                   <div className="completed-badge">✅ Complétée</div>
                 ) : task.started_at && task.time_left > 0 ? (

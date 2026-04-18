@@ -1,13 +1,14 @@
-// src/pages/Check.jsx
 import React, { useMemo } from "react";
 import { useUser } from "../contexts/UserContext.jsx";
-import { useQuery } from "@tanstack/react-query";
+import { useCheck } from "../hooks/useCheck";
 import "./Check.css";
 
 export default function Check() {
-  const { axiosInstance, user } = useUser();
+  const { user } = useUser();
 
-  // 🔥 Criteria memo (évite recréation)
+  const { data, isLoading, isError, error } = useCheck();
+
+  // 🔥 criteria memo inchangé
   const criteria = useMemo(
     () => [
       { label: "5 amis", key: "friends", optional: false },
@@ -20,45 +21,14 @@ export default function Check() {
     []
   );
 
-  // ✅ React Query optimisé
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["eligibility", user?.id],
+  if (!user) {
+    return <div className="check-page">⏳ Chargement...</div>;
+  }
 
-    queryFn: async () => {
-      const res = await axiosInstance.get("/eligibility/check/");
-      return res.data;
-    },
-
-    enabled: !!user && !!axiosInstance,
-
-    staleTime: Infinity, // cache permanent
-    gcTime: Infinity, // remplace cacheTime en v5
-
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 1,
-
-    // 🔥 Optimisation : transforme data directement
-    select: (data) => {
-      const completed = Object.values(data).filter(Boolean).length;
-      return {
-        ...data,
-        completed,
-      };
-    },
-  });
-
-  // ⏳ Loading propre
   if (isLoading) {
     return <div className="check-page">⏳ Chargement...</div>;
   }
 
-  // ❌ Error propre
   if (isError) {
     return (
       <div className="check-page">
@@ -69,7 +39,7 @@ export default function Check() {
 
   if (!data) return null;
 
-  // 🔥 Calcul propre
+  // 🔥 calcul UI (correct)
   const completed = criteria.filter((c) => data[c.key]).length;
   const progressPercent = Math.round(
     (completed / criteria.length) * 100

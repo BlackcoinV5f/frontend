@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./LuckyDistributorGame.css";
 import { useUser } from "../contexts/UserContext";
+import { useBalance } from "../hooks/useBalance";
 
 export default function LuckyDistributorGame() {
   const { user, axiosInstance } = useUser();
+  const { data: balance = 0, refetch: refetchBalance } = useBalance();
 
   const [gameId, setGameId] = useState(null);
   const [cards, setCards] = useState([]);
@@ -11,33 +13,27 @@ export default function LuckyDistributorGame() {
   const [reward, setReward] = useState(0);
   const [loot, setLoot] = useState([]);
   const [busy, setBusy] = useState(false);
-  const [balance, setBalance] = useState(0);
   const [bet, setBet] = useState(100);
 
-  // ✅ Nouveau : message de fin de partie
   const [message, setMessage] = useState(null);
-
-  // =========================
-  // API balance utilisateur
-  // =========================
-  const fetchBalance = async () => {
-    try {
-      const { data } = await axiosInstance.get("/balance/");
-      setBalance(data.points);
-    } catch (err) {
-      console.error("❌ Erreur fetchBalance:", err);
-    }
-  };
 
   // =========================
   // START GAME
   // =========================
   const startGame = async () => {
-    try {
-      if (bet <= 0) return setMessage({ type: "error", text: "Mise invalide !" });
-      if (bet > balance) return setMessage({ type: "error", text: "Solde insuffisant !" });
-      setBusy(true);
+    if (busy) return;
 
+    if (bet <= 0) {
+      return setMessage({ type: "error", text: "Mise invalide !" });
+    }
+
+    if (bet > balance) {
+      return setMessage({ type: "error", text: "Solde insuffisant !" });
+    }
+
+    setBusy(true);
+
+    try {
       const { data } = await axiosInstance.post("/luckygame/start", {
         user_id: user.id,
         bet,
@@ -47,6 +43,7 @@ export default function LuckyDistributorGame() {
       setLevel(data.current_level);
       setReward(data.current_reward);
       setLoot([]);
+
       setCards(
         data.multipliers.map((_, idx) => ({
           id: idx,
@@ -55,9 +52,9 @@ export default function LuckyDistributorGame() {
         }))
       );
 
-      await fetchBalance();
+      await refetchBalance();
     } catch (err) {
-      console.error("❌ Erreur startGame:", err);
+      console.error("❌ startGame:", err);
     } finally {
       setBusy(false);
     }
@@ -68,7 +65,9 @@ export default function LuckyDistributorGame() {
   // =========================
   const playCard = async (index) => {
     if (busy || !gameId) return;
+
     setBusy(true);
+
     try {
       const { data } = await axiosInstance.post("/luckygame/play", {
         game_id: gameId,
@@ -101,19 +100,29 @@ export default function LuckyDistributorGame() {
             })) || []
           );
         }, 2000);
-      } else if (data.result === "lose") {
+      }
+
+      if (data.result === "lose") {
         setTimeout(() => {
-          setMessage({ type: "lose", text: "Dommage 😢 Tu as perdu ta mise !" });
+          setMessage({
+            type: "lose",
+            text: "Dommage 😢 Tu as perdu ta mise !",
+          });
           resetGame();
         }, 2000);
-      } else if (data.result === "win") {
+      }
+
+      if (data.result === "win") {
         setTimeout(() => {
-          setMessage({ type: "win", text: `🎉 Bravo ! Tu as gagné ${data.reward} pts !` });
+          setMessage({
+            type: "win",
+            text: `🎉 Bravo ! Tu as gagné ${data.reward} pts !`,
+          });
           resetGame();
         }, 2000);
       }
     } catch (err) {
-      console.error("❌ Erreur playCard:", err);
+      console.error("❌ playCard:", err);
     } finally {
       setBusy(false);
     }
@@ -123,23 +132,32 @@ export default function LuckyDistributorGame() {
   // CASHOUT
   // =========================
   const cashout = async () => {
-    if (!gameId) return;
+    if (!gameId || busy) return;
+
+    setBusy(true);
+
     try {
       const { data } = await axiosInstance.post("/luckygame/cashout", {
         game_id: gameId,
       });
 
-      setMessage({ type: "win", text: `💰 Encaissement réussi : ${data.reward} pts` });
+      setMessage({
+        type: "win",
+        text: `💰 Encaissement réussi : ${data.reward} pts`,
+      });
+
       resetGame();
 
-      await fetchBalance();
+      await refetchBalance();
     } catch (err) {
-      console.error("❌ Erreur cashout:", err);
+      console.error("❌ cashout:", err);
+    } finally {
+      setBusy(false);
     }
   };
 
   // =========================
-  // RESET GAME
+  // RESET
   // =========================
   const resetGame = () => {
     setGameId(null);
@@ -147,22 +165,25 @@ export default function LuckyDistributorGame() {
     setLoot([]);
     setReward(0);
     setLevel(1);
-    fetchBalance();
+
+    refetchBalance();
   };
 
-  useEffect(() => {
-    if (user) fetchBalance();
-  }, [user]);
-
+  // =========================
+  // LEVEL UI
+  // =========================
   const getVisibleLevels = () => {
     const start = Math.max(1, level - 2);
     const end = Math.min(25, start + 4);
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
+  // =========================
+  // UI
+  // =========================
   return (
     <div className="lucky-game">
-      {/* ✅ Popup message */}
+
       {message && (
         <div className={`game-message ${message.type}`}>
           {message.text}
@@ -196,6 +217,7 @@ export default function LuckyDistributorGame() {
               className="user-avatar"
             />
           )}
+
           <div className="user-meta">
             <span className="username">{user?.username || "Joueur"}</span>
             <span className="balance">Solde : {balance} pts</span>
@@ -228,7 +250,9 @@ export default function LuckyDistributorGame() {
                 >
                   <div className="card-inner">
                     <div className="card-front"></div>
-                    <div className="card-back">{card.reward || "??"}x</div>
+                    <div className="card-back">
+                      {card.reward || "??"}x
+                    </div>
                   </div>
                 </div>
               ))}
@@ -239,7 +263,12 @@ export default function LuckyDistributorGame() {
                 <span>BUTIN OBTENU</span>
                 <span>{loot.length} objets</span>
               </div>
-              <button className="cashout-btn" onClick={cashout} disabled={busy}>
+
+              <button
+                className="cashout-btn"
+                onClick={cashout}
+                disabled={busy}
+              >
                 ENCAISSER
               </button>
             </div>

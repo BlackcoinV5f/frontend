@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -14,18 +13,23 @@ import Historic from "./pages/Historic";
 import backgroundImage from "./assets/background.png";
 import "./App.css";
 
-// 🧠 Query Client
+// ========================
+// 🧠 QUERY CLIENT (FIX SCALE)
+// ========================
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 15,
+      staleTime: 1000 * 60 * 5,   // 5 min global
+      gcTime: 1000 * 60 * 30,     // 🔥 évite fuite mémoire
       refetchOnWindowFocus: false,
       retry: 1,
     },
   },
 });
 
-// 🧩 Lazy components
+// ========================
+// 🧩 LAZY
+// ========================
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const Navbar = lazy(() => import("./components/Navbar"));
 const Footer = lazy(() => import("./components/Footer"));
@@ -33,7 +37,7 @@ const ErrorBoundary = lazy(() => import("./components/ErrorBoundary"));
 const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
-// 🧭 Public
+// Public
 const AuthChoice = lazy(() => import("./pages/AuthChoice"));
 const RegisterForm = lazy(() => import("./pages/RegisterForm"));
 const Login = lazy(() => import("./pages/Login"));
@@ -41,7 +45,7 @@ const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Welcome = lazy(() => import("./pages/Welcome"));
 const LandingRedirect = lazy(() => import("./pages/LandingRedirect"));
 
-// 🔒 Protected
+// Protected
 const Home = lazy(() => import("./pages/Home"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Friends = lazy(() => import("./pages/Friends"));
@@ -62,25 +66,21 @@ const Kyc = lazy(() => import("./pages/Kyc"));
 const BlackAI = lazy(() => import("./pages/BlackAI"));
 const Check = lazy(() => import("./pages/Check"));
 
-// 💰 Finance
+// Finance
 const DepositMethods = lazy(() => import("./pages/DepositMethods"));
 const Depots = lazy(() => import("./pages/Depots"));
 const Retraits = lazy(() => import("./pages/Retraits"));
 const RetraitMethode = lazy(() => import("./pages/RetraitMethode"));
 
-// 🔐 Protected Route
+// ========================
+// 🔐 PROTECTED ROUTE
+// ========================
 const ProtectedRoute = ({ children }) => {
-  const {
-    isAuthenticated,
-    isEmailVerified,
-    hasCompletedWelcomeTasks,
-    loading,
-  } = useUser();
+  const { isAuthenticated, isEmailVerified, loading } = useUser();
 
   if (loading) return <LoadingSpinner />;
   if (!isAuthenticated) return <Navigate to="/auth-choice" replace />;
   if (!isEmailVerified) return <Navigate to="/verify-email" replace />;
-  if (!hasCompletedWelcomeTasks) return <Navigate to="/welcome" replace />;
 
   return children;
 };
@@ -89,14 +89,28 @@ ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// ⭐ App Content
+// ========================
+// ⭐ APP CONTENT
+// ========================
 function AppContent() {
   const { user, loading } = useUser();
   const location = useLocation();
-  const [showSplash, setShowSplash] = useState(true);
 
-  // ✅ cacher navbar + footer pour BlackAI
-  const hideBars = location.pathname.startsWith("/black-ai");
+  // 🔥 Splash intelligent
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem("splash_seen");
+  });
+
+  const handleFinishSplash = () => {
+    sessionStorage.setItem("splash_seen", "true");
+    setShowSplash(false);
+  };
+
+  // 🔥 scalable hideBars
+  const hiddenRoutes = ["/black-ai"];
+  const hideBars = hiddenRoutes.some((path) =>
+    location.pathname.startsWith(path)
+  );
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -116,26 +130,19 @@ function AppContent() {
       className="app-container"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      {/* Splash */}
-      {showSplash && (
-        <Suspense fallback={<LoadingSpinner />}>
-          <SplashScreen onFinish={() => setShowSplash(false)} />
-        </Suspense>
-      )}
+      <Suspense fallback={<LoadingSpinner />}>
 
-      {/* Navbar */}
-      {!hideBars && (
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingSpinner />}>
-            <Navbar user={user} />
-          </Suspense>
-        </ErrorBoundary>
-      )}
+        {/* Splash */}
+        {showSplash && (
+          <SplashScreen onFinish={handleFinishSplash} />
+        )}
 
-      {/* Routes */}
-      <main className="content">
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingSpinner />}>
+        {/* Navbar */}
+        {!hideBars && <Navbar user={user} />}
+
+        {/* Routes */}
+        <main className="content">
+          <ErrorBoundary>
             <Routes>
 
               {/* Public */}
@@ -170,7 +177,7 @@ function AppContent() {
               <Route path="/airdrop/:platformId" element={<ProtectedRoute><AirdropClaim /></ProtectedRoute>} />
               <Route path="/kyc" element={<ProtectedRoute><Kyc /></ProtectedRoute>} />
 
-              {/* ✅ BlackAI fullscreen */}
+              {/* BlackAI */}
               <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
 
               {/* Finance */}
@@ -185,23 +192,20 @@ function AppContent() {
               {/* Fallback */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </Suspense>
-        </ErrorBoundary>
-      </main>
+          </ErrorBoundary>
+        </main>
 
-      {/* Footer */}
-      {!hideBars && (
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingSpinner />}>
-            <Footer />
-          </Suspense>
-        </ErrorBoundary>
-      )}
+        {/* Footer */}
+        {!hideBars && <Footer />}
+
+      </Suspense>
     </div>
   );
 }
 
-// 🚀 Root App
+// ========================
+// 🚀 ROOT
+// ========================
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -210,7 +214,6 @@ export default function App() {
           <AppContent />
         </AdmProvider>
       </UserProvider>
-
     </QueryClientProvider>
   );
 }

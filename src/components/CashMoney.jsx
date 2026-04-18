@@ -1,46 +1,22 @@
-// src/components/CashMoney.jsx
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
-import { useQuery } from "@tanstack/react-query";
+import { useCashMoney } from "../hooks/useCashMoney";
 import { GiCash } from "react-icons/gi";
 import "./CashMoney.css";
 
 const CashMoney = () => {
-  const { user, axiosInstance } = useUser();
+  const { user } = useUser();
   const controls = useAnimation();
 
   const [animate, setAnimate] = useState(false);
 
-  // ✅ React Query optimisé
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["cashBalance"], // ✅ stable (plus de user.id ici)
-    
-    queryFn: async () => {
-      const res = await axiosInstance.get("/wallet/realcash/");
-      return res.data;
-    },
+  // ✅ hook centralisé
+  const { data, isLoading, isError } = useCashMoney();
 
-    enabled: !!user, // ✅ évite bug au démarrage
-
-    // 🔥 CONFIG CACHE PRO
-    staleTime: 1000 * 60 * 15, // 15 min sans refetch
-    cacheTime: 1000 * 60 * 30, // garde en mémoire 30 min
-
-    // 🔥 bloque les refetch automatiques
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-
-  // ✅ extraction sécurisée
   const cashBalance = data?.cash_balance ?? 0;
 
-  // ✅ animation quand valeur change
+  // animation
   useEffect(() => {
     if (!isLoading && data) {
       setAnimate(true);
@@ -49,7 +25,6 @@ const CashMoney = () => {
     }
   }, [cashBalance, isLoading, data]);
 
-  // ✅ animation framer
   useEffect(() => {
     if (animate) {
       controls.start({
@@ -59,7 +34,8 @@ const CashMoney = () => {
     }
   }, [animate, controls]);
 
-  // ❌ erreur
+  if (!user) return null;
+
   if (isError) {
     return (
       <div className="cashmoney-card">

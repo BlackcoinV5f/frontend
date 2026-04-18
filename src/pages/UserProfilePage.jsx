@@ -1,11 +1,8 @@
-// src/pages/UserProfilePage.jsx
-import React, { useState } from "react";
+import React from "react";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import {
   FiLogOut,
-  FiEdit,
-  FiCheck,
   FiMail,
   FiPhone,
   FiGlobe,
@@ -18,9 +15,7 @@ import "./UserProfilePage.css";
 
 const UserProfilePage = () => {
   const { t } = useTranslation();
-  const { user, logoutUser, isAuthenticated, setUser } = useUser();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState({ ...user });
+  const { user, logoutUser, isAuthenticated } = useUser();
   const navigate = useNavigate();
 
   if (!user) return null;
@@ -41,44 +36,8 @@ const UserProfilePage = () => {
   };
 
   // -------------------------------
-  // Toggle édition profil
+  // Helpers
   // -------------------------------
-  const handleEditToggle = async () => {
-    if (isEditing) {
-      try {
-        const formData = new FormData();
-        if (editedUser.first_name) formData.append("first_name", editedUser.first_name);
-        if (editedUser.last_name) formData.append("last_name", editedUser.last_name);
-        if (editedUser.phone) formData.append("phone", editedUser.phone);
-        if (editedUser.country) formData.append("country", editedUser.country);
-        if (editedUser.email) formData.append("email", editedUser.email);
-        if (editedUser.birth_date) formData.append("birth_date", editedUser.birth_date);
-        if (editedUser.avatar instanceof File) formData.append("avatar", editedUser.avatar);
-
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/user/update-profile`,
-          {
-            method: "POST",
-            credentials: "include",
-            body: formData,
-          }
-        );
-
-        if (!res.ok) throw new Error("Erreur API update profil");
-        const updatedUser = await res.json();
-        setUser(updatedUser);
-      } catch (err) {
-        console.error("Erreur mise à jour profil:", err);
-      }
-    }
-
-    setIsEditing(!isEditing);
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditedUser((prev) => ({ ...prev, [field]: value }));
-  };
-
   const isProfileComplete = (data) => {
     const requiredFields = [
       "first_name",
@@ -198,15 +157,7 @@ const UserProfilePage = () => {
           </div>
           <div className="detail-content">
             <label>{t("userProfile.email")}</label>
-            {isEditing ? (
-              <input
-                type="email"
-                value={editedUser.email || ""}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-              />
-            ) : (
-              <p>{displayValue(user.email)}</p>
-            )}
+            <p>{displayValue(user.email)}</p>
           </div>
         </div>
 
@@ -216,15 +167,7 @@ const UserProfilePage = () => {
           </div>
           <div className="detail-content">
             <label>{t("userProfile.phone")}</label>
-            {isEditing ? (
-              <input
-                type="tel"
-                value={editedUser.phone || ""}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-              />
-            ) : (
-              <p>{displayValue(user.phone)}</p>
-            )}
+            <p>{displayValue(user.phone)}</p>
           </div>
         </div>
 
@@ -234,15 +177,7 @@ const UserProfilePage = () => {
           </div>
           <div className="detail-content">
             <label>{t("userProfile.country")}</label>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedUser.country || ""}
-                onChange={(e) => handleInputChange("country", e.target.value)}
-              />
-            ) : (
-              <p>{displayValue(user.country)}</p>
-            )}
+            <p>{displayValue(user.country)}</p>
           </div>
         </div>
 
@@ -275,16 +210,6 @@ const UserProfilePage = () => {
             {t("userProfile.actions.verifyKYC")}
           </button>
         )}
-
-        <button
-          className={`edit-button ${isEditing ? "save" : ""}`}
-          onClick={handleEditToggle}
-        >
-          {isEditing ? <FiCheck size={16} /> : <FiEdit size={16} />}
-          {isEditing
-            ? t("userProfile.actions.save")
-            : t("userProfile.actions.editProfile")}
-        </button>
 
         {isAuthenticated && (
           <button className="logout-button" onClick={handleLogout}>

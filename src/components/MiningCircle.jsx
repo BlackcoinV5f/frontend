@@ -1,8 +1,7 @@
-// src/components/MiningCircle.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { useUser } from "../contexts/UserContext";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMining } from "../hooks/useMining";
 
 import "react-circular-progressbar/dist/styles.css";
 import "./MiningCircle.css";
@@ -20,16 +19,15 @@ import level9 from "../assets/level9.png";
 const levelImages = { 1: level1, 2: level2, 3: level3, 4: level4, 5: level5, 6: level6, 7: level7, 8: level8, 9: level9 };
 
 const MiningCircle = () => {
-  const { user, axiosInstance } = useUser();
-  const queryClient = useQueryClient();
+  const { user } = useUser();
+  const { data, startMining, claimMining } = useMining();
+
   const intervalRef = useRef(null);
 
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("idle");
   const [buttonText, setButtonText] = useState("START");
   const [level, setLevel] = useState(1);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [cycleMs, setCycleMs] = useState(0);
 
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -39,26 +37,7 @@ const MiningCircle = () => {
     return `${h}:${m}:${s}`;
   };
 
-  // ✅ QUERY PROPRE (aucun refetch inutile)
-  const { data } = useQuery({
-    queryKey: ["mining"], // ✅ stable
-
-    queryFn: async () => {
-      const res = await axiosInstance.get(`/mining/status/${user.id}`);
-      return res.data;
-    },
-
-    enabled: !!user,
-
-    staleTime: 1000 * 60 * 15, // ✅ 15 min réel
-    cacheTime: 1000 * 60 * 30,
-
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-
-  // ✅ SYNC LOCAL (ZÉRO API ici)
+  // 🔥 TON LOGIC RESTE INTACT
   useEffect(() => {
     if (!data) return;
 
@@ -67,29 +46,27 @@ const MiningCircle = () => {
 
     if (data.status === "running") {
       setStatus("running");
-      setTimeLeft(data.remaining_time_ms);
-      setCycleMs(data.total_cycle_ms);
-      setButtonText(formatTime(data.remaining_time_ms));
+
+      let timeLeft = data.remaining_time_ms;
+
+      setButtonText(formatTime(timeLeft));
 
       intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1000) {
-            clearInterval(intervalRef.current);
-            setProgress(100);
-            setStatus("ready");
-            setButtonText("CLAIM");
-            return 0;
-          }
+        timeLeft -= 1000;
 
-          const updated = prev - 1000;
-          const progressValue =
-            ((data.total_cycle_ms - updated) / data.total_cycle_ms) * 100;
+        if (timeLeft <= 0) {
+          clearInterval(intervalRef.current);
+          setProgress(100);
+          setStatus("ready");
+          setButtonText("CLAIM");
+          return;
+        }
 
-          setProgress(progressValue);
-          setButtonText(formatTime(updated));
+        const progressValue =
+          ((data.total_cycle_ms - timeLeft) / data.total_cycle_ms) * 100;
 
-          return updated;
-        });
+        setProgress(progressValue);
+        setButtonText(formatTime(timeLeft));
       }, 1000);
     } else if (data.status === "ready_to_claim") {
       setProgress(100);
@@ -104,29 +81,6 @@ const MiningCircle = () => {
     return () => clearInterval(intervalRef.current);
   }, [data]);
 
-  // 🚀 START (SANS invalidate)
-  const { mutate: startMining } = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.post(`/mining/start/${user.id}`);
-      return res.data;
-    },
-    onSuccess: (newData) => {
-      // ✅ mise à jour directe du cache (pas de refetch)
-      queryClient.setQueryData(["mining"], newData);
-    },
-  });
-
-  // 🎁 CLAIM (SANS invalidate)
-  const { mutate: claimPoints } = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.post(`/mining/claim/${user.id}`);
-      return res.data;
-    },
-    onSuccess: (newData) => {
-      queryClient.setQueryData(["mining"], newData);
-    },
-  });
-
   return (
     <div className="mining-wrapper">
       <div className="progress-circle">
@@ -137,7 +91,6 @@ const MiningCircle = () => {
             pathColor: "#00ff88",
             textColor: "#fff",
             trailColor: "#333",
-            strokeLinecap: "round",
           })}
         />
 
@@ -152,7 +105,9 @@ const MiningCircle = () => {
         className="mining-button"
         disabled={status === "running" && buttonText !== "CLAIM"}
         onClick={() =>
-          status === "idle" ? startMining() : claimPoints()
+          status === "idle"
+            ? startMining.mutate()
+            : claimMining.mutate()
         }
       >
         {buttonText}

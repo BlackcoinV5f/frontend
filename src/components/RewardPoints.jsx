@@ -1,46 +1,22 @@
-// src/components/RewardPoints.jsx
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
-import { useQuery } from "@tanstack/react-query";
+import { useRewardPoints } from "../hooks/useRewardPoints";
 import { RiCoinsFill } from "react-icons/ri";
 import "./RewardPoints.css";
 
 const RewardPoints = () => {
-  const { user, axiosInstance } = useUser();
+  const { user } = useUser();
   const controls = useAnimation();
 
   const [animate, setAnimate] = useState(false);
 
-  // ✅ React Query optimisé
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["rewardPoints"], // ✅ stable (plus de user.id)
+  // ✅ hook centralisé
+  const { data, isLoading, isError } = useRewardPoints();
 
-    queryFn: async () => {
-      const res = await axiosInstance.get("/wallet/");
-      return res.data;
-    },
-
-    enabled: !!user, // ✅ évite bug au démarrage
-
-    // 🔥 CONFIG CACHE
-    staleTime: 1000 * 60 * 15, // 15 min
-    cacheTime: 1000 * 60 * 30,
-
-    // 🔥 stop refetch inutile
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
-
-  // ✅ extraction sécurisée
   const rewardPoints = data?.balance ?? 0;
 
-  // ✅ animation déclenchée sur changement
+  // animation trigger
   useEffect(() => {
     if (!isLoading && data) {
       setAnimate(true);
@@ -49,7 +25,7 @@ const RewardPoints = () => {
     }
   }, [rewardPoints, isLoading, data]);
 
-  // ✅ animation framer
+  // animation framer
   useEffect(() => {
     if (animate) {
       controls.start({
@@ -59,7 +35,8 @@ const RewardPoints = () => {
     }
   }, [animate, controls]);
 
-  // ❌ gestion erreur
+  if (!user) return null;
+
   if (isError) {
     return (
       <div className="rewardpoints-card">
@@ -76,7 +53,7 @@ const RewardPoints = () => {
       transition={{ duration: 0.4 }}
       onClick={() => setAnimate(true)}
     >
-      {/* 🔄 animation rotation */}
+      {/* animation rotation */}
       <div className="coins-animation">
         <motion.div
           animate={{ rotate: 360 }}

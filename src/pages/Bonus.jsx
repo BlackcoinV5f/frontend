@@ -1,8 +1,9 @@
-// src/pages/Bonus.jsx
 import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useTranslation } from "react-i18next";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useBonus } from "../hooks/useBonus";
+
 import {
   FaSpinner,
   FaExclamationTriangle,
@@ -12,61 +13,26 @@ import {
   FaGem,
   FaTicketAlt,
 } from "react-icons/fa";
+
 import "./bonus.css";
 
 export default function Bonus() {
-  const { user, axiosInstance } = useUser();
+  const { user } = useUser();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+
+  const { data: bonus, isLoading, isError, claimBonus } = useBonus();
 
   const [countdown, setCountdown] = useState("");
   const notifiedRef = useRef(false);
 
-  // ================= QUERY =================
-  const {
-    data: bonus,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["bonus", user?.id],
-
-    queryFn: async () => {
-      const res = await axiosInstance.get(`/bonus/${user.id}/status`);
-      return res.data;
-    },
-
-    enabled: !!user?.id && !!axiosInstance,
-
-    staleTime: Infinity,
-    gcTime: Infinity,
-
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 1,
-  });
-
-  // ================= MUTATION =================
-  const claimMutation = useMutation({
-    mutationFn: async () => {
-      const res = await axiosInstance.post(`/bonus/${user.id}/claim`);
-      return res.data;
-    },
-
-    onSuccess: (data) => {
-      queryClient.setQueryData(["bonus", user?.id], data);
-      notifiedRef.current = false;
-    },
-
-    onError: () => {
-      console.error("Erreur claim bonus");
-    },
-  });
-
+  // ================= ACTION =================
   const handleClaim = useCallback(() => {
-    if (!claimMutation.isPending) {
-      claimMutation.mutate();
+    if (!claimBonus.isPending) {
+      claimBonus.mutate();
+      notifiedRef.current = false;
     }
-  }, [claimMutation]);
+  }, [claimBonus]);
 
   // ================= MEMO =================
   const conditions = useMemo(() => bonus?.conditions || {}, [bonus]);
@@ -189,7 +155,7 @@ export default function Bonus() {
             </div>
 
             <div className={`condition-item ${conditions.friends_count >= 3 ? "completed" : ""}`}>
-              <FaUsers />{" "}
+              <FaUsers />
               {t("bonus.conditions.friendsCount", {
                 count: conditions.friends_count || 0,
               })}
@@ -200,12 +166,12 @@ export default function Bonus() {
           <div className="action-section">
             <button
               onClick={handleClaim}
-              disabled={claimMutation.isPending || bonus.status !== "eligible"}
+              disabled={claimBonus.isPending || bonus.status !== "eligible"}
               className={`convert-btn ${
                 bonus.status === "eligible" ? "eligible" : "disabled"
               }`}
             >
-              {claimMutation.isPending ? (
+              {claimBonus.isPending ? (
                 <>
                   <FaSpinner className="spin" /> {t("bonus.claiming")}
                 </>

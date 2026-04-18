@@ -3,21 +3,26 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import { FaFire, FaCog } from "react-icons/fa";
+import { useBalance } from "../hooks/useBalance";
 import "./Navbar.css";
 
 const Navbar = ({ user }) => {
   const navigate = useNavigate();
 
+  // ✅ récupération des points
+  const { data, isLoading } = useBalance();
+
   const handleProfileClick = () => {
     navigate("/profile");
   };
 
-  // 🧩 Génération d'un avatar dynamique si pas de photo
+  // 🧩 Avatar fallback
   const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "?";
+
   const getColorFromName = (name) => {
     const colors = ["#4a90e2", "#e67e22", "#2ecc71", "#9b59b6", "#e74c3c"];
     let hash = 0;
-    for (let i = 0; i < name?.length; i++) {
+    for (let i = 0; i < (name?.length || 0); i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
     return colors[Math.abs(hash) % colors.length];
@@ -25,6 +30,24 @@ const Navbar = ({ user }) => {
 
   const avatarSrc = user?.avatar_url || null;
   const avatarColor = getColorFromName(user?.first_name || user?.username);
+
+  // ✅ sécurisation des points
+  const rawPoints = Number(data ?? 0);
+
+  // ✅ formatage K / M propre
+  const formatPoints = (value) => {
+    if (value >= 1_000_000) {
+      return (value / 1_000_000)
+        .toFixed(1)
+        .replace(".0", "") + "M";
+    }
+
+    if (value >= 1_000) {
+      return Math.floor(value / 1_000) + "K";
+    }
+
+    return value.toString();
+  };
 
   return (
     <nav className="navbar">
@@ -62,7 +85,9 @@ const Navbar = ({ user }) => {
       {/* 🔥 Points */}
       <Link to="/balance" className="nav-item">
         <FaFire className="nav-icon small-icon" />
-        <span className="small-text">Points</span>
+        <span className="small-text">
+          {isLoading ? "..." : `${formatPoints(rawPoints)} pts`}
+        </span>
       </Link>
 
       {/* ⚙️ Paramètres */}

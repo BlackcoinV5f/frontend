@@ -2,7 +2,7 @@
 .blackai-container {
   display: flex;
   flex-direction: column;
-  height: 100dvh; /* 🔥 FIX MOBILE */
+  height: 100vh;
   max-width: 500px;
   margin: 0 auto;
   width: 100%;
@@ -10,6 +10,7 @@
   color: #e5e7eb;
   font-family: "Segoe UI", sans-serif;
   overflow: hidden;
+  position: relative;
 }
 
 /* HEADER */
@@ -28,6 +29,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.ai-icon {
+  font-size: 24px;
 }
 
 .header-info h2 {
@@ -90,6 +95,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 15px;
+  padding-bottom: 110px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -138,21 +144,20 @@
   flex-shrink: 0;
 }
 
-/* MESSAGE */
 .message-bubble {
   max-width: 85%;
-  background: transparent;
-  padding: 8px 4px;
-  font-size: 16px;
+  background: transparent; /* 🔥 plus de fond */
+  padding: 8px 4px; /* réduit car plus de "bulle" */
+  border-radius: 0; /* inutile sans fond */
+  font-size: 16px; /* 🔥 texte plus grand */
   line-height: 1.6;
   word-break: break-word;
+  box-shadow: none; /* supprime l'effet carte */
 }
 
 .message-wrapper.user .message-bubble {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
-  border-radius: 12px;
-  padding: 10px;
 }
 
 /* TIME */
@@ -163,7 +168,10 @@
   text-align: right;
 }
 
-/* TEXT */
+/* ============================================ */
+/* 🔥 CORRECTION TEXTE ALIGNÉ GAUCHE 🔥 */
+/* ============================================ */
+
 .message-text {
   line-height: 1.5;
   text-align: left;
@@ -174,23 +182,145 @@
   text-align: left;
 }
 
+/* Paragraphes */
 .message-text p {
   margin: 0 0 0.5rem 0;
+  line-height: 1.5;
 }
 
 .message-text p:last-child {
   margin-bottom: 0;
 }
 
-/* INPUT FIX 🔥 */
+/* Titres */
+.message-text h1 {
+  font-size: 1.5rem;
+  margin: 0.75rem 0 0.5rem 0;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.message-text h2 {
+  font-size: 1.2rem;
+  margin: 0.6rem 0 0.4rem 0;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+.message-text h3 {
+  font-size: 1.1rem;
+  margin: 0.5rem 0 0.3rem 0;
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+.message-text h4 {
+  font-size: 1rem;
+  margin: 0.4rem 0 0.2rem 0;
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+/* Empêcher les marges en trop sur le premier élément */
+.message-text h1:first-child,
+.message-text h2:first-child,
+.message-text h3:first-child,
+.message-text h4:first-child,
+.message-text p:first-child {
+  margin-top: 0;
+}
+
+/* Listes */
+.message-text ul,
+.message-text ol {
+  margin: 0.25rem 0 0.25rem 0;
+  padding-left: 1.5rem;
+}
+
+.message-text li {
+  margin: 0.15rem 0;
+  line-height: 1.4;
+}
+
+/* Puces spécifiques */
+.message-text ul li::marker {
+  color: #60a5fa;
+}
+
+/* Blockquotes */
+.message-text blockquote {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0 0.5rem 1rem;
+  border-left: 3px solid #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 0 8px 8px 0;
+}
+
+/* Code */
+.message-text pre {
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  background: #0b0f19;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.85rem;
+}
+
+.message-text code {
+  background: #0b0f19;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+}
+
+/* Tableaux */
+.message-text table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+}
+
+.message-text th,
+.message-text td {
+  border: 1px solid #374151;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.message-text th {
+  background: #1f2937;
+  font-weight: 600;
+}
+
+/* Texte en gras */
+.message-text strong {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+/* Liens */
+.message-text a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.message-text a:hover {
+  text-decoration: underline;
+}
+
+/* INPUT */
 .input-wrapper {
-  flex-shrink: 0; /* 🔥 remplace absolute */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   background: #111827;
   border-top: 1px solid #1f2937;
   padding: 10px;
 }
 
-/* INPUT */
 .input-container {
   display: flex;
   gap: 10px;
@@ -215,6 +345,10 @@
   border-color: #2563eb;
 }
 
+.message-input::placeholder {
+  color: #6b7280;
+}
+
 .send-button {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   border: none;
@@ -222,7 +356,13 @@
   border-radius: 10px;
   color: white;
   cursor: pointer;
+  transition: 0.2s;
   font-size: 18px;
+}
+
+.send-button:hover:not(.disabled) {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
 }
 
 .send-button.disabled {
@@ -237,7 +377,45 @@
   text-align: center;
 }
 
+/* TYPING INDICATOR */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background: #9ca3af;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: 0s; }
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+/* BACK BUTTON */
+.back-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.back-button:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
 /* ANIMATIONS */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -246,5 +424,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
   }
 }

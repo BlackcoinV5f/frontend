@@ -1,37 +1,19 @@
-// src/pages/Actions.jsx
 import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext.jsx";
 import ActionCard from "../components/ActionCard.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { useTranslation } from "react-i18next";
+import { useActions } from "../hooks/useActions";
 import "./Actions.css";
 
 import { DollarSign, Building2, Sparkles, User2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 
 const Actions = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("finance");
-  const { axiosInstance, user } = useUser();
+  const { user } = useUser();
 
-  // -----------------------------
-  // React Query v5 (signature objet)
-  // -----------------------------
-  const { data: actions = [], isLoading, refetch } = useQuery({
-    queryKey: ["actions", activeTab, user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      if (activeTab === "myactif") {
-        const res = await axiosInstance.get("/actions/my-packs");
-        return res.data || [];
-      } else {
-        const res = await axiosInstance.get(`/actions/category/${activeTab}`);
-        return res.data || [];
-      }
-    },
-    enabled: !!user?.id,
-    keepPreviousData: true,
-  });
+  const { data: actions = [], isLoading, refresh } = useActions(activeTab);
 
   const categories = [
     { id: "finance", label: t("actions.category.finance"), icon: <DollarSign size={18} /> },
@@ -46,7 +28,7 @@ const Actions = () => {
 
   return (
     <div className="actions-page">
-      {/* ===== Barres de catégories ===== */}
+      {/* catégories */}
       <div className="categories-bar">
         {categories.map(({ id, label, icon }) => (
           <button
@@ -60,7 +42,7 @@ const Actions = () => {
         ))}
       </div>
 
-      {/* ===== Contenu des actions ===== */}
+      {/* contenu */}
       <div className="actions-content">
         {actions.length === 0 ? (
           <p className="no-actions">{t("actions.noActions")}</p>
@@ -75,7 +57,7 @@ const Actions = () => {
                   pack_status: action.pack_status || action.status,
                 }}
                 context={cardContext}
-                onActionComplete={() => refetch()}
+                onActionComplete={refresh} // ✅ FIX IMPORTANT
               />
             ))}
           </div>

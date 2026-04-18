@@ -10,6 +10,14 @@
   background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
 }
 
+.bonus-page {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+
+  min-height: 100vh;
+}
 
 /* ================= HEADER ================= */
 

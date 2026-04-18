@@ -15,9 +15,9 @@ export const UserProvider = ({ children }) => {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-  /** ========================
-   * AXIOS CONFIGURATION
-   * ======================== */
+  // ========================
+  // 🔥 AXIOS INSTANCE SAFE
+  // ========================
   const axiosInstance = useMemo(() => {
     const instance = axios.create({
       baseURL: API_URL,
@@ -25,9 +25,18 @@ export const UserProvider = ({ children }) => {
       timeout: 10000,
     });
 
-    // Intercepteur pour refresh
+    let isRefreshing = false;
+    let queue = [];
+
+    const processQueue = (error) => {
+      queue.forEach((p) => {
+        error ? p.reject(error) : p.resolve();
+      });
+      queue = [];
+    };
+
     instance.interceptors.response.use(
-      (response) => response,
+      (res) => res,
       async (error) => {
         const originalRequest = error.config;
 
@@ -36,22 +45,28 @@ export const UserProvider = ({ children }) => {
           !originalRequest._retry &&
           !originalRequest.url.includes("/auth/refresh")
         ) {
-          const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-          if (!storedUser) {
-            console.warn("Pas d'utilisateur → pas de refresh");
-            return Promise.reject(error);
+          originalRequest._retry = true;
+
+          if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+              queue.push({
+                resolve: () => resolve(instance(originalRequest)),
+                reject,
+              });
+            });
           }
 
-          originalRequest._retry = true;
+          isRefreshing = true;
+
           try {
             await instance.post("/auth/refresh");
+            processQueue();
             return instance(originalRequest);
-          } catch (refreshError) {
-            console.error(
-              "⛔ Refresh échoué:",
-              refreshError.response?.data || refreshError.message
-            );
+          } catch (err) {
+            processQueue(err);
             logoutUser();
+          } finally {
+            isRefreshing = false;
           }
         }
 
@@ -62,9 +77,9 @@ export const UserProvider = ({ children }) => {
     return instance;
   }, [API_URL]);
 
-  /** ========================
-   * STATES
-   * ======================== */
+  // ========================
+  // STATE
+  // ========================
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("user")) || null;
@@ -72,104 +87,97 @@ export const UserProvider = ({ children }) => {
       return null;
     }
   });
-  const [loading, setLoading] = useState(false);
+
   const [error, setError] = useState(null);
 
-  /** ========================
-   * HELPERS
-   * ======================== */
+  // ========================
+  // HELPERS
+  // ========================
   const persistUserData = useCallback((userData) => {
     if (!userData) return;
+
     const normalizedUser = {
       ...userData,
-      is_verified: Boolean(userData.is_verified),
-      has_completed_welcome_tasks: Boolean(userData.has_completed_welcome_tasks),
       id: Number(userData.id),
+      is_verified: Boolean(userData.is_verified),
+      has_completed_welcome_tasks: Boolean(
+        userData.has_completed_welcome_tasks
+      ),
     };
+
     setUser(normalizedUser);
     localStorage.setItem("user", JSON.stringify(normalizedUser));
   }, []);
 
-  /** ========================
-   * LOGOUT
-   * ======================== */
+  // ========================
+  // LOGOUT
+  // ========================
   const logoutUser = useCallback(async () => {
     try {
       await axiosInstance.post("/auth/logout");
-    } catch (err) {
-      console.warn(
-        "⚠ Erreur logout backend:",
-        err.response?.data || err.message
-      );
-    }
+    } catch {}
+
     setUser(null);
     setError(null);
+
     localStorage.removeItem("user");
     localStorage.removeItem("pendingUser");
+
     navigate("/login", { replace: true });
   }, [axiosInstance, navigate]);
 
-  /** ========================
-   * AUTH STATE MEMOIZED
-   * ======================== */
+  // ========================
+  // AUTH STATE
+  // ========================
   const authState = useMemo(
     () => ({
-      isAuthenticated: Boolean(user),
-      isEmailVerified: Boolean(user?.is_verified),
-      hasCompletedWelcomeTasks: Boolean(user?.has_completed_welcome_tasks),
-      isProfileComplete: Boolean(
+      isAuthenticated: !!user,
+      isEmailVerified: !!user?.is_verified,
+      hasCompletedWelcomeTasks: !!user?.has_completed_welcome_tasks,
+      isProfileComplete: !!(
         user?.first_name &&
-          user?.last_name &&
-          user?.username &&
-          user?.email &&
-          user?.phone &&
-          user?.avatar_url
+        user?.last_name &&
+        user?.username &&
+        user?.email &&
+        user?.phone &&
+        user?.avatar_url
       ),
     }),
     [user]
   );
 
-  /** ========================
-   * API CALLS
-   * ======================== */
+  // ========================
+  // AUTH API
+  // ========================
   const fetchUserProfile = useCallback(async () => {
-    setLoading(true);
-    setError(null);
     try {
       const { data } = await axiosInstance.get("/auth/me");
-      if (!data?.user?.id) {
-        console.error("❌ Profil utilisateur non trouvé dans la réponse");
-        return null;
-      }
+
+      if (!data?.user?.id) return null;
+
       persistUserData(data.user);
       return data.user;
-    } catch (err) {
-      const msg =
-        err.response?.data?.detail || "Impossible de récupérer le profil";
-      console.error(
-        "❌ Erreur fetchUserProfile :",
-        err.response?.data || err.message
-      );
-      setError(msg);
+    } catch {
       return null;
-    } finally {
-      setLoading(false);
     }
   }, [axiosInstance, persistUserData]);
 
   const loginUser = useCallback(
     async ({ email, username, password }) => {
-      setLoading(true);
-      setError(null);
       try {
-        await axiosInstance.post("/auth/login", { email, username, password });
+        setError(null);
+
+        await axiosInstance.post("/auth/login", {
+          email,
+          username,
+          password,
+        });
+
         return await fetchUserProfile();
       } catch (err) {
-        const msg = err.response?.data?.detail || "Échec de la connexion";
+        const msg = err.response?.data?.detail || "Login failed";
         setError(msg);
         throw new Error(msg);
-      } finally {
-        setLoading(false);
       }
     },
     [axiosInstance, fetchUserProfile]
@@ -177,34 +185,28 @@ export const UserProvider = ({ children }) => {
 
   const registerUser = useCallback(
     async (formData) => {
-      setLoading(true);
-      setError(null);
       try {
         const { data } = await axiosInstance.post("/auth/register", formData, {
           headers: { "Content-Type": "multipart/form-data" },
-          timeout: 15000,
         });
 
-        // ✅ On sauve l’email + code + expiration (si dispo)
         const email = formData.get("email");
+
         if (email) {
           localStorage.setItem(
             "pendingUser",
             JSON.stringify({
               email,
               verification_code: data?.verification_code || null,
-              expires_in: data?.expires_in || 300, // 5 min par défaut
             })
           );
         }
 
         return data;
       } catch (err) {
-        const msg = err.response?.data?.detail || "Échec de l'inscription";
+        const msg = err.response?.data?.detail || "Register failed";
         setError(msg);
         throw new Error(msg);
-      } finally {
-        setLoading(false);
       }
     },
     [axiosInstance]
@@ -212,15 +214,12 @@ export const UserProvider = ({ children }) => {
 
   const verifyEmailCode = useCallback(
     async (code) => {
-      setLoading(true);
-      setError(null);
       try {
         const pendingUser = JSON.parse(
           localStorage.getItem("pendingUser") || "{}"
         );
-        if (!pendingUser.email) {
-          throw new Error("Aucune vérification en attente (email manquant)");
-        }
+
+        if (!pendingUser.email) throw new Error("No pending email");
 
         await axiosInstance.post("/auth/verify-email", {
           email: pendingUser.email,
@@ -231,168 +230,62 @@ export const UserProvider = ({ children }) => {
 
         return await fetchUserProfile();
       } catch (err) {
-        const msg =
-          err.response?.data?.detail || "Échec de la vérification de l'email";
+        const msg = err.response?.data?.detail || "Verification failed";
         setError(msg);
         throw new Error(msg);
-      } finally {
-        setLoading(false);
       }
     },
     [axiosInstance, fetchUserProfile]
   );
 
-  /** ========================
-   * INIT AUTH
-   * ======================== */
+  // ========================
+  // INIT SESSION (SAFE)
+  // ========================
   useEffect(() => {
-    const initAuth = async () => {
-      if (!user) return;
-      try {
-        await fetchUserProfile();
-      } catch (err) {
-        console.warn("⚠ Impossible d'initialiser la session:", err.message);
-      }
-    };
-    initAuth();
-  }, []); // exécuté 1 seule fois au démarrage
+    if (!user) return;
+    fetchUserProfile();
+  }, []); // volontaire
 
-  /** ========================
-   * AUTRES ENDPOINTS
-   * ======================== */
-  const fetchWallet = useCallback(
-    async (userId) => {
-      if (!userId) return 0;
-      try {
-        const { data } = await axiosInstance.get(`/wallet/${userId}`);
-        return data?.balance || 0;
-      } catch (err) {
-        console.error(
-          "❌ Erreur fetchWallet:",
-          err.response?.data || err.message
-        );
-        return 0;
-      }
-    },
-    [axiosInstance]
-  );
-
-  const fetchBalance = useCallback(async () => {
-    try {
-      const { data } = await axiosInstance.get("/balance/");
-      return data?.points || 0;
-    } catch (err) {
-      console.error(
-        "❌ Erreur fetchBalance:",
-        err.response?.data || err.message
-      );
-      return 0;
-    }
-  }, [axiosInstance]);
-
-  const startMining = useCallback(
-    async (userId) => {
-      if (!userId) return false;
-      try {
-        await axiosInstance.post(`/mining/start/${userId}`);
-        return true;
-      } catch (err) {
-        console.error(
-          "❌ Erreur startMining:",
-          err.response?.data || err.message
-        );
-        return false;
-      }
-    },
-    [axiosInstance]
-  );
-
-  const claimMining = useCallback(
-    async (userId, points = 1000) => {
-      if (!userId) return false;
-      try {
-        await axiosInstance.post(`/mining/claim/${userId}`, { points });
-        return true;
-      } catch (err) {
-        console.error(
-          "❌ Erreur claimMining:",
-          err.response?.data || err.message
-        );
-        return false;
-      }
-    },
-    [axiosInstance]
-  );
-
-  const updateUser = useCallback(
-    async (updates) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const updated = { ...user, ...updates };
-        persistUserData(updated);
-        return updated;
-      } catch (err) {
-        const msg = err.message || "Impossible de mettre à jour l'utilisateur";
-        setError(msg);
-        throw new Error(msg);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [user, persistUserData]
-  );
-
-  /** ========================
-   * CONTEXT VALUE
-   * ======================== */
-  const contextValue = useMemo(
+  // ========================
+  // CONTEXT
+  // ========================
+  const value = useMemo(
     () => ({
       user,
-      loading,
       error,
       ...authState,
-      updateUser,
-      registerUser,
       axiosInstance,
-      verifyEmailCode,
+
       loginUser,
       logoutUser,
-      persistUserData,
+      registerUser,
+      verifyEmailCode,
       fetchUserProfile,
-      fetchWallet,
-      fetchBalance,
-      startMining,
-      claimMining,
+      persistUserData,
+
       setError,
     }),
     [
       user,
-      loading,
       error,
       authState,
-      updateUser,
-      registerUser,
-      verifyEmailCode,
       loginUser,
       logoutUser,
-      persistUserData,
-      fetchWallet,
-      fetchBalance,
+      registerUser,
+      verifyEmailCode,
       fetchUserProfile,
-      startMining,
-      claimMining,
+      persistUserData,
     ]
   );
 
-  return (
-    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
-/** Hook personnalisé */
+// ========================
+// HOOK
+// ========================
 export const useUser = () => {
   const ctx = useContext(UserContext);
-  if (!ctx) throw new Error("useUser doit être utilisé dans un UserProvider");
+  if (!ctx) throw new Error("useUser must be used inside UserProvider");
   return ctx;
 };

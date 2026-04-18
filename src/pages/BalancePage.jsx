@@ -1,37 +1,22 @@
-// src/pages/BalancePage.jsx
 import React, { useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { FaBalanceScale } from "react-icons/fa";
 import { GiCash } from "react-icons/gi";
 import { RiCoinsFill } from "react-icons/ri";
 import { useUser } from "../contexts/UserContext";
-import { useQuery } from "@tanstack/react-query";
+import { useBalance } from "../hooks/useBalance";
 import "./BalancePage.css";
 
 const BalancePage = () => {
-  const { user, axiosInstance } = useUser();
+  const { user } = useUser();
 
   const controls = useAnimation();
   const [animateBalance, setAnimateBalance] = useState(false);
 
-  // ✅ React Query corrigé
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["balance", user?.id],
-    queryFn: async () => {
-      const res = await axiosInstance.get("/balance/");
-      return res.data;
-    },
-    enabled: !!user?.id,
-    staleTime: 1000 * 60 * 15,
-    refetchOnWindowFocus: false,
-  });
+  // ✅ Hook centralisé
+  const { data, isLoading, isError } = useBalance();
 
-  // ✅ EXTRACTION CORRECTE
-  const points = data?.points ?? 0;
+  const points = data ?? 0;
 
   // ✅ Animation quand points change
   useEffect(() => {

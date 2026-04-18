@@ -1,43 +1,17 @@
-// src/pages/DepositMethods.jsx
 import React, { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useAdm } from "../contexts/AdmContext";
 import { FaMoneyBillWave } from "react-icons/fa";
-import { useQuery } from "@tanstack/react-query";
+import { useDepositMethods } from "../hooks/useDepositMethods";
 import "./DepositMethods.css";
 
 export default function DepositMethods() {
-  const { axiosDeposit } = useAdm();
   const navigate = useNavigate();
 
-  // ================= QUERY =================
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["depositMethods"],
+  const { data, isLoading, isError } = useDepositMethods();
 
-    queryFn: async () => {
-      const res = await axiosDeposit.get("/transaction-methods/");
-      return res.data || [];
-    },
-
-    enabled: !!axiosDeposit,
-
-    staleTime: Infinity,
-    gcTime: Infinity,
-
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 1,
-  });
-
-  // 🔥 Memo (évite recalcul)
   const methods = useMemo(() => data || [], [data]);
 
-  // 🔥 Navigation optimisée
   const goToDeposit = useCallback(
     (id) => {
       navigate(`/deposits/${id}`);
@@ -49,7 +23,6 @@ export default function DepositMethods() {
     navigate("/wallet");
   }, [navigate]);
 
-  // ================= LOADING =================
   if (isLoading) {
     return (
       <div className="methods-loading">
@@ -59,7 +32,6 @@ export default function DepositMethods() {
     );
   }
 
-  // ================= ERROR =================
   if (isError) {
     return (
       <div className="methods-loading">
@@ -68,7 +40,6 @@ export default function DepositMethods() {
     );
   }
 
-  // ================= EMPTY =================
   if (!methods.length) {
     return (
       <div className="methods-loading">
@@ -77,7 +48,6 @@ export default function DepositMethods() {
     );
   }
 
-  // ================= RENDER =================
   return (
     <motion.div
       className="methods-container"
@@ -104,7 +74,7 @@ export default function DepositMethods() {
                 src={method.icon_url}
                 alt={method.name}
                 className="method-icon"
-                loading="lazy" // 🔥 perf image
+                loading="lazy"
               />
 
               {method.flag_url && (

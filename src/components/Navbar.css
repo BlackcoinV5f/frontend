@@ -3,71 +3,59 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px; /* 🔥 Plus de padding pour respirer */
+  padding: 6px 12px; /* 🔥 réduit */
   background: linear-gradient(135deg, #2c2f33, #23272a);
   color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 10px; /* légèrement réduit */
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 520px;
   margin: 0 auto;
-  transform: translateX(-10px); /* décale vers la gauche de 20px */
+  transform: translateX(-10px);
 }
 
-/* 📌 Éléments de navigation (agrandis) */
+/* 📌 Éléments */
 .nav-item {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
-  font-size: 15px; /* 🔥 Texte plus grand */
-  font-weight: bold;
+  font-size: 14px; /* 🔥 un peu réduit */
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   color: white;
-  padding: 8px 10px; /* 🔥 Plus d’espace autour */
-  border-radius: 8px;
+  padding: 5px 8px; /* 🔥 réduit */
+  border-radius: 6px;
   white-space: nowrap;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
+/* 📌 Icônes */
+.nav-icon {
+  font-size: 18px; /* 🔥 légèrement réduit */
+  margin-right: 5px;
 }
 
-/* 📌 Icônes (agrandies) */
-.nav-icon {
-  font-size: 20px; /* 🔥 Icônes plus grandes */
+/* 📌 Avatar */
+.nav-avatar {
+  width: 26px; /* 🔥 réduit */
+  height: 26px;
   margin-right: 6px;
 }
 
-.nav-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 8px;
-}
-
-.nav-avatar-placeholder {
-  margin-right: 8px;
-  text-transform: uppercase;
-}
-
-/* 📌 Responsive Design */
+/* 📌 Responsive */
 @media screen and (max-width: 768px) {
   .navbar {
-    padding: 8px;
-    max-width: 100%;
+    padding: 5px 8px;
   }
 
   .nav-item {
-    font-size: 14px;
-    padding: 6px;
+    font-size: 13px;
+    padding: 4px 6px;
   }
 
   .nav-icon {
-    font-size: 18px;
+    font-size: 16px;
   }
 }

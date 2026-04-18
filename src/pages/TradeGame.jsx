@@ -1,126 +1,139 @@
-                                                                                                                                                                                                                                                  // src/pages/TradeGame.jsx
+// src/pages/TradeGame.jsx
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useUser } from "../contexts/UserContext";
+import { useBalance } from "../hooks/useBalance";
+import { useQueryClient } from "@tanstack/react-query";
 import "./tradegame.css";
 
 export default function TradeGame() {
-  const { axiosInstance, fetchBalance, user } = useUser();
-
+  const { axiosInstance, user } = useUser();
+  const queryClient = useQueryClient();
+  
+  // État des mises
   const [bet1, setBet1] = useState("");
   const [bet2, setBet2] = useState("");
   const [gameId, setGameId] = useState(null);
-
+  
+  // Balance - source unique avec useBalance
+  const { data: balance = 0, refetch: refetchBalance } = useBalance();
+  
+  // État du jeu
   const [logo, setLogo] = useState(null);
   const [multiplier, setMultiplier] = useState(1.0);
   const [multiplierMax, setMultiplierMax] = useState(5000);
   const [isCrashed, setIsCrashed] = useState(false);
-
   const [isFalling, setIsFalling] = useState(false);
-  const [balance, setBalance] = useState(0);
   const [history, setHistory] = useState([]);
-  const [cashoutMsg, setCashoutMsg] = useState(null); // ✅ placé au bon endroit
-
+  const [cashoutMsg, setCashoutMsg] = useState(null);
+  
+  // Position et animation du logo
   const [logoLeft, setLogoLeft] = useState(0);
   const [logoBottom, setLogoBottom] = useState(0);
   const [logoTilt, setLogoTilt] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-
+  
+  // Refs
   const wsRef = useRef(null);
   const boardRef = useRef(null);
   const logoWrapperRef = useRef(null);
   const logoImgRef = useRef(null);
-  const RAF = useRef(null);
-
+  const rafRef = useRef(null);
   const startTimeRef = useRef(null);
+  
+  // Constantes
   const ANIMATION_DURATION = 8000;
-  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-
-  // --- Balance au montage
-  useEffect(() => {
-    if (user?.id) fetchBalance().then(setBalance).catch(() => {});
-  }, [user, fetchBalance]);
-
-  // --- Cleanup
+  
+  // Fonction d'easing
+  const easeOutCubic = useCallback((t) => 1 - Math.pow(1 - t, 3), []);
+  
+  // Rafraîchir la balance
+  const refreshBalance = useCallback(async () => {
+    await refetchBalance();
+    await queryClient.invalidateQueries(["balance"]);
+  }, [refetchBalance, queryClient]);
+  
+  // Cleanup WebSocket et RAF
   useEffect(() => {
     return () => {
       if (wsRef.current) {
         try {
           wsRef.current.close();
-        } catch {}
+        } catch (e) {
+          console.error("WebSocket close error:", e);
+        }
         wsRef.current = null;
       }
-      if (RAF.current) cancelAnimationFrame(RAF.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
     };
   }, []);
-
-  // --- Calcule position selon multiplier
+  
+  // Calculer la position du logo selon le multiplicateur
   const computePositionFromMultiplier = useCallback(
     (m) => {
       const board = boardRef.current;
       const logoImg = logoImgRef.current;
       if (!board || !logoImg) return { left: 0, bottom: 0, tilt: 0 };
-
+      
       const boardW = board.clientWidth;
       const boardH = board.clientHeight;
       const logoW = logoImg.clientWidth;
       const logoH = logoImg.clientHeight;
-
+      
       const paddingX = 12;
       const paddingBottom = 8;
       const maxBottom = Math.max(0, boardH - logoH - paddingBottom);
-
-      let ratio =
-        multiplierMax > 1
-          ? Math.min(
-              1,
-              Math.max(
-                0,
-                Math.log(Math.max(m, 1)) / Math.log(Math.max(multiplierMax, 2))
-              )
-            )
-          : Math.min(1, Math.max(0, m / Math.max(multiplierMax, 1)));
-
+      
+      // Calcul du ratio basé sur le logarithme pour une progression naturelle
+      let ratio = 0;
+      if (multiplierMax > 1) {
+        ratio = Math.min(
+          1,
+          Math.max(
+            0,
+            Math.log(Math.max(m, 1)) / Math.log(Math.max(multiplierMax, 2))
+          )
+        );
+      } else {
+        ratio = Math.min(1, Math.max(0, m / Math.max(multiplierMax, 1)));
+      }
+      
+      // Points de contrôle de la courbe de Bézier
       const p0 = { x: paddingX, bottom: 0 };
       const p2 = { x: boardW - paddingX, bottom: maxBottom };
       const p1 = { x: boardW * 0.62, bottom: maxBottom * 0.55 };
-
+      
       const t = ratio;
       const oneMinusT = 1 - t;
-
-      const bx =
-        oneMinusT * oneMinusT * p0.x +
-        2 * oneMinusT * t * p1.x +
-        t * t * p2.x;
-      const by =
-        oneMinusT * oneMinusT * p0.bottom +
-        2 * oneMinusT * t * p1.bottom +
-        t * t * p2.bottom;
-
-      const dx =
-        2 * oneMinusT * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
-      const dy =
-        2 * oneMinusT * (p1.bottom - p0.bottom) +
-        2 * t * (p2.bottom - p1.bottom);
+      
+      // Courbe de Bézier quadratique
+      const bx = oneMinusT * oneMinusT * p0.x + 2 * oneMinusT * t * p1.x + t * t * p2.x;
+      const by = oneMinusT * oneMinusT * p0.bottom + 2 * oneMinusT * t * p1.bottom + t * t * p2.bottom;
+      
+      // Calcul de l'angle (dérivée)
+      const dx = 2 * oneMinusT * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
+      const dy = 2 * oneMinusT * (p1.bottom - p0.bottom) + 2 * t * (p2.bottom - p1.bottom);
       let angleDeg = -Math.atan2(dy, dx) * (180 / Math.PI);
       angleDeg = Math.max(Math.min(angleDeg * 0.9, 40), -40);
-
+      
       return { left: bx - logoW / 2, bottom: by, tilt: angleDeg };
     },
     [multiplierMax]
   );
-
-  // --- Animation logo
-  useEffect(() => {
+  
+  // Animation du logo
+  const animateLogo = useCallback(() => {
     if (!logo) return;
-
-    startTimeRef.current = startTimeRef.current ?? null;
+    
     const step = (timestamp) => {
       if (!startTimeRef.current) startTimeRef.current = timestamp;
       const elapsed = timestamp - startTimeRef.current;
-
+      
       let t = Math.min(1, elapsed / ANIMATION_DURATION);
       t = easeOutCubic(t);
-
+      
       const board = boardRef.current;
       const logoImg = logoImgRef.current;
       if (board && logoImg) {
@@ -131,77 +144,146 @@ export default function TradeGame() {
         const paddingX = 12;
         const paddingBottom = 8;
         const maxBottom = Math.max(0, boardH - logoH - paddingBottom);
-
+        
         const p0 = { x: paddingX, bottom: 0 };
         const p2 = { x: boardW - paddingX, bottom: maxBottom };
         const p1 = { x: boardW * 0.62, bottom: maxBottom * 0.55 };
-
+        
         const oneMinusT = 1 - t;
-        const bx =
-          oneMinusT * oneMinusT * p0.x +
-          2 * oneMinusT * t * p1.x +
-          t * t * p2.x;
-        const by =
-          oneMinusT * oneMinusT * p0.bottom +
-          2 * oneMinusT * t * p1.bottom +
-          t * t * p2.bottom;
-
-        const dx =
-          2 * oneMinusT * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
-        const dy =
-          2 * oneMinusT * (p1.bottom - p0.bottom) +
-          2 * t * (p2.bottom - p1.bottom);
+        const bx = oneMinusT * oneMinusT * p0.x + 2 * oneMinusT * t * p1.x + t * t * p2.x;
+        const by = oneMinusT * oneMinusT * p0.bottom + 2 * oneMinusT * t * p1.bottom + t * t * p2.bottom;
+        
+        const dx = 2 * oneMinusT * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
+        const dy = 2 * oneMinusT * (p1.bottom - p0.bottom) + 2 * t * (p2.bottom - p1.bottom);
         let angleDeg = -Math.atan2(dy, dx) * (180 / Math.PI);
         angleDeg = Math.max(Math.min(angleDeg * 0.9, 40), -40);
-
+        
         setLogoLeft(Math.round(bx - logoW / 2));
         setLogoBottom(Math.round(by));
         setLogoTilt(angleDeg);
       }
-
-      if (!isCrashed) RAF.current = requestAnimationFrame(step);
+      
+      if (!isCrashed && t < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      }
     };
-
-    RAF.current = requestAnimationFrame(step);
+    
+    rafRef.current = requestAnimationFrame(step);
+    
     return () => {
-      if (RAF.current) cancelAnimationFrame(RAF.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
     };
-  }, [logo, isCrashed, easeOutCubic]);
-
-  const onCrashFinalize = (finalMultiplier) => {
+  }, [logo, isCrashed, easeOutCubic, ANIMATION_DURATION]);
+  
+  // Démarrer l'animation quand le logo change
+  useEffect(() => {
+    if (!logo) return;
+    const cleanup = animateLogo();
+    return cleanup;
+  }, [logo, animateLogo]);
+  
+  // Gérer le crash
+  const onCrashFinalize = useCallback((finalMultiplier) => {
     if (finalMultiplier && !isNaN(finalMultiplier)) {
       const pos = computePositionFromMultiplier(finalMultiplier);
       setLogoLeft(pos.left);
       setLogoBottom(pos.bottom);
       setLogoTilt(pos.tilt);
     }
-  };
-
-  const onLogoError = (e) => {
+  }, [computePositionFromMultiplier]);
+  
+  // Gestion des erreurs de chargement d'image
+  const onLogoError = useCallback((e) => {
     e.currentTarget.onerror = null;
     e.currentTarget.src = "/assets/logos/default.png";
-  };
-
-  const handlePlay = async () => {
+  }, []);
+  
+  // Connexion WebSocket
+  const connectWebSocket = useCallback((gameId) => {
+    if (!gameId) return;
+    
+    if (wsRef.current) {
+      try {
+        wsRef.current.close();
+      } catch (e) {
+        console.error("WebSocket close error:", e);
+      }
+      wsRef.current = null;
+    }
+    
+    const base = import.meta.env.VITE_BACKEND_WS_URL ||
+      `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}`;
+    const url = `${base.replace(/\/$/, "")}/tradegame/ws/progress/${gameId}`;
+    const ws = new WebSocket(url);
+    wsRef.current = ws;
+    
+    ws.onopen = () => console.info("WebSocket connected:", gameId);
+    
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        
+        if (msg.multiplier !== undefined) {
+          setMultiplier(Number(msg.multiplier));
+        }
+        
+        if (msg.event === "crash") {
+          const finalM = Number(msg.final_multiplier ?? msg.multiplier ?? multiplier);
+          onCrashFinalize(finalM);
+          setIsSpinning(false);
+          setIsFalling(true);
+          setIsCrashed(true);
+          setHistory(prev => [Number(finalM), ...prev].slice(0, 6));
+          
+          try {
+            ws.close();
+          } catch (e) {
+            console.error("WebSocket close error:", e);
+          }
+          wsRef.current = null;
+        }
+      } catch (e) {
+        console.error("WebSocket parse error:", e);
+      }
+    };
+    
+    ws.onclose = () => {
+      wsRef.current = null;
+      console.info("WebSocket closed");
+    };
+    
+    ws.onerror = (err) => console.error("WebSocket error:", err);
+  }, [multiplier, onCrashFinalize]);
+  
+  // Lancer une partie
+  const handlePlay = useCallback(async () => {
     const b1 = Number(bet1 || 0);
     const b2 = Number(bet2 || 0);
+    
     if (b1 <= 0 && b2 <= 0) {
-      alert("Place au moins une mise.");
+      alert("Placez au moins une mise.");
       return;
     }
-
+    
+    if (b1 > balance || b2 > balance) {
+      alert("Solde insuffisant.");
+      return;
+    }
+    
     try {
-      const res = await axiosInstance.post(
-        "/tradegame/play",
-        null,
-        { params: { bet1: b1, bet2: b2 } }
-      );
+      const res = await axiosInstance.post("/tradegame/play", null, {
+        params: { bet1: b1, bet2: b2 }
+      });
+      
       const data = res.data;
       if (data?.error) {
         alert(data.error);
         return;
       }
-
+      
       setGameId(data.game_id);
       setLogo(data.logo);
       setMultiplier(1);
@@ -210,112 +292,59 @@ export default function TradeGame() {
       setIsSpinning(true);
       setIsFalling(false);
       startTimeRef.current = null;
-
+      
       connectWebSocket(data.game_id);
-
-      const newBalance = await fetchBalance();
-      setBalance(newBalance);
+      await refreshBalance();
+      
     } catch (err) {
-      console.error("Erreur play:", err);
+      console.error("Erreur lors du lancement:", err);
       alert("Erreur lors du lancement de la partie.");
     }
-  };
-
-  const handleCashout = async (betKey) => {
+  }, [bet1, bet2, balance, axiosInstance, connectWebSocket, refreshBalance]);
+  
+  // Cashout
+  const handleCashout = useCallback(async (betKey) => {
     if (!gameId) return;
+    
     try {
       const res = await axiosInstance.post("/tradegame/cashout", null, {
-        params: {
-          game_id: gameId,
-          bet_key: betKey,
-          cashout_multiplier: Number(multiplier),
-        },
+        params: { game_id: gameId, bet_key: betKey }
       });
+      
       const data = res.data;
       if (data?.error) {
         alert(data.error);
         return;
       }
-
-      // ✅ message animé
-      setCashoutMsg(`✅ Cashout réussi ! Gain: ${data.gain}`);
+      
+      // Message de confirmation animé
+      setCashoutMsg(`✅ Cashout réussi ! Gain: ${data.gain} pts`);
       setTimeout(() => setCashoutMsg(null), 2500);
-
-      const newBalance = await fetchBalance();
-      setBalance(newBalance);
+      
+      await refreshBalance();
+      
     } catch (err) {
-      console.error("Erreur cashout:", err);
+      console.error("Erreur lors du cashout:", err);
       alert("Erreur lors du cashout.");
     }
-  };
-
-  const connectWebSocket = (gid) => {
-    if (!gid) return;
-    if (wsRef.current) {
-      try {
-        wsRef.current.close();
-      } catch {}
-      wsRef.current = null;
-    }
-
-    const base =
-      import.meta.env.VITE_BACKEND_WS_URL ||
-      `${
-        window.location.protocol === "https:" ? "wss" : "ws"
-      }://${window.location.host}`;
-    const url = `${base.replace(/\/$/, "")}/tradegame/ws/progress/${gid}`;
-    const ws = new WebSocket(url);
-    wsRef.current = ws;
-
-    ws.onopen = () => console.info("WS connected", gid);
-
-    ws.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-
-        if (msg.multiplier !== undefined)
-          setMultiplier(Number(msg.multiplier));
-
-        if (msg.event === "crash") {
-          const finalM = Number(
-            msg.final_multiplier ?? msg.multiplier ?? multiplier
-          );
-          onCrashFinalize(finalM);
-          setIsSpinning(false);
-          setIsFalling(true);
-          setIsCrashed(true);
-          setHistory((prev) => [Number(finalM), ...prev].slice(0, 6));
-          try {
-            ws.close();
-          } catch {}
-        }
-      } catch (e) {
-        console.error("WS parse error", e);
-      }
-    };
-
-    ws.onclose = () => {
-      wsRef.current = null;
-      console.info("WS closed");
-    };
-    ws.onerror = (err) => console.error("WS error", err);
-  };
-
-  const boardClass = `tradegame-board ${
-    gameId && !isCrashed ? "running" : ""
-  } ${isCrashed ? "crashed" : ""}`.trim();
-
+  }, [gameId, axiosInstance, refreshBalance]);
+  
+  // Classes CSS
+  const boardClass = `tradegame-board ${gameId && !isCrashed ? "running" : ""} ${isCrashed ? "crashed" : ""}`.trim();
+  
   return (
     <div className="tradegame-container">
+      {/* Balance */}
       <div className="tradegame-balance">
-        💰 Solde: <span>{balance}</span> pts
+        💰 Solde: <span>{typeof balance === 'number' ? balance.toFixed(2) : '0.00'}</span> pts
       </div>
-
+      
+      {/* Plateau de jeu */}
       <div ref={boardRef} className={boardClass}>
         <div className="board-bar-bottom" />
         <div className="board-bar-left" />
         <div className="clouds-fast" aria-hidden="true" />
-
+        
         {logo && (
           <div
             ref={logoWrapperRef}
@@ -324,6 +353,7 @@ export default function TradeGame() {
               left: `${logoLeft}px`,
               bottom: `${logoBottom}px`,
               transform: `translateX(-50%) rotate(${logoTilt}deg)`,
+              transition: isCrashed ? "none" : "transform 0.05s linear"
             }}
           >
             <img
@@ -336,7 +366,7 @@ export default function TradeGame() {
                 isFalling ? "falling" : ""
               }`}
               onError={onLogoError}
-              style={{ width: "60px" }}
+              style={{ width: "60px", height: "auto" }}
               onAnimationEnd={() => {
                 if (isFalling) {
                   setLogo(null);
@@ -346,37 +376,46 @@ export default function TradeGame() {
             />
           </div>
         )}
-
+        
+        {/* Multiplicateur */}
         <div className="tradegame-multiplier">
-          {Number(multiplier).toFixed(2)}x
+          {typeof multiplier === 'number' ? multiplier.toFixed(2) : '1.00'}x
         </div>
       </div>
-
-      {cashoutMsg && <div className="cashout-msg">{cashoutMsg}</div>}
-
+      
+      {/* Message de cashout */}
+      {cashoutMsg && (
+        <div className="cashout-msg">
+          {cashoutMsg}
+        </div>
+      )}
+      
+      {/* Historique */}
       <div className="tradegame-history">
-  <div className="history-list">
-    {history.length === 0 ? (
-      <span>N/A</span>
-    ) : (
-      history.map((m, i) => {
-        const value = Number(m);
-        const isGreen = value >= 3.0;
-
-        return (
-          <span
-            key={i}
-            className={`history-item ${isGreen ? "green" : "red"}`}
-          >
-            {value.toFixed(2)}x
-          </span>
-        );
-      })
-    )}
-  </div>
-</div>
-
+        <div className="history-list">
+          {history.length === 0 ? (
+            <span>Aucun historique</span>
+          ) : (
+            history.map((m, i) => {
+              const value = Number(m);
+              const isGreen = value >= 3.0;
+              
+              return (
+                <span
+                  key={i}
+                  className={`history-item ${isGreen ? "green" : "red"}`}
+                >
+                  {value.toFixed(2)}x
+                </span>
+              );
+            })
+          )}
+        </div>
+      </div>
+      
+      {/* Formulaire de mise */}
       <div className="tradegame-form">
+        {/* Mise 1 */}
         <div className="bet-row">
           <input
             className="tradegame-input"
@@ -384,6 +423,9 @@ export default function TradeGame() {
             value={bet1}
             onChange={(e) => setBet1(e.target.value)}
             placeholder="Mise 1"
+            min="0"
+            step="0.01"
+            disabled={!!gameId && !isCrashed}
           />
           {gameId && !isCrashed ? (
             <button
@@ -393,12 +435,17 @@ export default function TradeGame() {
               💸 Cashout 1
             </button>
           ) : (
-            <button className="tradegame-btn play" onClick={handlePlay}>
+            <button
+              className="tradegame-btn play"
+              onClick={handlePlay}
+              disabled={(!bet1 || Number(bet1) <= 0) && (!bet2 || Number(bet2) <= 0)}
+            >
               ▶️ Jouer
             </button>
           )}
         </div>
-
+        
+        {/* Mise 2 */}
         <div className="bet-row">
           <input
             className="tradegame-input"
@@ -406,6 +453,9 @@ export default function TradeGame() {
             value={bet2}
             onChange={(e) => setBet2(e.target.value)}
             placeholder="Mise 2"
+            min="0"
+            step="0.01"
+            disabled={!!gameId && !isCrashed}
           />
           {gameId && !isCrashed ? (
             <button
@@ -415,7 +465,11 @@ export default function TradeGame() {
               💸 Cashout 2
             </button>
           ) : (
-            <button className="tradegame-btn play" onClick={handlePlay}>
+            <button
+              className="tradegame-btn play"
+              onClick={handlePlay}
+              disabled={(!bet1 || Number(bet1) <= 0) && (!bet2 || Number(bet2) <= 0)}
+            >
               ▶️ Jouer
             </button>
           )}
