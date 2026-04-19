@@ -14,7 +14,6 @@ export default function LuckyDistributorGame() {
   const [loot, setLoot] = useState([]);
   const [busy, setBusy] = useState(false);
   const [bet, setBet] = useState(100);
-
   const [message, setMessage] = useState(null);
 
   // =========================
@@ -35,17 +34,16 @@ export default function LuckyDistributorGame() {
 
     try {
       const { data } = await axiosInstance.post("/luckygame/start", {
-        user_id: user.id,
         bet,
       });
 
       setGameId(data.game_id);
-      setLevel(data.current_level);
-      setReward(data.current_reward);
+      setLevel(data.level); // ✅ corrigé
+      setReward(data.reward); // ✅ corrigé
       setLoot([]);
 
       setCards(
-        data.multipliers.map((_, idx) => ({
+        (data.multipliers || []).map((_, idx) => ({
           id: idx,
           flipped: false,
           reward: null,
@@ -55,6 +53,7 @@ export default function LuckyDistributorGame() {
       await refetchBalance();
     } catch (err) {
       console.error("❌ startGame:", err);
+      setMessage({ type: "error", text: "Erreur démarrage partie" });
     } finally {
       setBusy(false);
     }
@@ -74,32 +73,40 @@ export default function LuckyDistributorGame() {
         choice_index: index,
       });
 
+      // ✅ sécurisation multipliers
       setCards((prev) =>
         prev.map((c, i) => ({
           ...c,
           flipped: true,
-          reward: data.multipliers[i],
+          reward: data.multipliers ? data.multipliers[i] : null,
         }))
       );
 
-      setLoot((prev) => [
-        ...prev,
-        { label: `${data.chosen_multiplier}x`, value: data.chosen_multiplier },
-      ]);
+      // ✅ sécurisation loot
+      if (data.chosen_multiplier) {
+        setLoot((prev) => [
+          ...prev,
+          {
+            label: `${data.chosen_multiplier}x`,
+            value: data.chosen_multiplier,
+          },
+        ]);
+      }
 
-      setReward(data.reward);
+      setReward(data.reward || 0);
 
       if (data.result === "continue") {
         setTimeout(() => {
           setLevel(data.level);
+
           setCards(
-            data.next_multipliers?.map((_, idx) => ({
+            (data.next_multipliers || []).map((_, idx) => ({
               id: idx,
               flipped: false,
               reward: null,
-            })) || []
+            }))
           );
-        }, 2000);
+        }, 1200);
       }
 
       if (data.result === "lose") {
@@ -109,20 +116,12 @@ export default function LuckyDistributorGame() {
             text: "Dommage 😢 Tu as perdu ta mise !",
           });
           resetGame();
-        }, 2000);
+        }, 1200);
       }
 
-      if (data.result === "win") {
-        setTimeout(() => {
-          setMessage({
-            type: "win",
-            text: `🎉 Bravo ! Tu as gagné ${data.reward} pts !`,
-          });
-          resetGame();
-        }, 2000);
-      }
     } catch (err) {
       console.error("❌ playCard:", err);
+      setMessage({ type: "error", text: "Erreur de jeu" });
     } finally {
       setBusy(false);
     }
@@ -147,10 +146,11 @@ export default function LuckyDistributorGame() {
       });
 
       resetGame();
-
       await refetchBalance();
+
     } catch (err) {
       console.error("❌ cashout:", err);
+      setMessage({ type: "error", text: "Erreur encaissement" });
     } finally {
       setBusy(false);
     }
@@ -165,8 +165,6 @@ export default function LuckyDistributorGame() {
     setLoot([]);
     setReward(0);
     setLevel(1);
-
-    refetchBalance();
   };
 
   // =========================
@@ -205,6 +203,7 @@ export default function LuckyDistributorGame() {
       )}
 
       <div className="game-board">
+
         <div className="user-info">
           {user?.avatar && (
             <img
@@ -251,7 +250,7 @@ export default function LuckyDistributorGame() {
                   <div className="card-inner">
                     <div className="card-front"></div>
                     <div className="card-back">
-                      {card.reward || "??"}x
+                      {card.reward !== null ? `${card.reward}x` : "??"}
                     </div>
                   </div>
                 </div>
@@ -269,7 +268,7 @@ export default function LuckyDistributorGame() {
                 onClick={cashout}
                 disabled={busy}
               >
-                ENCAISSER
+                ENCAISSER ({reward} pts)
               </button>
             </div>
           </>

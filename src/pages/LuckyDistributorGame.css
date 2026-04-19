@@ -377,3 +377,36 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+.toast-error {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #ff4d4f;
+  color: white;
+
+  padding: 12px 20px;
+  border-radius: 12px;
+
+  font-weight: 500;
+  font-size: 14px;
+
+  z-index: 9999;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
