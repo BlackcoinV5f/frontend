@@ -16,116 +16,123 @@ export default function LuckyDistributorGame() {
   const [bet, setBet] = useState(100);
   const [message, setMessage] = useState(null);
 
-  // =========================
-  // START GAME
-  // =========================
-  const startGame = async () => {
-    if (busy) return;
+ // =========================
+// START GAME (FIX)
+// =========================
+const startGame = async () => {
+  if (busy) return;
 
-    if (bet <= 0) {
-      return setMessage({ type: "error", text: "Mise invalide !" });
+  if (bet <= 0) {
+    return setMessage({ type: "error", text: "Mise invalide !" });
+  }
+
+  if (bet > balance) {
+    return setMessage({ type: "error", text: "Solde insuffisant !" });
+  }
+
+  setBusy(true);
+
+  try {
+    const { data } = await axiosInstance.post("/luckygame/start", {
+      bet,
+    });
+
+    setGameId(data.game_id);
+    setLevel(data.level);
+    setReward(data.reward);
+    setLoot([]);
+
+    // ✅ IMPORTANT : 4 cartes fixes (pas de multipliers)
+    setCards(
+      Array.from({ length: 4 }, (_, idx) => ({
+        id: idx,
+        flipped: false,
+        reward: null,
+      }))
+    );
+
+    await refetchBalance();
+  } catch (err) {
+    console.error("❌ startGame:", err);
+    setMessage({ type: "error", text: "Erreur démarrage partie" });
+  } finally {
+    setBusy(false);
+  }
+};
+
+  // =========================
+// PLAY CARD (FIX)
+// =========================
+const playCard = async (index) => {
+  if (busy || !gameId) return;
+
+  setBusy(true);
+
+  try {
+    const { data } = await axiosInstance.post("/luckygame/play", {
+      game_id: gameId,
+      choice_index: index,
+    });
+
+    // ✅ révéler UNE seule carte
+    setCards((prev) =>
+      prev.map((c, i) => {
+        if (i === index) {
+          return {
+            ...c,
+            flipped: true,
+            reward: data.selected_value, // 🔥 clé importante
+          };
+        }
+        return c;
+      })
+    );
+
+    // ✅ loot
+    if (data.selected_value > 0) {
+      setLoot((prev) => [
+        ...prev,
+        {
+          label: `${data.selected_value}x`,
+          value: data.selected_value,
+        },
+      ]);
     }
 
-    if (bet > balance) {
-      return setMessage({ type: "error", text: "Solde insuffisant !" });
+    setReward(data.reward || 0);
+
+    if (data.result === "continue") {
+      setTimeout(() => {
+        setLevel(data.level);
+
+        // reset cartes (design inchangé)
+        setCards(
+          Array.from({ length: 4 }, (_, idx) => ({
+            id: idx,
+            flipped: false,
+            reward: null,
+          }))
+        );
+      }, 1200);
     }
 
-    setBusy(true);
-
-    try {
-      const { data } = await axiosInstance.post("/luckygame/start", {
-        bet,
-      });
-
-      setGameId(data.game_id);
-      setLevel(data.level); // ✅ corrigé
-      setReward(data.reward); // ✅ corrigé
-      setLoot([]);
-
-      setCards(
-        (data.multipliers || []).map((_, idx) => ({
-          id: idx,
-          flipped: false,
-          reward: null,
-        }))
-      );
-
-      await refetchBalance();
-    } catch (err) {
-      console.error("❌ startGame:", err);
-      setMessage({ type: "error", text: "Erreur démarrage partie" });
-    } finally {
-      setBusy(false);
+    if (data.result === "lose") {
+      setTimeout(() => {
+        setMessage({
+          type: "lose",
+          text: "Dommage 😢 Tu as perdu ta mise !",
+        });
+        resetGame();
+      }, 1200);
     }
-  };
 
-  // =========================
-  // PLAY CARD
-  // =========================
-  const playCard = async (index) => {
-    if (busy || !gameId) return;
-
-    setBusy(true);
-
-    try {
-      const { data } = await axiosInstance.post("/luckygame/play", {
-        game_id: gameId,
-        choice_index: index,
-      });
-
-      // ✅ sécurisation multipliers
-      setCards((prev) =>
-        prev.map((c, i) => ({
-          ...c,
-          flipped: true,
-          reward: data.multipliers ? data.multipliers[i] : null,
-        }))
-      );
-
-      // ✅ sécurisation loot
-      if (data.chosen_multiplier) {
-        setLoot((prev) => [
-          ...prev,
-          {
-            label: `${data.chosen_multiplier}x`,
-            value: data.chosen_multiplier,
-          },
-        ]);
-      }
-
-      setReward(data.reward || 0);
-
-      if (data.result === "continue") {
-        setTimeout(() => {
-          setLevel(data.level);
-
-          setCards(
-            (data.next_multipliers || []).map((_, idx) => ({
-              id: idx,
-              flipped: false,
-              reward: null,
-            }))
-          );
-        }, 1200);
-      }
-
-      if (data.result === "lose") {
-        setTimeout(() => {
-          setMessage({
-            type: "lose",
-            text: "Dommage 😢 Tu as perdu ta mise !",
-          });
-          resetGame();
-        }, 1200);
-      }
-
-    } catch (err) {
-      console.error("❌ playCard:", err);
-      setMessage({ type: "error", text: "Erreur de jeu" });
-    } finally {
-      setBusy(false);
-    }
-  };
+  } catch (err) {
+    console.error("❌ playCard:", err);
+    setMessage({ type: "error", text: "Erreur de jeu" });
+  } finally {
+    setBusy(false);
+  }
+};
 
   // =========================
   // CASHOUT
