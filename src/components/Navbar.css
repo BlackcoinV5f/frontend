@@ -1,11 +1,21 @@
-.navbar {
+/* 📌 NAVBAR WRAPPER (comme footer) */
+.navbar-wrapper {
   position: fixed;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%); /* centrage propre */
-
+  left: 0;
   width: 100%;
-  max-width: 420px;
+
+  display: flex;
+  justify-content: center;
+
+  background: transparent;
+  z-index: 1000;
+}
+
+/* 📌 NAVBAR (ton design conservé) */
+.navbar {
+  width: 100%;
+  max-width: 420px; /* 🔥 aligné avec ton app */
 
   display: flex;
   align-items: center;
@@ -16,13 +26,11 @@
   background: linear-gradient(135deg, #2c2f33, #23272a);
   color: white;
 
-  border-radius: 0 0 10px 10px;
+  border-radius: 0; /* ❌ supprimé */
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-
-  z-index: 1000;
 }
 
-/* ITEMS */
+/* 📌 ITEMS */
 .nav-item {
   display: flex;
   align-items: center;
@@ -38,33 +46,33 @@
   color: white;
 
   padding: 5px 8px;
-  border-radius: 6px;
 
   white-space: nowrap;
-  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-/* ICONES */
+/* 📌 ICÔNES */
 .nav-icon {
   font-size: 18px;
   margin-right: 5px;
 }
 
-/* AVATAR */
+/* 📌 AVATAR */
 .nav-avatar {
   width: 26px;
   height: 26px;
   margin-right: 6px;
+  border-radius: 50%;
 }
 
-/* RESPONSIVE */
-@media (max-width: 480px) {
+/* 📌 RESPONSIVE */
+@media screen and (max-width: 768px) {
   .navbar {
+    max-width: 100%; /* 🔥 full width mobile */
     padding: 5px 8px;
   }
 
   .nav-item {
-    font-size: 12px;
+    font-size: 13px;
     padding: 4px 6px;
   }
 
