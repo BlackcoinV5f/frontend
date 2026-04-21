@@ -4,11 +4,23 @@
 .home {
   position: relative;
   width: 100%;
-  height: calc(100vh - 80px);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ================================
+   ZONE CENTRALE (CORRECTION CLÉ)
+================================ */
+.home-center {
+  position: absolute;
+  top: 60px;    /* hauteur navbar */
+  bottom: 60px; /* hauteur footer */
+  left: 0;
+  right: 0;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 }
 
 /* ================================
@@ -26,7 +38,7 @@
    BOUTONS LOGOS (BASE)
 ================================ */
 .logo-button {
-  position: relative; /* 🔴 IMPORTANT pour le badge */
+  position: relative;
   background: none;
   border: none;
   padding: 0;
@@ -45,12 +57,14 @@
 .bonus-logo {
   position: absolute;
   top: 50%;
-  left: 4%;
+  left: max(12px, 4%);
   transform: translateY(-50%);
   z-index: 5;
 }
 
-/* 🔴 BADGE BONUS */
+/* ================================
+   BADGE BONUS
+================================ */
 .bonus-badge {
   position: absolute;
   top: 4px;
@@ -84,15 +98,14 @@
 ================================ */
 .blackai-logo {
   position: absolute;
-  left: 4%;
-  top: 30%;
-  transform: translateY(-150%);
+  top: 20%;
+  left: max(12px, 4%);
   z-index: 6;
   transition: transform 0.15s ease;
 }
 
 .blackai-logo:active {
-  transform: translateY(-150%) scale(0.9);
+  transform: scale(0.9);
 }
 
 .blackai-logo img {
@@ -105,7 +118,7 @@
 .logos-container {
   position: absolute;
   top: 50%;
-  right: 4%;
+  right: max(12px, 4%);
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -117,11 +130,16 @@
    MOBILE
 ================================ */
 @media (max-width: 480px) {
+
   .logo-button img {
     width: 70px;
   }
 
   .blackai-logo img {
     width: 100px;
+  }
+
+  .logos-container {
+    gap: 70px; /* 🔥 meilleur spacing mobile */
   }
 }
