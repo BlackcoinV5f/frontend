@@ -6,7 +6,7 @@ import { FaHome, FaTasks, FaUserFriends, FaInfoCircle, FaWallet } from "react-ic
 const Footer = () => {
   return (
     <footer className="footer">
-      <div className="footer-inner">
+      <div className="bottom-bar">
 
         <Link to="/" className="nav-item">
           <FaHome className="icon" />
