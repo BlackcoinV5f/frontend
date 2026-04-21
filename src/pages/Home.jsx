@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import MiningCircle from "../components/MiningCircle";
@@ -17,20 +17,30 @@ const Home = ({ points, setPoints, level, setLevel }) => {
   const navigate = useNavigate();
   const { loading } = useUser();
 
+  // 🔴 Badge bonus
   const [bonusAvailable, setBonusAvailable] = useState(false);
 
-  const handleNavigate = useCallback((path) => {
+  const handleNavigate = (path) => {
+    // Quand on clique sur Bonus → on enlève le badge
     if (path === "/bonus") {
       setBonusAvailable(false);
     }
     navigate(path);
-  }, [navigate]);
+  };
 
+  // ==========================================================
+  // 🔔 ÉCOUTE DE L'ÉVÉNEMENT BONUS DISPONIBLE
+  // ==========================================================
   useEffect(() => {
-    const handler = () => setBonusAvailable(true);
+    const handler = () => {
+      setBonusAvailable(true);
+    };
 
     window.addEventListener("bonus:available", handler);
-    return () => window.removeEventListener("bonus:available", handler);
+
+    return () => {
+      window.removeEventListener("bonus:available", handler);
+    };
   }, []);
 
   if (loading) {
@@ -51,6 +61,8 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         onClick={() => handleNavigate("/bonus")}
       >
         <img src={BonusLogoImg} alt="Bonus" />
+
+        {/* 🔴 BADGE */}
         {bonusAvailable && <span className="bonus-badge" />}
       </button>
 
@@ -63,16 +75,14 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         <img src={BlackAiLogoImg} alt="BlackAI" />
       </button>
 
-      {/* 🔥 ZONE CENTRÉE CORRIGÉE */}
-      <div className="home-center">
-        <div className="mining-container">
-          <MiningCircle
-            points={points}
-            setPoints={setPoints}
-            level={level}
-            setLevel={setLevel}
-          />
-        </div>
+      {/* ⛏️ MINING */}
+      <div className="mining-container">
+        <MiningCircle
+          points={points}
+          setPoints={setPoints}
+          level={level}
+          setLevel={setLevel}
+        />
       </div>
 
       {/* 📦 COLONNE DROITE */}
@@ -109,7 +119,6 @@ const Home = ({ points, setPoints, level, setLevel }) => {
           <img src={ActionsLogoImg} alt="Actions" />
         </button>
       </div>
-
     </div>
   );
 };
