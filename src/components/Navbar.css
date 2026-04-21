@@ -1,57 +1,70 @@
-/* 📌 Barre de navigation */
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%); /* centrage propre */
+
+  width: 100%;
+  max-width: 420px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 12px; /* 🔥 réduit */
+
+  padding: 6px 12px;
+
   background: linear-gradient(135deg, #2c2f33, #23272a);
   color: white;
-  border-radius: 10px; /* légèrement réduit */
+
+  border-radius: 0 0 10px 10px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  transform: translateX(-10px);
+
+  z-index: 1000;
 }
 
-/* 📌 Éléments */
+/* ITEMS */
 .nav-item {
   display: flex;
   align-items: center;
   justify-content: center;
+
   flex: 1;
-  font-size: 14px; /* 🔥 un peu réduit */
+
+  font-size: 14px;
   font-weight: 600;
+
   cursor: pointer;
   text-decoration: none;
   color: white;
-  padding: 5px 8px; /* 🔥 réduit */
+
+  padding: 5px 8px;
   border-radius: 6px;
+
   white-space: nowrap;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-/* 📌 Icônes */
+/* ICONES */
 .nav-icon {
-  font-size: 18px; /* 🔥 légèrement réduit */
+  font-size: 18px;
   margin-right: 5px;
 }
 
-/* 📌 Avatar */
+/* AVATAR */
 .nav-avatar {
-  width: 26px; /* 🔥 réduit */
+  width: 26px;
   height: 26px;
   margin-right: 6px;
 }
 
-/* 📌 Responsive */
-@media screen and (max-width: 768px) {
+/* RESPONSIVE */
+@media (max-width: 480px) {
   .navbar {
     padding: 5px 8px;
   }
 
   .nav-item {
-    font-size: 13px;
+    font-size: 12px;
     padding: 4px 6px;
   }
 
