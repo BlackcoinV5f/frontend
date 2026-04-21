@@ -1,39 +1,14 @@
 /* ================================
-   RESET GLOBAL (CRUCIAL)
-================================ */
-*,
-*::before,
-*::after {
-  box-sizing: border-box; /* 🔴 évite les décalages 417px / 420px */
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  background: #020b1f; /* fond global propre */
-  overflow-x: hidden;
-}
-
-/* ================================
-   CONTENEUR PRINCIPAL (ALIGNÉ)
+   CONTENEUR PRINCIPAL
 ================================ */
 .home {
   position: relative;
-
   width: 100%;
-  max-width: 420px;   /* 🔴 EXACTEMENT comme navbar */
-  margin: 0 auto;     /* 🔴 centrage parfait */
-
   height: calc(100vh - 80px);
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   overflow: hidden;
-
-  background: radial-gradient(circle at center, #0a1f44 0%, #020b1f 100%);
 }
 
 /* ================================
@@ -42,7 +17,6 @@ html, body {
 .mining-container {
   position: relative;
   z-index: 2;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,7 +26,7 @@ html, body {
    BOUTONS LOGOS (BASE)
 ================================ */
 .logo-button {
-  position: relative;
+  position: relative; /* 🔴 IMPORTANT pour le badge */
   background: none;
   border: none;
   padding: 0;
@@ -76,7 +50,7 @@ html, body {
   z-index: 5;
 }
 
-/* BADGE BONUS */
+/* 🔴 BADGE BONUS */
 .bonus-badge {
   position: absolute;
   top: 4px;
@@ -133,11 +107,9 @@ html, body {
   top: 50%;
   right: 4%;
   transform: translateY(-50%);
-
   display: flex;
   flex-direction: column;
   gap: 95px;
-
   z-index: 5;
 }
 
@@ -145,21 +117,11 @@ html, body {
    MOBILE
 ================================ */
 @media (max-width: 480px) {
-
   .logo-button img {
     width: 70px;
   }
 
   .blackai-logo img {
     width: 100px;
-  }
-
-  .logos-container {
-    gap: 70px;
-    right: 3%;
-  }
-
-  .bonus-logo {
-    left: 3%;
   }
 }

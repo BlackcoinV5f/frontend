@@ -61,18 +61,6 @@ body, html {
   align-items: center;
 }
 
-.app-container {
-  width: 100%;
-  max-width: 420px;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid #ccc;
-  background: white;
-  position: relative;
-  overflow: hidden; /* Empêche le défilement */
-}
 
 .content {
   flex-grow: 1;
@@ -94,7 +82,7 @@ body, html {
 /* Conteneur principal */
 .app-container {
   width: 100%;
-  max-width: 420px; /* Adapté aux smartphones */
+  max-width: 450px; /* Adapté aux smartphones */
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -152,7 +140,7 @@ body, html {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
 }
 
 /* Contenu principal */
