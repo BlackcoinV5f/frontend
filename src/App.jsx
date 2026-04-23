@@ -10,17 +10,16 @@ import { AdmProvider } from "./contexts/AdmContext";
 
 import LuckyDistributorGame from "./pages/LuckyDistributorGame";
 import Historic from "./pages/Historic";
-import backgroundImage from "./assets/background.png";
 import "./App.css";
 
 // ========================
-// 🧠 QUERY CLIENT (FIX SCALE)
+// 🧠 QUERY CLIENT
 // ========================
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,   // 5 min global
-      gcTime: 1000 * 60 * 30,     // 🔥 évite fuite mémoire
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
       refetchOnWindowFocus: false,
       retry: 1,
     },
@@ -96,7 +95,6 @@ function AppContent() {
   const { user, loading } = useUser();
   const location = useLocation();
 
-  // 🔥 Splash intelligent
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem("splash_seen");
   });
@@ -106,7 +104,6 @@ function AppContent() {
     setShowSplash(false);
   };
 
-  // 🔥 scalable hideBars
   const hiddenRoutes = ["/black-ai"];
   const hideBars = hiddenRoutes.some((path) =>
     location.pathname.startsWith(path)
@@ -126,79 +123,78 @@ function AppContent() {
   }
 
   return (
-    <div
-      className="app-container"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
-      <Suspense fallback={<LoadingSpinner />}>
+    <div className="app-wrapper">
+      <div className="app-container">
+        <Suspense fallback={<LoadingSpinner />}>
 
-        {/* Splash */}
-        {showSplash && (
-          <SplashScreen onFinish={handleFinishSplash} />
-        )}
+          {/* Splash */}
+          {showSplash && (
+            <SplashScreen onFinish={handleFinishSplash} />
+          )}
 
-        {/* Navbar */}
-        {!hideBars && <Navbar user={user} />}
+          {/* Navbar */}
+          {!hideBars && <Navbar user={user} />}
 
-        {/* Routes */}
-        <main className="content">
-          <ErrorBoundary>
-            <Routes>
+          {/* Routes */}
+          <main className="content">
+            <ErrorBoundary>
+              <Routes>
 
-              {/* Public */}
-              <Route path="/" element={<LandingRedirect />} />
-              <Route path="/auth-choice" element={<AuthChoice />} />
-              <Route path="/register" element={<RegisterForm />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/welcome" element={<Welcome />} />
-              <Route path="/historic" element={<Historic />} />
+                {/* Public */}
+                <Route path="/" element={<LandingRedirect />} />
+                <Route path="/auth-choice" element={<AuthChoice />} />
+                <Route path="/register" element={<RegisterForm />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/welcome" element={<Welcome />} />
+                <Route path="/historic" element={<Historic />} />
 
-              {/* Protected */}
-              <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-              <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
-              <Route path="/tasks/:taskId/validate" element={<ProtectedRoute><ValidateTask /></ProtectedRoute>} />
-              <Route path="/daily-tasks/:packId" element={<ProtectedRoute><DailyTasks /></ProtectedRoute>} />
-              <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
-              <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
-              <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
-              <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
-              <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
-              <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/trade-game" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
-              <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
-              <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
+                {/* Protected */}
+                <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
+                <Route path="/tasks/:taskId/validate" element={<ProtectedRoute><ValidateTask /></ProtectedRoute>} />
+                <Route path="/daily-tasks/:packId" element={<ProtectedRoute><DailyTasks /></ProtectedRoute>} />
+                <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><UserProfilePage /></ProtectedRoute>} />
+                <Route path="/info" element={<ProtectedRoute><Info /></ProtectedRoute>} />
+                <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
+                <Route path="/balance" element={<ProtectedRoute><BalancePage /></ProtectedRoute>} />
+                <Route path="/my-actions" element={<ProtectedRoute><MyActions /></ProtectedRoute>} />
+                <Route path="/status" element={<ProtectedRoute><Status /></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                <Route path="/trade-game" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
+                <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
+                <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
 
-              {/* Airdrop */}
-              <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
-              <Route path="/check" element={<ProtectedRoute><Check /></ProtectedRoute>} />
-              <Route path="/airdrop/:platformId" element={<ProtectedRoute><AirdropClaim /></ProtectedRoute>} />
-              <Route path="/kyc" element={<ProtectedRoute><Kyc /></ProtectedRoute>} />
+                {/* Airdrop */}
+                <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
+                <Route path="/check" element={<ProtectedRoute><Check /></ProtectedRoute>} />
+                <Route path="/airdrop/:platformId" element={<ProtectedRoute><AirdropClaim /></ProtectedRoute>} />
+                <Route path="/kyc" element={<ProtectedRoute><Kyc /></ProtectedRoute>} />
 
-              {/* BlackAI */}
-              <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
+                {/* BlackAI */}
+                <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
 
-              {/* Finance */}
-              <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
-              <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
-              <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
-              <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
+                {/* Finance */}
+                <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
+                <Route path="/deposits/:id" element={<ProtectedRoute><Depots /></ProtectedRoute>} />
+                <Route path="/retrait-methode" element={<ProtectedRoute><RetraitMethode /></ProtectedRoute>} />
+                <Route path="/retrait" element={<ProtectedRoute><Retraits /></ProtectedRoute>} />
 
-              {/* Autres */}
-              <Route path="/lucky-game" element={<LuckyDistributorGame />} />
+                {/* Autres */}
+                <Route path="/lucky-game" element={<LuckyDistributorGame />} />
 
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </ErrorBoundary>
-        </main>
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </ErrorBoundary>
+          </main>
 
-        {/* Footer */}
-        {!hideBars && <Footer />}
+          {/* Footer */}
+          {!hideBars && <Footer />}
 
-      </Suspense>
+        </Suspense>
+      </div>
     </div>
   );
 }

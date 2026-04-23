@@ -3,20 +3,22 @@ import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
 import { useRewardPoints } from "../hooks/useRewardPoints";
 import { RiCoinsFill } from "react-icons/ri";
+import { useTranslation } from "react-i18next";
 import "./RewardPoints.css";
 
 const RewardPoints = () => {
+  const { t, i18n } = useTranslation();
   const { user } = useUser();
   const controls = useAnimation();
 
   const [animate, setAnimate] = useState(false);
 
-  // ✅ hook centralisé
+  // données
   const { data, isLoading, isError } = useRewardPoints();
 
   const rewardPoints = data?.balance ?? 0;
 
-  // animation trigger
+  // animation déclenchée
   useEffect(() => {
     if (!isLoading && data) {
       setAnimate(true);
@@ -25,7 +27,7 @@ const RewardPoints = () => {
     }
   }, [rewardPoints, isLoading, data]);
 
-  // animation framer
+  // animation visuelle
   useEffect(() => {
     if (animate) {
       controls.start({
@@ -40,7 +42,7 @@ const RewardPoints = () => {
   if (isError) {
     return (
       <div className="rewardpoints-card">
-        ❌ Erreur chargement points
+        {t("rewards.error")}
       </div>
     );
   }
@@ -67,21 +69,25 @@ const RewardPoints = () => {
         </motion.div>
       </div>
 
-      <p className="rewardpoints-label">Points de récompense</p>
+      <p className="rewardpoints-label">
+        {t("rewards.title")}
+      </p>
 
       <motion.div className="rewardpoints-amount" animate={controls}>
         {isLoading ? (
-          <span className="loading">Chargement...</span>
+          <span className="loading">
+            {t("common.loading")}
+          </span>
         ) : (
           <>
-            {rewardPoints.toLocaleString()}{" "}
+            {rewardPoints.toLocaleString(i18n.language)}{" "}
             <span className="unit">BKC</span>
           </>
         )}
       </motion.div>
 
       <p className="rewardpoints-hint">
-        Récompenses • Packs • Services premium
+        {t("rewards.hint")}
       </p>
     </motion.div>
   );

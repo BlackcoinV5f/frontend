@@ -1,45 +1,46 @@
 import React, { useMemo } from "react";
 import { useUser } from "../contexts/UserContext.jsx";
 import { useCheck } from "../hooks/useCheck";
+import { useTranslation } from "react-i18next";
 import "./Check.css";
 
 export default function Check() {
+  const { t } = useTranslation();
   const { user } = useUser();
 
   const { data, isLoading, isError, error } = useCheck();
 
-  // 🔥 criteria memo inchangé
+  // critères traduisibles
   const criteria = useMemo(
     () => [
-      { label: "5 amis", key: "friends", optional: false },
-      { label: "50 tasks", key: "tasks", optional: false },
-      { label: "Pack payé (bonus)", key: "pack", optional: true },
-      { label: "50M pts", key: "points", optional: false },
-      { label: "21 jours d'utilisation", key: "days", optional: false },
-      { label: "Level 5 (mining)", key: "level", optional: false },
+      { key: "friends", optional: false },
+      { key: "tasks", optional: false },
+      { key: "pack", optional: true },
+      { key: "points", optional: false },
+      { key: "days", optional: false },
+      { key: "level", optional: false },
     ],
     []
   );
 
-  if (!user) {
-    return <div className="check-page">⏳ Chargement...</div>;
-  }
-
-  if (isLoading) {
-    return <div className="check-page">⏳ Chargement...</div>;
+  if (!user || isLoading) {
+    return (
+      <div className="check-page">
+        ⏳ {t("common.loading")}
+      </div>
+    );
   }
 
   if (isError) {
     return (
       <div className="check-page">
-        ❌ Erreur: {error?.message || "Impossible de vérifier"}
+        ❌ {t("check.error")} : {error?.message || t("check.error_fallback")}
       </div>
     );
   }
 
   if (!data) return null;
 
-  // 🔥 calcul UI (correct)
   const completed = criteria.filter((c) => data[c.key]).length;
   const progressPercent = Math.round(
     (completed / criteria.length) * 100
@@ -47,10 +48,10 @@ export default function Check() {
 
   return (
     <div className="check-page">
-      <h2>Eligibility Check</h2>
+      <h2>{t("check.title")}</h2>
 
       <p className="eligibility-warning">
-        ⚠️ Les critères peuvent évoluer avec le projet.
+        ⚠️ {t("check.warning")}
       </p>
 
       {/* Progress */}
@@ -59,7 +60,10 @@ export default function Check() {
           className="eligibility-progress-fill"
           style={{ width: `${progressPercent}%` }}
         >
-          {completed} / {criteria.length} validés
+          {t("check.progress", {
+            completed,
+            total: criteria.length,
+          })}
         </div>
       </div>
 
@@ -76,7 +80,7 @@ export default function Check() {
               }`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <span>{item.label}</span>
+              <span>{t(`check.criteria.${item.key}`)}</span>
 
               <span className={isValid ? "achieved" : ""}>
                 {isValid ? "✅" : item.optional ? "⚪" : "❌"}
@@ -90,11 +94,11 @@ export default function Check() {
       <div className="eligibility-result">
         {data.eligible ? (
           <p className="eligible">
-            🎉 Vous êtes éligible à l'airdrop
+            🎉 {t("check.eligible")}
           </p>
         ) : (
           <p className="not-eligible">
-            ❌ Conditions obligatoires non remplies
+            ❌ {t("check.not_eligible")}
           </p>
         )}
       </div>

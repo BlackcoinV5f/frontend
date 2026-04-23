@@ -4,17 +4,17 @@ import { FaCheck, FaTrophy, FaExternalLinkAlt, FaClock } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useTasks } from "../hooks/useTasks";
+import { useTranslation } from "react-i18next";
 import "./Tasks.css";
 
 const Tasks = () => {
+  const { t } = useTranslation();
   const { user } = useUser();
   const navigate = useNavigate();
 
   const { data, isLoading, isError, startTask } = useTasks();
-
   const [tasks, setTasks] = useState([]);
 
-  // ✅ mapping IDENTIQUE
   useEffect(() => {
     if (!data?.tasks) return;
 
@@ -28,7 +28,6 @@ const Tasks = () => {
     setTasks(styledTasks);
   }, [data]);
 
-  // ✅ timer IDENTIQUE
   useEffect(() => {
     const interval = setInterval(() => {
       setTasks((prev) =>
@@ -44,7 +43,7 @@ const Tasks = () => {
   if (!user) {
     return (
       <div className="tasks-container">
-        ⚠️ Connecte-toi pour voir les tâches
+        ⚠️ {t("tasks.login_required")}
       </div>
     );
   }
@@ -63,7 +62,7 @@ const Tasks = () => {
   if (isError) {
     return (
       <div className="tasks-container">
-        ❌ Erreur chargement des tâches
+        ❌ {t("tasks.error")}
       </div>
     );
   }
@@ -73,7 +72,6 @@ const Tasks = () => {
   const progress =
     totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
-  // ✅ START TASK FIX
   const handleTaskClick = (task) => {
     startTask.mutate(task.id);
     window.open(task.link, "_blank");
@@ -93,106 +91,76 @@ const Tasks = () => {
   };
 
   return (
-    <motion.div
-      className="tasks-container"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      <motion.div
-        className="tasks-header"
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <h2>📋 Tâches à accomplir</h2>
+    <motion.div className="tasks-container">
+      <div className="tasks-header">
+        <h2>📋 {t("tasks.title")}</h2>
 
         <div className="progress-container">
           <div className="progress-bar">
             <motion.div
               className="progress-fill"
-              initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              transition={{ delay: 0.4, duration: 1, type: "spring" }}
             />
           </div>
           <span className="progress-text">{completedCount}</span>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        className="tasks-list"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
+      <div className="tasks-list">
         <AnimatePresence>
-          {tasks.map((task, index) => (
-            <motion.div
-              key={task.id}
-              className="task-item"
-              style={{ borderLeft: `4px solid ${task.color}` }}
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.1 * index, type: "spring" }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="task-content">
-                <div className="task-info">
-                  <div className="task-platform">
-                    <img
-                      src={task.icon}
-                      alt={task.title}
-                      className="platform-icon"
-                    />
-                    <span>{task.title}</span>
+          {tasks.map((task, index) => {
+            const isValid = task.completed;
+
+            return (
+              <motion.div key={task.id} className="task-item">
+                <div className="task-content">
+                  <div className="task-info">
+                    <div className="task-platform">
+                      <img src={task.icon} alt={task.title} />
+                      <span>{task.title}</span>
+                    </div>
+
+                    <div className="task-points">
+                      <FaTrophy />
+                      <span>
+                        {task.reward_points} {t("tasks.points")}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="task-points">
-                    <FaTrophy className="trophy-icon" />
-                    <span>{task.reward_points} pts</span>
-                  </div>
-                </div>
-
-                {task.completed ? (
-                  <div className="completed-badge">✅ Complétée</div>
-                ) : task.started_at && task.time_left > 0 ? (
-                  <div className="cooldown-container">
-                    <div className="cooldown-timer">
+                  {isValid ? (
+                    <div className="completed-badge">
+                      ✅ {t("tasks.completed")}
+                    </div>
+                  ) : task.started_at && task.time_left > 0 ? (
+                    <div>
                       <FaClock />
                       <span>{formatTime(task.time_left)}</span>
+                      <button disabled>
+                        <FaCheck /> {t("tasks.validate")}
+                      </button>
                     </div>
-                    <button className="validate-button disabled" disabled>
-                      <FaCheck /> Valider
+                  ) : task.started_at ? (
+                    <button onClick={() => handleValidateClick(task)}>
+                      <FaCheck /> {t("tasks.validate")}
                     </button>
-                  </div>
-                ) : task.started_at && task.time_left === 0 ? (
-                  <button
-                    onClick={() => handleValidateClick(task)}
-                    className="validate-button"
-                  >
-                    <FaCheck /> Valider
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleTaskClick(task)}
-                    className="task-button"
-                  >
-                    <FaExternalLinkAlt /> Commencer
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                  ) : (
+                    <button onClick={() => handleTaskClick(task)}>
+                      <FaExternalLinkAlt /> {t("tasks.start")}
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
 
         {tasks.length === 0 && (
           <div className="no-tasks">
-            🎉 Vous avez terminé toutes les tâches !
+            🎉 {t("tasks.done")}
           </div>
         )}
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

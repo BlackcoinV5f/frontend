@@ -33,6 +33,7 @@
       "generic": "An error occurred. Please try again."
     }
   },
+
   "info": {
     "title": "📢 Official Information — BLACKCOIN",
     "intro": "The <1>BLACKCOIN</1> team is actively developing the project with many major features in preparation.",
@@ -50,6 +51,7 @@
     "communicationText2": "We invite you to always verify information through our official channels to avoid any confusion.",
     "footer": "Thank you for being part of BLACKCOIN's evolution."
   },
+
   "userProfile": {
     "header": {
       "close": "Close"
@@ -74,6 +76,7 @@
       "logout": "Logout"
     }
   },
+
   "auth": {
     "welcome": "Welcome to BlackCoin 🪙",
     "question": "What would you like to do?",
@@ -81,6 +84,7 @@
     "register": "Sign up",
     "login": "Log in"
   },
+
   "verifyEmail": {
     "title": "Email verification",
     "checkAccount": "Check your account associated with",
@@ -91,6 +95,7 @@
     "error": "Error during verification",
     "expired": "⏳ The code has expired. Please request a new code."
   },
+
   "welcome": {
     "loading": "Loading...",
     "error": "An error occurred.",
@@ -115,6 +120,7 @@
       "validate": "Validate"
     }
   },
+
   "login": {
     "title": "Login",
     "emailOrUsername": "Email or username",
@@ -137,6 +143,7 @@
       "link": "Create an account"
     }
   },
+
   "action": {
     "category": "Category",
     "type": "Type",
@@ -162,6 +169,7 @@
       "error": "❌ Error during action."
     }
   },
+
   "actions": {
     "category": {
       "finance": "Finance",
@@ -172,6 +180,7 @@
     "noActions": "No actions available",
     "fetchError": "❌ Error loading actions"
   },
+
   "bonus": {
     "authRequired": "Login required",
     "title": "Bonus Program",
@@ -216,11 +225,57 @@
       }
     }
   },
+
   "wallet": {
     "title": "My Wallet",
     "loading": "Loading...",
     "depositComing": "Deposit (coming soon)",
     "withdraw": "Withdraw",
     "history": "History"
+  },
+
+  "cash": {
+    "error": "❌ Failed to load balance",
+    "real_balance": "Real money balance",
+    "hint": "Withdrawable • Real deposits • Monetary value"
+  },
+
+  "common": {
+    "loading": "Loading..."
+  },
+
+  "rewards": {
+    "error": "❌ Failed to load points",
+    "title": "Reward points",
+    "hint": "Rewards • Packs • Premium services"
+  },
+
+  "check": {
+    "title": "Eligibility Check",
+    "warning": "Criteria may change as the project evolves.",
+    "error": "Error",
+    "error_fallback": "Unable to verify",
+    "progress": "{{completed}} / {{total}} completed",
+    "eligible": "You are eligible for the airdrop",
+    "not_eligible": "Required conditions not met",
+    "criteria": {
+      "friends": "5 friends",
+      "tasks": "50 tasks",
+      "pack": "Paid pack (bonus)",
+      "points": "50M points",
+      "days": "21 days of usage",
+      "level": "Level 5 (mining)"
+    }
+  },
+
+  "tasks": {
+    "title": "Tasks to complete",
+    "login_required": "Log in to view tasks",
+    "error": "Failed to load tasks",
+    "completed": "Completed",
+    "validate": "Validate",
+    "start": "Start",
+    "points": "pts",
+    "done": "You have completed all tasks!"
   }
 }

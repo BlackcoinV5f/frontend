@@ -3,20 +3,22 @@ import { motion, useAnimation } from "framer-motion";
 import { useUser } from "../contexts/UserContext";
 import { useCashMoney } from "../hooks/useCashMoney";
 import { GiCash } from "react-icons/gi";
+import { useTranslation } from "react-i18next";
 import "./CashMoney.css";
 
 const CashMoney = () => {
+  const { t, i18n } = useTranslation();
   const { user } = useUser();
   const controls = useAnimation();
 
   const [animate, setAnimate] = useState(false);
 
-  // ✅ hook centralisé
+  // hook données
   const { data, isLoading, isError } = useCashMoney();
 
   const cashBalance = data?.cash_balance ?? 0;
 
-  // animation
+  // animation déclenchée quand le solde change
   useEffect(() => {
     if (!isLoading && data) {
       setAnimate(true);
@@ -25,6 +27,7 @@ const CashMoney = () => {
     }
   }, [cashBalance, isLoading, data]);
 
+  // animation visuelle
   useEffect(() => {
     if (animate) {
       controls.start({
@@ -39,7 +42,7 @@ const CashMoney = () => {
   if (isError) {
     return (
       <div className="cashmoney-card">
-        ❌ Erreur chargement solde
+        {t("cash.error")}
       </div>
     );
   }
@@ -51,7 +54,9 @@ const CashMoney = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <p className="cashmoney-label">Solde argent réel</p>
+      <p className="cashmoney-label">
+        {t("cash.real_balance")}
+      </p>
 
       <motion.div
         className="cashmoney-amount"
@@ -59,11 +64,13 @@ const CashMoney = () => {
         onClick={() => setAnimate(true)}
       >
         {isLoading ? (
-          <span className="loading">Chargement...</span>
+          <span className="loading">
+            {t("common.loading")}
+          </span>
         ) : (
           <>
             <GiCash className="cash-icon" />
-            {cashBalance.toLocaleString(undefined, {
+            {cashBalance.toLocaleString(i18n.language, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}{" "}
@@ -73,7 +80,7 @@ const CashMoney = () => {
       </motion.div>
 
       <p className="cashmoney-hint">
-        Retirable • Dépôts réels • Valeur monétaire
+        {t("cash.hint")}
       </p>
     </motion.div>
   );

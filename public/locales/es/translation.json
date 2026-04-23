@@ -33,6 +33,7 @@
       "generic": "Ocurrió un error. Por favor, inténtalo de nuevo."
     }
   },
+
   "info": {
     "title": "📢 Información Oficial — BLACKCOIN",
     "intro": "El equipo de <1>BLACKCOIN</1> está desarrollando activamente el proyecto con muchas características importantes en preparación.",
@@ -50,6 +51,7 @@
     "communicationText2": "Te invitamos a verificar siempre la información a través de nuestros canales oficiales para evitar confusiones.",
     "footer": "Gracias por ser parte de la evolución de BLACKCOIN."
   },
+
   "userProfile": {
     "header": {
       "close": "Cerrar"
@@ -74,6 +76,7 @@
       "logout": "Cerrar sesión"
     }
   },
+
   "auth": {
     "welcome": "Bienvenido a BlackCoin 🪙",
     "question": "¿Qué deseas hacer?",
@@ -81,6 +84,7 @@
     "register": "Registrarse",
     "login": "Iniciar sesión"
   },
+
   "verifyEmail": {
     "title": "Verificación de correo electrónico",
     "checkAccount": "Verifica tu cuenta asociada a",
@@ -91,6 +95,7 @@
     "error": "Error durante la verificación",
     "expired": "⏳ El código ha expirado. Por favor, solicita un nuevo código."
   },
+
   "welcome": {
     "loading": "Cargando...",
     "error": "Ocurrió un error.",
@@ -115,6 +120,7 @@
       "validate": "Validar"
     }
   },
+
   "login": {
     "title": "Iniciar sesión",
     "emailOrUsername": "Correo electrónico o nombre de usuario",
@@ -137,6 +143,7 @@
       "link": "Crear una cuenta"
     }
   },
+
   "action": {
     "category": "Categoría",
     "type": "Tipo",
@@ -162,6 +169,7 @@
       "error": "❌ Error durante la acción."
     }
   },
+
   "actions": {
     "category": {
       "finance": "Finanzas",
@@ -172,6 +180,7 @@
     "noActions": "No hay acciones disponibles",
     "fetchError": "❌ Error al cargar las acciones"
   },
+
   "bonus": {
     "authRequired": "Inicio de sesión requerido",
     "title": "Programa de Bonos",
@@ -216,11 +225,57 @@
       }
     }
   },
+
   "wallet": {
     "title": "Mi Billetera",
     "loading": "Cargando...",
     "depositComing": "Depósito (próximamente)",
     "withdraw": "Retirar",
     "history": "Historial"
+  },
+
+  "cash": {
+    "error": "❌ Error al cargar el saldo",
+    "real_balance": "Saldo de dinero real",
+    "hint": "Retirable • Depósitos reales • Valor monetario"
+  },
+
+  "common": {
+    "loading": "Cargando..."
+  },
+
+  "rewards": {
+    "error": "❌ Error al cargar los puntos",
+    "title": "Puntos de recompensa",
+    "hint": "Recompensas • Paquetes • Servicios premium"
+  },
+
+  "check": {
+    "title": "Verificación de elegibilidad",
+    "warning": "Los criterios pueden cambiar con el proyecto.",
+    "error": "Error",
+    "error_fallback": "No se pudo verificar",
+    "progress": "{{completed}} / {{total}} completados",
+    "eligible": "Eres elegible para el airdrop",
+    "not_eligible": "Condiciones obligatorias no cumplidas",
+    "criteria": {
+      "friends": "5 amigos",
+      "tasks": "50 tareas",
+      "pack": "Paquete pagado (bonus)",
+      "points": "50M puntos",
+      "days": "21 días de uso",
+      "level": "Nivel 5 (mining)"
+    }
+  },
+
+  "tasks": {
+    "title": "Tareas por completar",
+    "login_required": "Inicia sesión para ver las tareas",
+    "error": "Error al cargar las tareas",
+    "completed": "Completada",
+    "validate": "Validar",
+    "start": "Comenzar",
+    "points": "pts",
+    "done": "¡Has completado todas las tareas!"
   }
 }
