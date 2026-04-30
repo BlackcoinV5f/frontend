@@ -14,11 +14,12 @@ import RewardPoints from "../components/RewardPoints";
 import "./Wallet.css";
 
 const Wallet = () => {
+  // ✅ namespace correct
+  const { t } = useTranslation("transactions");
+
   const { user, loading } = useUser();
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
-  // 🔥 Navigation optimisée (évite re-render inutile)
   const goWithdraw = useCallback(() => {
     navigate("/retrait-methode");
   }, [navigate]);
@@ -27,7 +28,7 @@ const Wallet = () => {
     navigate("/historic");
   }, [navigate]);
 
-  // ⏳ Loading propre
+  // ⏳ Loading
   if (loading) {
     return (
       <div className="wallet-loading">
@@ -36,11 +37,11 @@ const Wallet = () => {
     );
   }
 
-  // 🚫 Sécurité (si user absent)
+  // 🚫 Sécurité
   if (!user) {
     return (
       <div className="wallet-error">
-        {t("wallet.errorUser")}
+        {t("wallet.loading")} {/* fallback propre */}
       </div>
     );
   }
@@ -52,7 +53,7 @@ const Wallet = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {/* ===== HEADER ===== */}
+      {/* HEADER */}
       <motion.div
         className="wallet-header"
         whileHover={{ scale: 1.05 }}
@@ -62,10 +63,10 @@ const Wallet = () => {
         <FaWallet className="wallet-icon" />
       </motion.div>
 
-      {/* ===== ACTIONS ===== */}
+      {/* ACTIONS */}
       <div className="wallet-actions">
 
-        {/* ❌ DEPOT (désactivé) */}
+        {/* DEPOT */}
         <motion.button
           type="button"
           className="wallet-button deposit-button disabled"
@@ -75,7 +76,7 @@ const Wallet = () => {
           <span>{t("wallet.depositComing")}</span>
         </motion.button>
 
-        {/* ✅ RETRAIT */}
+        {/* RETRAIT */}
         <motion.button
           type="button"
           className="wallet-button withdraw-button"
@@ -87,7 +88,7 @@ const Wallet = () => {
           <span>{t("wallet.withdraw")}</span>
         </motion.button>
 
-        {/* ✅ HISTORIQUE */}
+        {/* HISTORIQUE */}
         <motion.button
           type="button"
           className="wallet-button history-button"
@@ -101,7 +102,7 @@ const Wallet = () => {
 
       </div>
 
-      {/* ===== SOLDES ===== */}
+      {/* SOLDES */}
       <div className="wallet-balances">
         <CashMoney />
         <RewardPoints />

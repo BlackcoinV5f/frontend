@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import {
@@ -10,15 +10,19 @@ import {
   FiX,
 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
-
 import "./UserProfilePage.css";
 
 const UserProfilePage = () => {
-  const { t } = useTranslation();
+  // ✅ namespace correct
+  const { t } = useTranslation("profil");
+
   const { user, logoutUser, isAuthenticated } = useUser();
   const navigate = useNavigate();
 
-  if (!user) return null;
+  // ✅ UX améliorée
+  if (!user) {
+    return <div className="loader">{t("userProfile.loading", "Chargement...")}</div>;
+  }
 
   // -------------------------------
   // Déconnexion
@@ -38,39 +42,35 @@ const UserProfilePage = () => {
   // -------------------------------
   // Helpers
   // -------------------------------
+  const requiredFields = [
+    "first_name",
+    "last_name",
+    "username",
+    "email",
+    "phone",
+    "country",
+    "avatar_url",
+    "has_completed_welcome_tasks",
+  ];
+
   const isProfileComplete = (data) => {
-    const requiredFields = [
-      "first_name",
-      "last_name",
-      "username",
-      "email",
-      "phone",
-      "country",
-      "avatar_url",
-      "has_completed_welcome_tasks",
-    ];
     return requiredFields.every((key) => !!data?.[key]);
   };
 
-  const completionPercentage = () => {
-    const required = [
-      "first_name",
-      "last_name",
-      "username",
-      "email",
-      "phone",
-      "country",
-      "avatar_url",
-      "has_completed_welcome_tasks",
-    ];
-    const done = required.filter((key) => !!user?.[key]).length;
-    return Math.round((done / required.length) * 100);
-  };
+  // ✅ optimisé (memo)
+  const completion = useMemo(() => {
+    const done = requiredFields.filter((key) => !!user?.[key]).length;
+    return Math.round((done / requiredFields.length) * 100);
+  }, [user]);
 
-  const displayValue = (value) => (value ? value : "—");
+  // ✅ fallback traduit
+  const displayValue = (value) =>
+    value || t("userProfile.notSpecified", "—");
 
   const avatarSrc =
-    user?.avatar_url && user.avatar_url.trim() !== "" ? user.avatar_url : null;
+    user?.avatar_url && user.avatar_url.trim() !== ""
+      ? user.avatar_url
+      : null;
 
   const getInitial = (name) => name?.charAt(0)?.toUpperCase() || "?";
 
@@ -87,6 +87,7 @@ const UserProfilePage = () => {
 
   return (
     <div className="user-profile-page">
+
       {/* HEADER */}
       <div className="profile-header">
         <button className="close-button" onClick={() => navigate(-1)}>
@@ -97,6 +98,7 @@ const UserProfilePage = () => {
       {/* AVATAR */}
       <div className="profile-avatar-section">
         <div className="avatar-container">
+
           {avatarSrc ? (
             <img
               src={avatarSrc}
@@ -136,13 +138,13 @@ const UserProfilePage = () => {
       <div className="completion-section">
         <div className="completion-header">
           <span>{t("userProfile.profileCompletion")}</span>
-          <span>{completionPercentage()}%</span>
+          <span>{completion}%</span>
         </div>
 
         <div className="progress-bar">
           <div
             className="progress-fill"
-            style={{ width: `${completionPercentage()}%` }}
+            style={{ width: `${completion}%` }}
           ></div>
         </div>
       </div>
@@ -152,40 +154,32 @@ const UserProfilePage = () => {
         <h4>{t("userProfile.personalInfo")}</h4>
 
         <div className="detail-row">
-          <div className="detail-icon">
-            <FiMail />
-          </div>
-          <div className="detail-content">
+          <FiMail />
+          <div>
             <label>{t("userProfile.email")}</label>
             <p>{displayValue(user.email)}</p>
           </div>
         </div>
 
         <div className="detail-row">
-          <div className="detail-icon">
-            <FiPhone />
-          </div>
-          <div className="detail-content">
+          <FiPhone />
+          <div>
             <label>{t("userProfile.phone")}</label>
             <p>{displayValue(user.phone)}</p>
           </div>
         </div>
 
         <div className="detail-row">
-          <div className="detail-icon">
-            <FiGlobe />
-          </div>
-          <div className="detail-content">
+          <FiGlobe />
+          <div>
             <label>{t("userProfile.country")}</label>
             <p>{displayValue(user.country)}</p>
           </div>
         </div>
 
         <div className="detail-row">
-          <div className="detail-icon">
-            <FiAward />
-          </div>
-          <div className="detail-content">
+          <FiAward />
+          <div>
             <label>{t("userProfile.welcomeTasks")}</label>
             <p>
               {user.has_completed_welcome_tasks
@@ -207,7 +201,7 @@ const UserProfilePage = () => {
       <div className="profile-actions">
         {!user.is_verified && (
           <button className="kyc-button" onClick={() => navigate("/kyc")}>
-            {t("userProfile.actions.verifyKYC")}
+            {t("userProfile.actions.verifyKyc")}
           </button>
         )}
 
@@ -217,6 +211,7 @@ const UserProfilePage = () => {
           </button>
         )}
       </div>
+
     </div>
   );
 };

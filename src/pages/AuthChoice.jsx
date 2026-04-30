@@ -16,16 +16,9 @@ const languages = [
 const AuthChoice = () => {
   const navigate = useNavigate();
   const { user, loading } = useUser();
-  const { t, i18n } = useTranslation();
 
-  // 🔥 Charger la langue UNE SEULE FOIS
-  useEffect(() => {
-    const savedLang = localStorage.getItem("appLanguage");
-
-    if (savedLang && i18n.language !== savedLang) {
-      i18n.changeLanguage(savedLang);
-    }
-  }, [i18n]);
+  // ✅ IMPORTANT → on précise le namespace
+  const { t, i18n } = useTranslation("login");
 
   // 🔐 Redirection utilisateur connecté
   useEffect(() => {
@@ -36,8 +29,10 @@ const AuthChoice = () => {
 
   // 🌍 Changement de langue
   const handleLanguageChange = (lang) => {
-    i18n.changeLanguage(lang);
-    localStorage.setItem("appLanguage", lang);
+    if (i18n.resolvedLanguage !== lang) {
+      i18n.changeLanguage(lang);
+      localStorage.setItem("appLanguage", lang);
+    }
   };
 
   const handleRegister = () => navigate("/register");
@@ -53,7 +48,7 @@ const AuthChoice = () => {
       {/* 🌍 LANGUAGE SWITCH */}
       <div className="language-switch">
         {languages.map((lang) => {
-          const isActive = i18n.language.startsWith(lang.code);
+          const isActive = i18n.resolvedLanguage === lang.code;
 
           return (
             <button

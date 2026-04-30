@@ -1,0 +1,123 @@
+{
+  "deposits": {
+    "loading": "Loading deposit methods...",
+    "error": "Unable to load deposit methods",
+    "empty": "No methods available",
+    "title": "Choose a deposit method",
+    "back": "Back to wallet"
+  },
+
+  "deposit": {
+    "error": "Unable to load deposit method",
+    "notFound": "Method not found",
+    "country": "Country",
+    "account": "Account / address",
+    "backMethods": "Back to methods",
+
+    "form": {
+      "username": "Username",
+      "phone": "Phone number",
+      "amount": "Amount",
+      "transactionId": "Transaction ID",
+
+      "submit": "Submit deposit",
+      "sending": "Processing...",
+
+      "errors": {
+        "required": "All fields are required",
+        "invalidAmount": "Invalid amount",
+        "noUser": "Unable to identify user",
+        "generic": "An error occurred during deposit"
+      },
+
+      "success": "Deposit submitted successfully"
+    }
+  },
+
+  "withdraws": {
+    "loading": "Loading methods...",
+    "error": "Unable to load withdrawal methods",
+    "empty": "No withdrawal methods available",
+    "title": "Choose your withdrawal method",
+    "noCountry": "Country not specified"
+  },
+
+  "withdraw": {
+    "noMethod": "No method selected. Please go back and choose one.",
+    "back": "Back",
+    "backMethods": "Back to methods",
+    "country": "Country",
+    "noCountry": "Not specified",
+
+    "form": {
+      "address": "Address / account number",
+      "amount": "Amount to withdraw (min {{min}} BKC)",
+
+      "submit": "Submit withdrawal",
+      "sending": "Processing...",
+
+      "errors": {
+        "required": "All fields are required",
+        "minAmount": "Minimum withdrawal amount is {{min}} BKC",
+        "noUser": "User not identified",
+        "generic": "An error occurred during withdrawal"
+      },
+
+      "success": "Withdrawal request submitted successfully"
+    }
+  },
+
+  "history": {
+    "title": "History",
+    "loading": "Loading history...",
+    "error": "Unable to load transaction history",
+
+    "empty": {
+      "title": "No transactions found",
+      "text": "Your transactions will appear here"
+    },
+
+    "count": "{{count}} transaction",
+    "count_plural": "{{count}} transactions",
+
+    "notSpecified": "Not specified",
+
+    "table": {
+      "method": "Method",
+      "amount": "Amount",
+      "status": "Status",
+      "date": "Date"
+    },
+
+    "status": {
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "unknown": "Unknown"
+    }
+  },
+
+  "wallet": {
+    "title": "My Wallet",
+    "loading": "Loading...",
+    "depositComing": "Deposit (coming soon)",
+    "withdraw": "Withdraw",
+    "history": "History"
+  },
+
+  "cash": {
+    "error": "Error loading balance",
+    "realBalance": "Real balance",
+    "hint": "Withdrawable • Real deposits • Monetary value"
+  },
+
+  "rewards": {
+    "error": "Error loading points",
+    "title": "Reward points",
+    "hint": "Rewards • Packs • Premium services"
+  },
+
+  "common": {
+    "loading": "Loading..."
+  }
+}

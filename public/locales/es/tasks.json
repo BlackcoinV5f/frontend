@@ -1,0 +1,64 @@
+{
+  "tasksPage": {
+    "title": "Tareas a completar",
+    "login_required": "Inicia sesión para ver las tareas",
+    "error": "Error al cargar las tareas",
+    "completed": "Completada",
+    "validate": "Validar",
+    "start": "Comenzar",
+    "points": "pts",
+    "done": "¡Has completado todas las tareas!"
+  },
+
+  "validatePage": {
+    "login_required": "Inicia sesión para validar una tarea",
+    "not_found": "Tarea no encontrada",
+    "back_tasks": "Volver a las tareas",
+    "back": "Volver",
+    "title": "Validación",
+    "instructions": "Introduce el código de validación proporcionado después de la tarea",
+    "placeholder": "Código de validación",
+    "submit": "Validar",
+    "success": "Tarea validada con éxito 🎉",
+    "points": "pts",
+    "total": "Total ganado: {{amount}} pts",
+    "empty_code": "Por favor introduce un código de validación",
+    "invalid_code": "Código inválido",
+    "unauthorized": "No autorizado. Inicia sesión nuevamente.",
+    "error": "Error durante la validación"
+  },
+
+  "dailyPage": {
+    "login_required": "Inicia sesión",
+    "error": "Error",
+    "pack_title": "Tareas del Pack #{{id}}",
+    "no_tasks": "No hay tareas disponibles",
+    "start": "Comenzar",
+    "validate": "Validar",
+    "done": "Completada",
+    "completed": "¡Tarea completada!",
+    "all_done": "¡Todas las tareas completadas!",
+    "claim": "Reclamar",
+    "reward": "Recompensa",
+    "reward_message": "Recompensa recibida",
+    "start_error": "No se pudo iniciar la tarea",
+    "complete_error": "No se pudo completar la tarea",
+    "claim_error": "No se pudo reclamar la recompensa"
+  },
+
+  "taskspk": {
+    "join_telegram": "Únete a nuestro canal oficial de Telegram",
+    "like_facebook": "Comparte y da me gusta a nuestra página de Facebook",
+    "follow_twitter": "Sigue nuestra cuenta oficial en X",
+    "subscribe_youtube": "Suscríbete a nuestro canal oficial de YouTube",
+    "watch_tiktok": "Mira y da like a nuestros videos de TikTok"
+  },
+
+  "platform": {
+    "telegram": "Telegram",
+    "facebook": "Facebook",
+    "twitter": "X (Twitter)",
+    "youtube": "YouTube",
+    "tiktok": "TikTok"
+  }
+}

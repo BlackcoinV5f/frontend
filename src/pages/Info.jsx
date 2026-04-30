@@ -5,7 +5,8 @@ import { useTranslation, Trans } from "react-i18next";
 import "./Info.css";
 
 const SocialIcon = ({ href, icon, label }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("info"); // ✅
+
   return (
     <motion.a
       href={href}
@@ -24,7 +25,7 @@ const SocialIcon = ({ href, icon, label }) => {
 };
 
 const Info = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("info"); // ✅
 
   return (
     <motion.div
@@ -36,68 +37,53 @@ const Info = () => {
       {/* TITRE */}
       <h2>{t("info.title")}</h2>
 
-      {/* INTRODUCTION */}
+      {/* INTRO */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
         className="highlight"
       >
-        <Trans i18nKey="info.intro">
-          L’équipe <strong>BLACKCOIN</strong> poursuit activement le développement du projet avec de nombreuses fonctionnalités majeures en préparation.
+        <Trans ns="info" i18nKey="info.intro">
+          L’équipe <strong>BLACKCOIN</strong> développe activement le projet.
         </Trans>
       </motion.p>
 
       {/* SOCIALS */}
       <div className="social-grid">
-        <SocialIcon href="https://t.me/+2VYCu2Ygs0Q1YTk0" icon="📢" label="info.telegram" />
-        <SocialIcon href="https://x.com/BlackcoinON" icon="𝕏" label="info.twitter" />
-        <SocialIcon href="https://www.facebook.com/share/1CjsWSj1P3/" icon="📘" label="info.facebook" />
-        <SocialIcon href="https://www.youtube.com/@Blackcoinchaine" icon="▶️" label="info.youtube" />
-        <SocialIcon href="https://www.instagram.com/blackcoin_bkc" icon="📸" label="info.instagram" />
-        <SocialIcon href="https://www.tiktok.com/@blackcoin_official" icon="🎵" label="info.tiktok" />
+        <SocialIcon href="..." icon="📢" label="info.socials.telegram" />
+        <SocialIcon href="..." icon="𝕏" label="info.socials.twitter" />
+        <SocialIcon href="..." icon="📘" label="info.socials.facebook" />
+        <SocialIcon href="..." icon="▶️" label="info.socials.youtube" />
+        <SocialIcon href="..." icon="📸" label="info.socials.instagram" />
+        <SocialIcon href="..." icon="🎵" label="info.socials.tiktok" />
       </div>
 
-      {/* DESCRIPTION DU PROJET */}
-      <motion.div
-        className="section"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.45 }}
-      >
-        <h3>{t("info.aboutTitle")}</h3>
-        <p>{t("info.aboutText1")}</p>
-        <p>{t("info.aboutText2")}</p>
+      {/* ABOUT */}
+      <motion.div className="section">
+        <h3>{t("info.about.title")}</h3>
+        <p>{t("info.about.text1")}</p>
+        <p>{t("info.about.text2")}</p>
+
         <motion.a
           href="https://blackcoinweb.com"
           target="_blank"
           rel="noopener noreferrer"
           className="official-link"
-          whileHover={{ scale: 1.05 }}
         >
           🌐 www.blackcoinweb.com
         </motion.a>
       </motion.div>
 
-      {/* NOTE IMPORTANTE */}
-      <motion.div
-        className="section important"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
-      >
-        <h3>{t("info.communicationTitle")}</h3>
-        <p>{t("info.communicationText1")}</p>
-        <p>{t("info.communicationText2")}</p>
+      {/* COMMUNICATION */}
+      <motion.div className="section important">
+        <h3>{t("info.communication.title")}</h3>
+        <p>{t("info.communication.text1")}</p>
+        <p>{t("info.communication.text2")}</p>
       </motion.div>
 
       {/* FOOTER */}
-      <motion.p
-        className="footer-note"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-      >
+      <motion.p className="footer-note">
         {t("info.footer")}
       </motion.p>
     </motion.div>

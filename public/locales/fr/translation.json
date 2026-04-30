@@ -1,56 +1,6 @@
-{
-  "register": {
-    "title": "Créer un compte",
-    "personalInfo": "Informations personnelles",
-    "firstName": "Prénom",
-    "lastName": "Nom",
-    "birthDate": "Date de naissance",
-    "contactInfo": "Informations de contact",
-    "phoneNumber": "Numéro de téléphone",
-    "email": "Email",
-    "telegramUsername": "Nom d'utilisateur Telegram",
-    "security": "Sécurité",
-    "password": "Mot de passe",
-    "confirmPassword": "Confirmer le mot de passe",
-    "submit": "Créer mon compte",
-    "loading": "Création en cours...",
-    "success": "Inscription réussie ! Veuillez vérifier votre email.",
-    "criteria": {
-      "length": "Au moins 8 caractères",
-      "uppercase": "Une lettre majuscule",
-      "number": "Un chiffre",
-      "specialChar": "Un caractère spécial"
-    },
-    "errors": {
-      "missingFields": "Veuillez remplir tous les champs.",
-      "invalidEmail": "Adresse email invalide.",
-      "invalidPhoneNumber": "Numéro de téléphone invalide.",
-      "invalidTelegramUsername": "Nom d'utilisateur Telegram invalide.",
-      "passwordMismatch": "Les mots de passe ne correspondent pas.",
-      "passwordWeak": "Le mot de passe est trop faible.",
-      "invalidBirthDate": "Date de naissance invalide.",
-      "ageTooYoung": "Vous devez avoir au moins 13 ans pour vous inscrire.",
-      "generic": "Une erreur est survenue. Veuillez réessayer."
-    }
-  },
 
-  "info": {
-    "title": "📢 Informations Officielles — BLACKCOIN",
-    "intro": "L’équipe <1>BLACKCOIN</1> développe activement le projet avec de nombreuses fonctionnalités majeures en préparation.",
-    "telegram": "Telegram",
-    "twitter": "X (Twitter)",
-    "facebook": "Facebook",
-    "youtube": "YouTube",
-    "instagram": "Instagram",
-    "tiktok": "TikTok",
-    "aboutTitle": "🌍 À propos du projet",
-    "aboutText1": "BLACKCOIN est une initiative collaborative internationale lancée le 21 mars 2024, visant à construire un écosystème numérique solide, transparent et durable.",
-    "aboutText2": "Pour consulter le Livre Blanc, la Feuille de route et la Politique de confidentialité, veuillez visiter notre site officiel :",
-    "communicationTitle": "📌 Communication officielle",
-    "communicationText1": "Toutes les informations officielles, mises à jour et annonces importantes concernant BLACKCOIN sont publiées exclusivement via notre site officiel et nos réseaux sociaux.",
-    "communicationText2": "Nous vous invitons à toujours vérifier les informations via nos canaux officiels afin d’éviter toute confusion.",
-    "footer": "Merci de faire partie de l’évolution de BLACKCOIN."
-  },
+
+  
 
   "userProfile": {
     "header": {
@@ -77,154 +27,13 @@
     }
   },
 
-  "auth": {
-    "welcome": "Bienvenue sur BlackCoin 🪙",
-    "question": "Que souhaites-tu faire ?",
-    "loading": "Chargement...",
-    "register": "S’inscrire",
-    "login": "Se connecter"
-  },
+  
 
-  "verifyEmail": {
-    "title": "Vérification d'email",
-    "checkAccount": "Vérifiez votre compte associé à",
-    "codeLabel": "Votre code de vérification :",
-    "expiresIn": "Expire dans",
-    "placeholder": "Entrez le code à 6 chiffres",
-    "verifyButton": "Vérifier le code",
-    "error": "Erreur lors de la vérification",
-    "expired": "⏳ Le code a expiré. Veuillez demander un nouveau code."
-  },
+  
 
-  "welcome": {
-    "loading": "Chargement...",
-    "error": "Une erreur est survenue.",
-    "step1": {
-      "title": "🎉 Bienvenue {{name}} !",
-      "description": "Merci de rejoindre notre communauté. Votre sécurité est notre priorité.",
-      "warning": "⚠️ Ne partagez jamais vos informations sensibles.",
-      "continue": "Continuer"
-    },
-    "step2": {
-      "title": "📝 Activez votre compte",
-      "points": "🎯 Points",
-      "processing": "Traitement...",
-      "finish": "Terminer",
-      "completeAll": "Complétez toutes les tâches"
-    },
-    "task": {
-      "join": "Rejoindre {{name}}",
-      "points": "+{{points}} pts",
-      "visitFirst": "Visitez d’abord",
-      "wait": "Patientez 10s...",
-      "validate": "Valider"
-    }
-  },
 
-  "login": {
-    "title": "Connexion",
-    "emailOrUsername": "Email ou nom d’utilisateur",
-    "password": "Mot de passe",
-    "placeholder": {
-      "emailOrUsername": "email@example.com ou nom_utilisateur",
-      "password": "••••••••"
-    },
-    "errors": {
-      "missingEmail": "Veuillez saisir votre email ou nom d’utilisateur.",
-      "missingPassword": "Veuillez saisir votre mot de passe.",
-      "generic": "Échec de la connexion. Vérifiez vos identifiants."
-    },
-    "button": {
-      "login": "Se connecter",
-      "loading": "Connexion en cours..."
-    },
-    "register": {
-      "text": "Pas encore inscrit ?",
-      "link": "Créer un compte"
-    }
-  },
-
-  "action": {
-    "category": "Catégorie",
-    "type": "Type",
-    "pricePerPart": "Prix par part",
-    "totalParts": "Parts totales",
-    "dailyEarnings": "Gains journaliers",
-    "status": "Statut",
-    "button": {
-      "contribute": "Contribuer",
-      "unavailable": "Indisponible",
-      "start": "Démarrer",
-      "viewTasks": "Voir les tâches",
-      "claim": "Réclamer",
-      "pending": "En attente ⏳",
-      "completed": "Terminé",
-      "loading": "⏳ En cours..."
-    },
-    "feedback": {
-      "mustLogin": "⚠️ Vous devez être connecté pour agir.",
-      "buySuccess": "✅ Achat du pack \"{{name}}\" réussi !",
-      "startSuccess": "🚀 Pack \"{{name}}\" démarré !",
-      "claimSuccess": "💰 Gains du pack \"{{name}}\" réclamés avec succès !",
-      "error": "❌ Erreur lors de l’action."
-    }
-  },
-
-  "actions": {
-    "category": {
-      "finance": "Finance",
-      "realEstate": "Immobilier",
-      "opportunities": "Opportunités",
-      "myAssets": "Mes actifs"
-    },
-    "noActions": "Aucune action disponible",
-    "fetchError": "❌ Erreur lors du chargement des actions"
-  },
-
-  "bonus": {
-    "authRequired": "Connexion requise",
-    "title": "Programme de Bonus",
-    "subtitle": "Réclamez 0.3 BKC toutes les 24h",
-    "loading": "Chargement...",
-    "available": "Disponible",
-    "availableIn": "Disponible dans :",
-    "points": {
-      "title": "Vos Points"
-    },
-    "conditions": {
-      "title": "Conditions",
-      "hasPack": "Pack actif",
-      "hasDeposit": "Dépôt effectué",
-      "friendsCount": "Parrainage ({{count}}/3)"
-    },
-    "claiming": "Réclamation...",
-    "claim": "Réclamer 0.3 BKC",
-    "success": {
-      "claimed": "🎉 Bonus réclamé avec succès !"
-    },
-    "error": {
-      "generic": "Erreur lors du chargement",
-      "claim": "Erreur lors de la réclamation"
-    },
-    "friends": {
-      "title": "Programme de Parrainage",
-      "description": "Invitez vos amis et gagnez des récompenses ensemble !",
-      "yourCode": "Votre code promo",
-      "generate": "Générer mon code promo",
-      "generating": "Génération...",
-      "copy": "Copier",
-      "copied": "Copié !",
-      "yourReferrals": "Vos filleuls",
-      "referral": "Filleul",
-      "empty": {
-        "title": "Vous n'avez pas encore invité d'amis",
-        "subtitle": "Partagez votre code promo pour commencer à gagner des récompenses !"
-      },
-      "errors": {
-        "copy": "Erreur lors de la copie du code promo."
-      }
-    }
-  },
+  
+  
 
   "wallet": {
     "title": "Mon Wallet",
@@ -267,15 +76,3 @@
       "level": "Niveau 5 (mining)"
     }
   },
-
-  "tasks": {
-    "title": "Tâches à accomplir",
-    "login_required": "Connecte-toi pour voir les tâches",
-    "error": "Erreur de chargement des tâches",
-    "completed": "Complétée",
-    "validate": "Valider",
-    "start": "Commencer",
-    "points": "pts",
-    "done": "Vous avez terminé toutes les tâches !"
-  }
-}

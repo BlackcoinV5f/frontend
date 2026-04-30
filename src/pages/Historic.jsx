@@ -1,10 +1,12 @@
-// src/pages/Historic.jsx
 import React from "react";
 import { useAdm } from "../contexts/AdmContext";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import "./Historic.css";
 
 export default function Historic() {
+  // ✅ namespace correct
+  const { t, i18n } = useTranslation("transactions");
   const { user, axiosDeposit } = useAdm();
 
   const { data: history = [], isLoading, isError } = useQuery({
@@ -15,17 +17,21 @@ export default function Historic() {
       return res.data;
     },
     enabled: !!user?.id,
-    staleTime: 15 * 60 * 1000, // 15 minutes
-    cacheTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
   });
 
   const getStatusBadge = (status) => {
     const s = (status || "").toLowerCase();
-    if (s.includes("approved") || s.includes("approuvé")) return <span className="status approved">✓ Approuvé</span>;
-    if (s.includes("rejected") || s.includes("rejeté")) return <span className="status rejected">✗ Rejeté</span>;
-    if (s.includes("pending") || s.includes("attente")) return <span className="status pending">⏳ En attente</span>;
-    return <span className="status unknown">{status || "Inconnu"}</span>;
+
+    if (s.includes("approved") || s.includes("approuvé"))
+      return <span className="status approved">✓ {t("history.status.approved")}</span>;
+
+    if (s.includes("rejected") || s.includes("rejeté"))
+      return <span className="status rejected">✗ {t("history.status.rejected")}</span>;
+
+    if (s.includes("pending") || s.includes("attente"))
+      return <span className="status pending">⏳ {t("history.status.pending")}</span>;
+
+    return <span className="status unknown">{status || t("history.status.unknown")}</span>;
   };
 
   const getMethodIcon = (name) => {
@@ -42,22 +48,24 @@ export default function Historic() {
   const formatDate = (value) => {
     if (!value) return "-";
     const d = new Date(value);
-    return !isNaN(d) ? d.toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }) : value;
+    return !isNaN(d)
+      ? d.toLocaleString(i18n.language.split("-")[0], {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : value;
   };
 
   if (isLoading) {
     return (
       <div className="historic-page">
-        <h1 className="historic-title">HISTORIQUE</h1>
+        <h1 className="historic-title">{t("history.title")}</h1>
         <div className="historic-container loading-state">
           <div className="loading-spinner"></div>
-          <p>Chargement de l'historique...</p>
+          <p>{t("history.loading")}</p>
         </div>
       </div>
     );
@@ -66,9 +74,9 @@ export default function Historic() {
   if (isError) {
     return (
       <div className="historic-page">
-        <h1 className="historic-title">HISTORIQUE</h1>
+        <h1 className="historic-title">{t("history.title")}</h1>
         <div className="historic-container error-message">
-          <span className="error-icon">⚠️</span> Impossible de charger l'historique des transactions
+          ⚠️ {t("history.error")}
         </div>
       </div>
     );
@@ -77,11 +85,11 @@ export default function Historic() {
   if (!history.length) {
     return (
       <div className="historic-page">
-        <h1 className="historic-title">HISTORIQUE</h1>
+        <h1 className="historic-title">{t("history.title")}</h1>
         <div className="historic-container empty-state">
           <div className="empty-icon">📊</div>
-          <h3>Aucune transaction trouvée</h3>
-          <p>Vos transactions apparaîtront ici</p>
+          <h3>{t("history.empty.title")}</h3>
+          <p>{t("history.empty.text")}</p>
         </div>
       </div>
     );
@@ -89,12 +97,12 @@ export default function Historic() {
 
   return (
     <div className="historic-page">
-      <h1 className="historic-title">HISTORIQUE</h1>
+      <h1 className="historic-title">{t("history.title")}</h1>
 
       <div className="historic-container">
         <div className="historic-summary">
           <span className="transaction-count">
-            {history.length} transaction{history.length > 1 ? "s" : ""}
+            {t("history.count", { count: history.length })}
           </span>
         </div>
 
@@ -102,22 +110,29 @@ export default function Historic() {
           <table className="historic-table">
             <thead>
               <tr>
-                <th>Méthode</th>
-                <th>Montant</th>
-                <th>Statut</th>
-                <th>Date</th>
+                <th>{t("history.table.method")}</th>
+                <th>{t("history.table.amount")}</th>
+                <th>{t("history.table.status")}</th>
+                <th>{t("history.table.date")}</th>
               </tr>
             </thead>
             <tbody>
-              {history.map((t, i) => (
-                <tr key={t.id || i}>
+              {history.map((tItem, i) => (
+                <tr key={tItem.id || i}>
                   <td>
-                    <span className="method-icon">{getMethodIcon(t.method_name)}</span>{" "}
-                    {t.method_name || "Non spécifié"}
+                    <span className="method-icon">
+                      {getMethodIcon(tItem.method_name)}
+                    </span>{" "}
+                    {tItem.method_name || t("history.notSpecified")}
                   </td>
-                  <td>{t.amount} <span className="currency">$BKC</span></td>
-                  <td>{getStatusBadge(t.status)}</td>
-                  <td>{formatDate(t.created_at || t.date)}</td>
+
+                  <td>
+                    {tItem.amount} <span className="currency">BKC</span>
+                  </td>
+
+                  <td>{getStatusBadge(tItem.status)}</td>
+
+                  <td>{formatDate(tItem.created_at || tItem.date)}</td>
                 </tr>
               ))}
             </tbody>

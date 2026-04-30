@@ -277,5 +277,195 @@
     "start": "Comenzar",
     "points": "pts",
     "done": "¡Has completado todas las tareas!"
+  },
+
+  "validate": {
+    "login_required": "Log in to validate a task",
+    "not_found": "Task not found",
+    "back_tasks": "Back to tasks",
+    "back": "Back",
+    "title": "Validation",
+    "instructions": "Enter the validation code provided after the task",
+    "placeholder": "Validation code",
+    "submit": "Validate",
+    "success": "Task successfully validated 🎉",
+    "points": "pts",
+    "total": "Total earned: {{amount}} pts",
+    "empty_code": "Please enter a validation code",
+    "invalid_code": "Invalid code",
+    "unauthorized": "Unauthorized. Please log in again.",
+    "error": "Validation error"
+  },
+
+  "daily": {
+    "login_required": "Inicia sesión",
+    "error": "Error",
+    "pack_title": "Tareas del Pack #{{id}}",
+    "no_tasks": "No hay tareas disponibles",
+    "start": "Comenzar",
+    "validate": "Validar",
+    "done": "Completada",
+    "completed": "¡Tarea completada!",
+    "all_done": "¡Todas las tareas completadas!",
+    "claim": "Reclamar",
+    "reward": "Recompensa",
+    "reward_message": "Recompensa recibida",
+    "start_error": "No se pudo iniciar",
+    "complete_error": "No se pudo completar",
+    "claim_error": "No se pudo reclamar"
+  },
+
+  "deposits": {
+    "loading": "Cargando métodos de depósito...",
+    "error": "Error al cargar los métodos de depósito",
+    "empty": "No hay métodos disponibles",
+    "title": "Elige un método de depósito",
+    "back": "Volver a la billetera"
+  },
+
+  "deposit": {
+    "errors": {
+      "load": "No se pudo cargar el método de depósito",
+      "not_found": "Método no encontrado",
+      "submit": "Ocurrió un error durante el depósito"
+    },
+    "country": "País",
+    "account": "Cuenta / dirección",
+    "back_methods": "Volver a los métodos",
+    "form": {
+      "username": "Nombre de usuario",
+      "phone": "Número de teléfono",
+      "amount": "Monto",
+      "transaction_id": "ID de la transacción",
+      "submit": "Enviar depósito",
+      "sending": "Enviando...",
+      "validation": {
+        "required": "Todos los campos son obligatorios",
+        "invalid_amount": "Monto inválido",
+        "no_user": "No se pudo identificar al usuario"
+      },
+      "success": "Depósito enviado con éxito"
+    }
+  },
+
+  "withdraws": {
+    "loading": "Cargando métodos...",
+    "error": "Error al cargar los métodos de retiro",
+    "empty": "No hay métodos de retiro disponibles",
+    "title": "Elige tu método de retiro",
+    "no_country": "País no especificado"
+  },
+
+  "withdraw": {
+    "no_method": "Ningún método seleccionado. Vuelve atrás para elegir uno.",
+    "back": "Volver",
+    "back_methods": "Volver a los métodos",
+    "country": "País",
+    "no_country": "No especificado",
+    "form": {
+      "address": "Dirección / número de cuenta",
+      "amount": "Monto a retirar (mín 1.2 BKC)",
+      "submit": "Enviar retiro",
+      "sending": "Enviando...",
+      "required": "Todos los campos son obligatorios",
+      "min_amount": "El monto mínimo de retiro es 1.2 BKC",
+      "no_user": "Usuario no identificado",
+      "success": "Solicitud de retiro enviada con éxito",
+      "error": "Ocurrió un error durante el retiro"
+    }
+  },
+
+  "history": {
+    "title": "Historial",
+    "loading": "Cargando historial...",
+    "error": "No se pudo cargar el historial de transacciones",
+    "empty_title": "No se encontraron transacciones",
+    "empty_text": "Tus transacciones aparecerán aquí",
+    "count": "{{count}} transacción",
+    "not_specified": "No especificado",
+    "table": {
+      "method": "Método",
+      "amount": "Monto",
+      "status": "Estado",
+      "date": "Fecha"
+    },
+    "status": {
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "pending": "Pendiente",
+      "unknown": "Desconocido"
+    }
+  },
+
+  "game": {
+    "player": "Jugador",
+    "balance": "Saldo",
+    "bet": "Apuesta",
+    "start": "Iniciar partida",
+    "loot": "BOTÍN OBTENIDO",
+    "items": "{{count}} objeto",
+    "cashout": "RETIRAR",
+
+    "invalid_bet": "Apuesta inválida",
+    "insufficient_balance": "Saldo insuficiente",
+    "start_error": "Error al iniciar la partida",
+    "lose": "Qué pena 😢 ¡Has perdido tu apuesta!",
+    "play_error": "Error del juego",
+    "cashout_success": "💰 Retiro exitoso: {{amount}} pts",
+    "cashout_error": "Error al retirar"
+  },
+
+  "trade": {
+    "balance": "Saldo",
+    "no_history": "Sin historial",
+    "bet1": "Apuesta 1",
+    "bet2": "Apuesta 2",
+    "play": "Jugar",
+
+    "bet_required": "Coloca al menos una apuesta",
+    "insufficient_balance": "Saldo insuficiente",
+    "start_error": "Error al iniciar la partida",
+    "cashout_success": "✅ ¡Retiro exitoso! Ganancia: {{amount}} pts",
+    "cashout_error": "Error durante el retiro"
+  },
+
+  "packs": {
+    "discovery": "Pack Descubrimiento",
+    "growth": "Pack Crecimiento",
+    "dynamic": "Pack Dinámico",
+    "premium": "Pack Premium",
+    "expert": "Pack Experto",
+    "supreme": "Pack Supremo",
+    "prestige": "Pack Prestigio",
+    "elite": "Pack Élite",
+    "royal": "Pack Real",
+    "ultimate": "Pack Último"
+  },
+
+  "taskspk": {
+    "join_telegram": "Únete a nuestro canal oficial de Telegram",
+    "like_facebook": "Comparte y dale me gusta a nuestra página de Facebook",
+    "follow_twitter": "Sigue nuestra cuenta oficial en X",
+    "subscribe_youtube": "Suscríbete a nuestro canal oficial de YouTube",
+    "watch_tiktok": "Mira y dale me gusta a nuestros videos de TikTok"
+  },
+
+  "platform": {
+    "telegram": "Telegram",
+    "facebook": "Facebook",
+    "twitter": "X (Twitter)",
+    "youtube": "YouTube",
+    "tiktok": "TikTok"
+  },
+
+  "actionbkd": {
+    "status": {
+      "available": "Disponible",
+      "paid": "Pagado",
+      "in_progress": "En progreso",
+      "claimable": "Para reclamar",
+      "pending": "Pendiente",
+      "completed": "Completado"
+    }
   }
 }

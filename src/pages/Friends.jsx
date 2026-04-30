@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useUser } from "../contexts/UserContext";
 import { useFriends } from "../hooks/useFriends";
@@ -16,67 +16,77 @@ import { GiPartyPopper } from "react-icons/gi";
 import "./Friends.css";
 
 const Friends = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("friends");
   const { user } = useUser();
-
   const { data, isLoading, isError, generateCode } = useFriends();
 
   const [isCopied, setIsCopied] = useState(false);
+  const [copyError, setCopyError] = useState("");
 
   const promoCode = data?.promo_code || "";
-  const referrals = [...new Set(data?.friends || [])];
 
-  // 📋 copy
-  const handleCopyCode = () => {
+  // 🔥 FIX doublons + tri
+  const referrals = [...new Set(data?.friends || [])].sort();
+
+  // 📋 COPY
+  const handleCopyCode = async () => {
     if (!promoCode) return;
 
-    navigator.clipboard.writeText(promoCode).then(() => {
+    try {
+      await navigator.clipboard.writeText(promoCode);
       setIsCopied(true);
+      setCopyError("");
+
       setTimeout(() => setIsCopied(false), 2000);
-    });
+    } catch {
+      setCopyError(t("bonus.friends.errors.copy"));
+    }
   };
 
-  if (!user) {
-    return <div className="friends-container">Loading...</div>;
-  }
+  // ================= STATES =================
 
-  if (isLoading) {
-    return <div className="friends-container">Loading...</div>;
+  if (!user || isLoading) {
+    return (
+      <div className="friends-container">
+        {t("bonus.loading")}
+      </div>
+    );
   }
 
   if (isError) {
     return (
       <div className="friends-container">
-        ❌ {t("bonus.error.generic")}
+        {t("bonus.errors.generic")}
       </div>
     );
   }
+
+  // ================= RENDER =================
 
   return (
     <motion.div
       className="friends-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
     >
       {/* HEADER */}
-      <motion.div className="friends-header">
-        <FaUserFriends className="header-icon" />
+      <div className="friends-header">
+        <FaUserFriends />
         <h2>{t("bonus.friends.title")}</h2>
-        <GiPartyPopper className="header-icon" />
-      </motion.div>
+        <GiPartyPopper />
+      </div>
 
-      <motion.p className="friends-description">
+      <p className="friends-description">
         {t("bonus.friends.description")}
-      </motion.p>
+      </p>
 
       {/* CODE */}
-      <motion.div className="referral-section">
+      <div className="referral-section">
         <h3>
           <FaUserPlus /> {t("bonus.friends.yourCode")}
         </h3>
 
-        <motion.button
+        <button
           onClick={() => generateCode.mutate()}
           disabled={generateCode.isPending}
           className="generate-code-button"
@@ -85,7 +95,7 @@ const Friends = () => {
           {generateCode.isPending
             ? t("bonus.friends.generating")
             : t("bonus.friends.generate")}
-        </motion.button>
+        </button>
 
         {promoCode && (
           <div className="referral-link-container">
@@ -104,31 +114,46 @@ const Friends = () => {
             </button>
           </div>
         )}
-      </motion.div>
 
-      {/* LIST */}
-      <motion.div className="invited-section">
+        {copyError && <p className="error">{copyError}</p>}
+      </div>
+
+      {/* REFERRALS LIST */}
+      <div className="invited-section">
         <h3>
-          <FaClipboardList /> {t("bonus.friends.yourReferrals")}
+          <FaClipboardList /> {t("bonus.friends.yourReferrals")} ({referrals.length})
         </h3>
 
-        {referrals.length > 0 ? (
-          <motion.ul>
-            <AnimatePresence>
-              {referrals.map((friend, index) => (
-                <motion.li key={index}>
-                  <span>{friend}</span>
-                </motion.li>
-              ))}
-            </AnimatePresence>
-          </motion.ul>
-        ) : (
-          <div>
+        {referrals.length === 0 ? (
+          <div className="empty-state">
             <p>{t("bonus.friends.empty.title")}</p>
             <p>{t("bonus.friends.empty.subtitle")}</p>
           </div>
+        ) : (
+          <div className="referral-list">
+            {referrals.map((friend, index) => (
+              <motion.div
+                key={index}
+                className="referral-item"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                {/* Avatar */}
+                <div className="avatar">
+                  {friend.charAt(0).toUpperCase()}
+                </div>
+
+                {/* Info */}
+                <div className="referral-info">
+                  <span className="username">{friend}</span>
+                  <span className="status">Active</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         )}
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

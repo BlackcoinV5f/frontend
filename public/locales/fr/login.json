@@ -1,0 +1,115 @@
+{
+  "auth": {
+    "welcome": "Bienvenue sur BlackCoin",
+    "question": "Que souhaites-tu faire ?",
+    "loading": "Chargement...",
+    "register": "S’inscrire",
+    "login": "Se connecter"
+  },
+
+  "register": {
+    "title": "Créer un compte",
+    "personalInfo": "Informations personnelles",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "birthDate": "Date de naissance",
+
+    "contactInfo": "Informations de contact",
+    "phoneNumber": "Numéro de téléphone",
+    "email": "Email",
+    "telegramUsername": "Nom d'utilisateur Telegram",
+
+    "security": "Sécurité",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+
+    "submit": "Créer mon compte",
+    "loading": "Création en cours...",
+    "success": "Inscription réussie. Veuillez vérifier votre email.",
+
+    "criteria": {
+      "length": "Au moins 8 caractères",
+      "uppercase": "Une lettre majuscule",
+      "number": "Un chiffre",
+      "specialChar": "Un caractère spécial"
+    },
+
+    "errors": {
+      "missingFields": "Veuillez remplir tous les champs.",
+      "invalidEmail": "Adresse email invalide.",
+      "invalidPhoneNumber": "Numéro de téléphone invalide.",
+      "invalidTelegramUsername": "Nom d'utilisateur Telegram invalide.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "passwordWeak": "Le mot de passe est trop faible.",
+      "invalidBirthDate": "Date de naissance invalide.",
+      "ageTooYoung": "Vous devez avoir au moins 13 ans pour vous inscrire.",
+      "generic": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
+
+  "login": {
+    "title": "Connexion",
+    "emailOrUsername": "Email ou nom d’utilisateur",
+    "password": "Mot de passe",
+
+    "placeholder": {
+      "emailOrUsername": "email@example.com ou nom_utilisateur",
+      "password": "••••••••"
+    },
+
+    "errors": {
+      "missingEmail": "Veuillez saisir votre email ou nom d’utilisateur.",
+      "missingPassword": "Veuillez saisir votre mot de passe.",
+      "generic": "Échec de la connexion. Vérifiez vos identifiants."
+    },
+
+    "button": {
+      "login": "Se connecter",
+      "loading": "Connexion en cours..."
+    },
+
+    "register": {
+      "text": "Pas encore inscrit ?",
+      "link": "Créer un compte"
+    }
+  },
+
+  "verifyEmail": {
+    "title": "Vérification d'email",
+    "checkAccount": "Vérifiez votre compte associé à",
+    "codeLabel": "Votre code de vérification :",
+    "expiresIn": "Expire dans",
+    "placeholder": "Entrez le code à 6 chiffres",
+    "verifyButton": "Vérifier le code",
+    "error": "Erreur lors de la vérification",
+    "expired": "Le code a expiré. Veuillez demander un nouveau code."
+  },
+
+  "welcome": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue.",
+
+    "step1": {
+      "title": "Bienvenue {{name}} !",
+      "description": "Merci de rejoindre notre communauté. Votre sécurité est notre priorité.",
+      "warning": "Ne partagez jamais vos informations sensibles.",
+      "continue": "Continuer"
+    },
+
+    "step2": {
+      "title": "Activez votre compte",
+      "points": "Points",
+      "processing": "Traitement...",
+      "finish": "Terminer",
+      "completeAll": "Complétez toutes les tâches"
+    },
+
+    "task": {
+      "join": "Rejoindre {{name}}",
+      "points": "+{{points}} pts",
+      "visitFirst": "Visitez d’abord",
+      "wait": "Patientez 10 secondes...",
+      "validate": "Valider"
+    }
+  }
+}

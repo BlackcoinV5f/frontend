@@ -1,27 +1,17 @@
-/* SplashScreen.css */
-
 .splash-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100dvh;             /* 🔹 vrai plein écran mobile */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(145deg, #1a1a2e, #16213e);
-  z-index: 50;                /* 🔹 assez haut, mais ne bloque pas entire app */
-  overflow: hidden;
-  border-radius: inherit;
-  pointer-events: auto;       /* géré dynamiquement dans JSX */
-}
-
-.particles {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;
+  height: 100dvh;
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+/* Particles */
+.particles {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
 }
 
@@ -34,21 +24,40 @@
   bottom: 0;
 }
 
-.splash-logo {
-  width: min(80%, 300px);
-  height: auto;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+/* 🔥 LOGO PARFAITEMENT CENTRÉ */
+.center-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 2;
 }
 
-.loading-container {
+.splash-logo {
+  width: min(80%, 260px);
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* 🔽 CONTENU EN BAS */
+.bottom-content {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 80%;
   max-width: 300px;
-  margin-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 2;
+}
+
+.loading-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .loading-bar {
@@ -57,27 +66,42 @@
   background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
   overflow: hidden;
-  position: relative;
 }
 
 .loading-progress {
   height: 100%;
   background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
   border-radius: 3px;
-  box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
 }
 
 .progress-text {
   margin-top: 8px;
   color: white;
   font-size: 14px;
-  font-weight: 500;
 }
 
 .brand-text {
   margin-top: 20px;
   color: rgba(255, 255, 255, 0.8);
   font-size: 12px;
-  letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+.splash-logo {
+  width: min(80%, 260px);
+  height: auto;
+  animation: glowPulse 2.5s infinite ease-in-out;
+}
+
+/* 🔥 effet glow pro */
+@keyframes glowPulse {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(0, 198, 255, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 5px rgba(0, 198, 255, 0.3));
+  }
 }

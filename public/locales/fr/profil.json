@@ -1,0 +1,56 @@
+{
+  "userProfile": {
+    "header": {
+      "close": "Fermer"
+    },
+
+    "status": {
+      "verified": "Vérifié",
+      "pending": "En attente"
+    },
+
+    "profileCompletion": "Complétion du profil",
+
+    "personalInfo": "Informations personnelles",
+    "email": "Email",
+    "phone": "Téléphone",
+    "country": "Pays",
+
+    "welcomeTasks": "Tâches d'initiation",
+    "completed": "Complétées",
+    "inProgress": "En cours",
+
+    "warningIncomplete": "Complétez votre profil pour accéder à toutes les fonctionnalités",
+
+    "actions": {
+      "verifyKyc": "Vérifier mon identité (KYC)",
+      "editProfile": "Modifier le profil",
+      "save": "Sauvegarder",
+      "logout": "Se déconnecter"
+    }
+  },
+
+  "check": {
+    "title": "Vérification d’éligibilité",
+    "warning": "Les critères peuvent évoluer avec le projet.",
+
+    "error": {
+      "default": "Erreur",
+      "fallback": "Impossible de vérifier"
+    },
+
+    "progress": "{{completed}} / {{total}} validés",
+
+    "eligible": "Vous êtes éligible à l'airdrop",
+    "notEligible": "Conditions obligatoires non remplies",
+
+    "criteria": {
+      "friends": "{{count}} amis",
+      "tasks": "{{count}} tâches",
+      "pack": "Pack actif requis",
+      "points": "{{count}} points",
+      "days": "{{count}} jours d'utilisation",
+      "level": "Niveau {{level}} minimum (mining)"
+    }
+  }
+}

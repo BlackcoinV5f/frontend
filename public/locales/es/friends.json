@@ -1,0 +1,58 @@
+{
+  "bonus": {
+    "authRequired": "Inicio de sesión requerido",
+    "title": "Programa de bonificación",
+    "subtitle": "Reclama 0.3 BKC cada 24 horas",
+
+    "loading": "Cargando...",
+    "available": "Disponible",
+    "availableIn": "Disponible en:",
+
+    "points": {
+      "title": "Tus puntos"
+    },
+
+    "conditions": {
+      "title": "Condiciones",
+      "hasPack": "Paquete activo",
+      "hasDeposit": "Depósito realizado",
+      "friendsCount": "Referidos ({{count}}/{{required}})"
+    },
+
+    "claiming": "Reclamando...",
+    "claim": "Reclamar 0.3 BKC",
+
+    "success": {
+      "claimed": "¡Bono reclamado con éxito!"
+    },
+
+    "errors": {
+      "generic": "Error al cargar",
+      "claim": "Error al reclamar"
+    },
+
+    "friends": {
+      "title": "Programa de referidos",
+      "description": "¡Invita a tus amigos y gana recompensas juntos!",
+
+      "yourCode": "Tu código de referido",
+      "generate": "Generar mi código",
+      "generating": "Generando...",
+
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+
+      "yourReferrals": "Tus referidos",
+      "referral": "Referido",
+
+      "empty": {
+        "title": "Aún no has invitado a ningún amigo",
+        "subtitle": "Comparte tu código para empezar a ganar recompensas"
+      },
+
+      "errors": {
+        "copy": "Error al copiar el código"
+      }
+    }
+  }
+}

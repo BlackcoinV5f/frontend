@@ -6,7 +6,9 @@ import { useTranslation } from "react-i18next";
 import "./Login.css";
 
 const Login = () => {
-  const { t } = useTranslation();
+  // ✅ namespace ajouté
+  const { t } = useTranslation("login");
+
   const navigate = useNavigate();
   const { loginUser } = useUser();
 
@@ -19,42 +21,41 @@ const Login = () => {
     e.preventDefault();
 
     const value = emailOrUsername.trim();
+    const pwd = password.trim();
 
     setLoading(true);
     setError("");
 
     try {
-      // ✅ Validation frontend propre
+      // ✅ validation
       if (!value) {
         throw new Error(t("login.errors.missingEmail"));
       }
 
-      if (!password) {
+      if (!pwd) {
         throw new Error(t("login.errors.missingPassword"));
       }
 
       const isEmail = value.includes("@");
 
-      // ✅ Appel API
       await loginUser({
         email: isEmail ? value : undefined,
         username: !isEmail ? value : undefined,
-        password,
+        password: pwd,
       });
 
-      // ✅ Redirection
       navigate("/home", { replace: true });
 
     } catch (err) {
       console.error("Login error:", err);
 
-      // ⚠️ IMPORTANT : on évite d'afficher brut le message backend
+      // ✅ message sécurisé + propre
       const backendMessage = err?.response?.data?.detail;
 
       const msg =
         typeof backendMessage === "string"
           ? backendMessage
-          : err.message || t("login.errors.generic");
+          : t("login.errors.generic");
 
       setError(msg);
 
@@ -73,6 +74,7 @@ const Login = () => {
         <label htmlFor="emailOrUsername">
           {t("login.emailOrUsername")}
         </label>
+
         <input
           id="emailOrUsername"
           type="text"
@@ -80,12 +82,14 @@ const Login = () => {
           value={emailOrUsername}
           onChange={(e) => setEmailOrUsername(e.target.value)}
           autoComplete="username"
+          disabled={loading}
         />
 
         {/* PASSWORD */}
         <label htmlFor="password">
           {t("login.password")}
         </label>
+
         <input
           id="password"
           type="password"
@@ -93,6 +97,7 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="current-password"
+          disabled={loading}
         />
 
         {/* ERROR */}

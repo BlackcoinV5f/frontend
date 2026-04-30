@@ -5,9 +5,12 @@ import { useTranslation } from "react-i18next";
 import "./VerifyEmail.css";
 
 const VerifyEmail = () => {
-  const { t } = useTranslation();
+  // ✅ namespace ajouté
+  const { t } = useTranslation("login");
+
   const navigate = useNavigate();
   const location = useLocation();
+
   const {
     verifyEmailCode,
     isAuthenticated,
@@ -24,6 +27,7 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     const raw = localStorage.getItem("pendingUser");
+
     const pending = raw
       ? JSON.parse(raw)
       : location.state?.email
@@ -42,9 +46,11 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     if (timeLeft <= 0) return;
+
     const interval = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
+
     return () => clearInterval(interval);
   }, [timeLeft]);
 
@@ -62,10 +68,16 @@ const VerifyEmail = () => {
 
     try {
       await verifyEmailCode(verificationCode);
+
       localStorage.removeItem("pendingUser");
+
       navigate("/welcome", { replace: true });
     } catch (err) {
-      const msg = err?.message || t("verifyEmail.error");
+      // ✅ fallback sécurisé
+      const msg = typeof err?.message === "string"
+        ? err.message
+        : t("verifyEmail.error");
+
       setFeedback({ error: msg, success: null });
     }
   }, [verificationCode, verifyEmailCode, navigate, setError, loading, t]);
@@ -73,6 +85,7 @@ const VerifyEmail = () => {
   return (
     <div className="verify-email-container">
       <div className="verify-card">
+
         <h1>{t("verifyEmail.title")}</h1>
 
         {email && (
@@ -84,9 +97,11 @@ const VerifyEmail = () => {
         {pendingCode && timeLeft > 0 && (
           <div className="code-box">
             <p>{t("verifyEmail.codeLabel")}</p>
+
             <div className="code">{pendingCode}</div>
+
             <p className="timer">
-              ⏳ {t("verifyEmail.expiresIn")}{" "}
+              {t("verifyEmail.expiresIn")}{" "}
               <strong>{formatTime(timeLeft)}</strong>
             </p>
           </div>
@@ -116,8 +131,13 @@ const VerifyEmail = () => {
           {t("verifyEmail.verifyButton")}
         </button>
 
-        {feedback.error && <div className="alert error">{feedback.error}</div>}
-        {feedback.success && <div className="alert success">{feedback.success}</div>}
+        {feedback.error && (
+          <div className="alert error">{feedback.error}</div>
+        )}
+
+        {feedback.success && (
+          <div className="alert success">{feedback.success}</div>
+        )}
 
         {timeLeft <= 0 && (
           <p className="expired">{t("verifyEmail.expired")}</p>

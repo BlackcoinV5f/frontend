@@ -5,27 +5,40 @@ export const useActionMutations = () => {
   const { axiosInstance, user } = useUser();
   const queryClient = useQueryClient();
 
+  // -----------------------
+  // BUY PACK (catalogue)
+  // -----------------------
   const buy = useMutation({
     mutationFn: (id) => axiosInstance.post(`/actions/buy/${id}`),
 
     onSuccess: () => {
-      queryClient.invalidateQueries(["actions"]);
+      // refresh catalogue
+      queryClient.invalidateQueries({ queryKey: ["actions"] });
+
+      // refresh portfolio
+      queryClient.invalidateQueries({ queryKey: ["myAssets"] });
     },
   });
 
+  // -----------------------
+  // START PACK (user)
+  // -----------------------
   const start = useMutation({
-    mutationFn: (id) => axiosInstance.post(`/actions/start/${id}`),
+    mutationFn: (id) => axiosInstance.post(`/my-assets/start/${id}`),
 
     onSuccess: () => {
-      queryClient.invalidateQueries(["actions"]);
+      queryClient.invalidateQueries({ queryKey: ["myAssets"] });
     },
   });
 
+  // -----------------------
+  // CLAIM REWARD (user)
+  // -----------------------
   const claim = useMutation({
-    mutationFn: (id) => axiosInstance.post(`/actions/claim/${id}`),
+    mutationFn: (id) => axiosInstance.post(`/my-assets/claim/${id}`),
 
     onSuccess: () => {
-      queryClient.invalidateQueries(["actions"]);
+      queryClient.invalidateQueries({ queryKey: ["myAssets"] });
     },
   });
 

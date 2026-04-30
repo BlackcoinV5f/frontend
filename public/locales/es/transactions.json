@@ -1,0 +1,123 @@
+{
+  "deposits": {
+    "loading": "Cargando métodos de depósito...",
+    "error": "No se pudieron cargar los métodos de depósito",
+    "empty": "No hay métodos disponibles",
+    "title": "Elige un método de depósito",
+    "back": "Volver al monedero"
+  },
+
+  "deposit": {
+    "error": "No se pudo cargar el método de depósito",
+    "notFound": "Método no encontrado",
+    "country": "País",
+    "account": "Cuenta / dirección",
+    "backMethods": "Volver a los métodos",
+
+    "form": {
+      "username": "Usuario",
+      "phone": "Número de teléfono",
+      "amount": "Cantidad",
+      "transactionId": "ID de transacción",
+
+      "submit": "Confirmar depósito",
+      "sending": "Procesando...",
+
+      "errors": {
+        "required": "Todos los campos son obligatorios",
+        "invalidAmount": "Cantidad inválida",
+        "noUser": "No se pudo identificar al usuario",
+        "generic": "Ocurrió un error durante el depósito"
+      },
+
+      "success": "Depósito enviado con éxito"
+    }
+  },
+
+  "withdraws": {
+    "loading": "Cargando métodos...",
+    "error": "No se pudieron cargar los métodos de retiro",
+    "empty": "No hay métodos de retiro disponibles",
+    "title": "Elige tu método de retiro",
+    "noCountry": "País no especificado"
+  },
+
+  "withdraw": {
+    "noMethod": "No se seleccionó ningún método. Vuelve atrás para elegir uno.",
+    "back": "Volver",
+    "backMethods": "Volver a los métodos",
+    "country": "País",
+    "noCountry": "No especificado",
+
+    "form": {
+      "address": "Dirección / número de cuenta",
+      "amount": "Cantidad a retirar (mín {{min}} BKC)",
+
+      "submit": "Confirmar retiro",
+      "sending": "Procesando...",
+
+      "errors": {
+        "required": "Todos los campos son obligatorios",
+        "minAmount": "El monto mínimo de retiro es {{min}} BKC",
+        "noUser": "Usuario no identificado",
+        "generic": "Ocurrió un error durante el retiro"
+      },
+
+      "success": "Solicitud de retiro enviada con éxito"
+    }
+  },
+
+  "history": {
+    "title": "Historial",
+    "loading": "Cargando historial...",
+    "error": "No se pudo cargar el historial de transacciones",
+
+    "empty": {
+      "title": "No se encontraron transacciones",
+      "text": "Tus transacciones aparecerán aquí"
+    },
+
+    "count": "{{count}} transacción",
+    "count_plural": "{{count}} transacciones",
+
+    "notSpecified": "No especificado",
+
+    "table": {
+      "method": "Método",
+      "amount": "Cantidad",
+      "status": "Estado",
+      "date": "Fecha"
+    },
+
+    "status": {
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "pending": "Pendiente",
+      "unknown": "Desconocido"
+    }
+  },
+
+  "wallet": {
+    "title": "Mi monedero",
+    "loading": "Cargando...",
+    "depositComing": "Depósito (próximamente)",
+    "withdraw": "Retirar",
+    "history": "Historial"
+  },
+
+  "cash": {
+    "error": "Error al cargar el saldo",
+    "realBalance": "Saldo real",
+    "hint": "Retirable • Depósitos reales • Valor monetario"
+  },
+
+  "rewards": {
+    "error": "Error al cargar los puntos",
+    "title": "Puntos de recompensa",
+    "hint": "Recompensas • Packs • Servicios premium"
+  },
+
+  "common": {
+    "loading": "Cargando..."
+  }
+}

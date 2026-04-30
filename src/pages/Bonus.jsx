@@ -17,10 +17,11 @@ import {
 import "./bonus.css";
 
 export default function Bonus() {
-  const { user } = useUser();
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
+  // ✅ namespace correct
+  const { t } = useTranslation("friends");
 
+  const { user } = useUser();
+  const queryClient = useQueryClient();
   const { data: bonus, isLoading, isError, claimBonus } = useBonus();
 
   const [countdown, setCountdown] = useState("");
@@ -112,12 +113,13 @@ export default function Bonus() {
 
       {isError && (
         <div className="bonus-error">
-          {t("bonus.error.generic")}
+          {t("bonus.errors.generic")}
         </div>
       )}
 
       {!isLoading && bonus && (
         <div className="bonus-content">
+
           {/* POINTS */}
           <div className="points-card">
             <h3>{t("bonus.points.title")}</h3>
@@ -158,6 +160,7 @@ export default function Bonus() {
               <FaUsers />
               {t("bonus.conditions.friendsCount", {
                 count: conditions.friends_count || 0,
+                required: 3, // ✅ corrigé
               })}
             </div>
           </div>
@@ -182,6 +185,7 @@ export default function Bonus() {
               )}
             </button>
           </div>
+
         </div>
       )}
     </div>

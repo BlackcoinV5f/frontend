@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import "./LuckyDistributorGame.css";
 import { useUser } from "../contexts/UserContext";
 import { useBalance } from "../hooks/useBalance";
+import { useTranslation } from "react-i18next";
 
 export default function LuckyDistributorGame() {
+  // ✅ namespace correct
+  const { t } = useTranslation("game");
+
   const { user, axiosInstance } = useUser();
   const { data: balance = 0, refetch: refetchBalance } = useBalance();
 
@@ -16,127 +20,103 @@ export default function LuckyDistributorGame() {
   const [bet, setBet] = useState(100);
   const [message, setMessage] = useState(null);
 
- // =========================
-// START GAME (FIX)
-// =========================
-const startGame = async () => {
-  if (busy) return;
+  const startGame = async () => {
+    if (busy) return;
 
-  if (bet <= 0) {
-    return setMessage({ type: "error", text: "Mise invalide !" });
-  }
-
-  if (bet > balance) {
-    return setMessage({ type: "error", text: "Solde insuffisant !" });
-  }
-
-  setBusy(true);
-
-  try {
-    const { data } = await axiosInstance.post("/luckygame/start", {
-      bet,
-    });
-
-    setGameId(data.game_id);
-    setLevel(data.level);
-    setReward(data.reward);
-    setLoot([]);
-
-    // ✅ IMPORTANT : 4 cartes fixes (pas de multipliers)
-    setCards(
-      Array.from({ length: 4 }, (_, idx) => ({
-        id: idx,
-        flipped: false,
-        reward: null,
-      }))
-    );
-
-    await refetchBalance();
-  } catch (err) {
-    console.error("❌ startGame:", err);
-    setMessage({ type: "error", text: "Erreur démarrage partie" });
-  } finally {
-    setBusy(false);
-  }
-};
-
-  // =========================
-// PLAY CARD (FIX)
-// =========================
-const playCard = async (index) => {
-  if (busy || !gameId) return;
-
-  setBusy(true);
-
-  try {
-    const { data } = await axiosInstance.post("/luckygame/play", {
-      game_id: gameId,
-      choice_index: index,
-    });
-
-    // ✅ révéler UNE seule carte
-    setCards((prev) =>
-      prev.map((c, i) => {
-        if (i === index) {
-          return {
-            ...c,
-            flipped: true,
-            reward: data.selected_value, // 🔥 clé importante
-          };
-        }
-        return c;
-      })
-    );
-
-    // ✅ loot
-    if (data.selected_value > 0) {
-      setLoot((prev) => [
-        ...prev,
-        {
-          label: `${data.selected_value}x`,
-          value: data.selected_value,
-        },
-      ]);
+    if (bet <= 0) {
+      return setMessage({ type: "error", text: t("game.invalid_bet") });
     }
 
-    setReward(data.reward || 0);
-
-    if (data.result === "continue") {
-      setTimeout(() => {
-        setLevel(data.level);
-
-        // reset cartes (design inchangé)
-        setCards(
-          Array.from({ length: 4 }, (_, idx) => ({
-            id: idx,
-            flipped: false,
-            reward: null,
-          }))
-        );
-      }, 1200);
+    if (bet > balance) {
+      return setMessage({ type: "error", text: t("game.insufficient_balance") });
     }
 
-    if (data.result === "lose") {
-      setTimeout(() => {
-        setMessage({
-          type: "lose",
-          text: "Dommage 😢 Tu as perdu ta mise !",
-        });
-        resetGame();
-      }, 1200);
+    setBusy(true);
+
+    try {
+      const { data } = await axiosInstance.post("/luckygame/start", { bet });
+
+      setGameId(data.game_id);
+      setLevel(data.level);
+      setReward(data.reward);
+      setLoot([]);
+
+      setCards(
+        Array.from({ length: 4 }, (_, idx) => ({
+          id: idx,
+          flipped: false,
+          reward: null,
+        }))
+      );
+
+      await refetchBalance();
+    } catch {
+      setMessage({ type: "error", text: t("game.start_error") });
+    } finally {
+      setBusy(false);
     }
+  };
 
-  } catch (err) {
-    console.error("❌ playCard:", err);
-    setMessage({ type: "error", text: "Erreur de jeu" });
-  } finally {
-    setBusy(false);
-  }
-};
+  const playCard = async (index) => {
+    if (busy || !gameId) return;
 
-  // =========================
-  // CASHOUT
-  // =========================
+    setBusy(true);
+
+    try {
+      const { data } = await axiosInstance.post("/luckygame/play", {
+        game_id: gameId,
+        choice_index: index,
+      });
+
+      setCards((prev) =>
+        prev.map((c, i) =>
+          i === index
+            ? { ...c, flipped: true, reward: data.selected_value }
+            : c
+        )
+      );
+
+      if (data.selected_value > 0) {
+        setLoot((prev) => [
+          ...prev,
+          {
+            label: `${data.selected_value}x`,
+            value: data.selected_value,
+          },
+        ]);
+      }
+
+      setReward(data.reward || 0);
+
+      if (data.result === "continue") {
+        setTimeout(() => {
+          setLevel(data.level);
+          setCards(
+            Array.from({ length: 4 }, (_, idx) => ({
+              id: idx,
+              flipped: false,
+              reward: null,
+            }))
+          );
+        }, 1200);
+      }
+
+      if (data.result === "lose") {
+        setTimeout(() => {
+          setMessage({
+            type: "lose",
+            text: t("game.lose"),
+          });
+          resetGame();
+        }, 1200);
+      }
+    } catch {
+      setMessage({ type: "error", text: t("game.play_error") });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const cashout = async () => {
     if (!gameId || busy) return;
 
@@ -149,23 +129,18 @@ const playCard = async (index) => {
 
       setMessage({
         type: "win",
-        text: `💰 Encaissement réussi : ${data.reward} pts`,
+        text: t("game.cashout_success", { amount: data.reward }),
       });
 
       resetGame();
       await refetchBalance();
-
-    } catch (err) {
-      console.error("❌ cashout:", err);
-      setMessage({ type: "error", text: "Erreur encaissement" });
+    } catch {
+      setMessage({ type: "error", text: t("game.cashout_error") });
     } finally {
       setBusy(false);
     }
   };
 
-  // =========================
-  // RESET
-  // =========================
   const resetGame = () => {
     setGameId(null);
     setCards([]);
@@ -174,18 +149,12 @@ const playCard = async (index) => {
     setLevel(1);
   };
 
-  // =========================
-  // LEVEL UI
-  // =========================
   const getVisibleLevels = () => {
     const start = Math.max(1, level - 2);
     const end = Math.min(25, start + 4);
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
-  // =========================
-  // UI
-  // =========================
   return (
     <div className="lucky-game">
 
@@ -199,10 +168,7 @@ const playCard = async (index) => {
       {gameId && (
         <div className="levels-bar">
           {getVisibleLevels().map((lvl) => (
-            <div
-              key={lvl}
-              className={`level-circle ${lvl === level ? "active" : ""}`}
-            >
+            <div key={lvl} className={`level-circle ${lvl === level ? "active" : ""}`}>
               {lvl}
             </div>
           ))}
@@ -212,35 +178,29 @@ const playCard = async (index) => {
       <div className="game-board">
 
         <div className="user-info">
-          {user?.avatar && (
-            <img
-              src={
-                user.avatar.startsWith("http")
-                  ? user.avatar
-                  : `${axiosInstance.defaults.baseURL}/${user.avatar.replace(/^\/+/, "")}`
-              }
-              alt="avatar"
-              className="user-avatar"
-            />
-          )}
-
           <div className="user-meta">
-            <span className="username">{user?.username || "Joueur"}</span>
-            <span className="balance">Solde : {balance} pts</span>
+            <span className="username">
+              {user?.username || t("game.player")}
+            </span>
+            <span className="balance">
+              {t("game.balance")} : {balance} pts
+            </span>
           </div>
         </div>
 
         {!gameId && (
           <div className="bet-section">
-            <label>Mise : </label>
+            <label>{t("game.bet")} : </label>
+
             <input
               type="number"
               min="1"
               value={bet}
               onChange={(e) => setBet(parseInt(e.target.value) || 0)}
             />
+
             <button onClick={startGame} disabled={busy}>
-              🎮 Démarrer la partie
+              🎮 {t("game.start")}
             </button>
           </div>
         )}
@@ -257,7 +217,7 @@ const playCard = async (index) => {
                   <div className="card-inner">
                     <div className="card-front"></div>
                     <div className="card-back">
-                      {card.reward !== null ? `${card.reward}x` : "??"}
+                      {card.reward !== null ? `${card.reward}x` : t("game.unknown", "??")}
                     </div>
                   </div>
                 </div>
@@ -266,16 +226,12 @@ const playCard = async (index) => {
 
             <div className="loot-section">
               <div className="loot-box">
-                <span>BUTIN OBTENU</span>
-                <span>{loot.length} objets</span>
+                <span>{t("game.loot")}</span>
+                <span>{t("game.items", { count: loot.length })}</span>
               </div>
 
-              <button
-                className="cashout-btn"
-                onClick={cashout}
-                disabled={busy}
-              >
-                ENCAISSER ({reward} pts)
+              <button className="cashout-btn" onClick={cashout} disabled={busy}>
+                {t("game.cashout")} ({reward} pts)
               </button>
             </div>
           </>

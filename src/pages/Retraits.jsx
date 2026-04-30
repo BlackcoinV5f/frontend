@@ -1,26 +1,31 @@
-// src/pages/Retraits.jsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAdm } from "../contexts/AdmContext";
 import { useUser } from "../contexts/UserContext";
+import { useTranslation } from "react-i18next";
 import "./Retraits.css";
 
 const Retraits = () => {
+  // ✅ namespace correct
+  const { t } = useTranslation("transactions");
+
   const { axiosDeposit } = useAdm();
   const { user } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Récupère la méthode sélectionnée depuis la page précédente
   const method = location.state?.selectedMethod;
 
   const [form, setForm] = useState({
     address: "",
     amount: "",
   });
+
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  const MIN_AMOUNT = 1.2;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,18 +33,20 @@ const Retraits = () => {
 
   const handleSubmit = async () => {
     if (!form.address || !form.amount) {
-      setMessage("❌ Tous les champs sont obligatoires !");
+      setMessage(`❌ ${t("withdraw.form.errors.required")}`);
       return;
     }
 
     const amountNumber = parseFloat(form.amount);
-    if (isNaN(amountNumber) || amountNumber < 1.2) {
-      setMessage("❌ Le montant minimal de retrait est de 1.2 BKC !");
+    if (isNaN(amountNumber) || amountNumber < MIN_AMOUNT) {
+      setMessage(
+        `❌ ${t("withdraw.form.errors.minAmount", { min: MIN_AMOUNT })}`
+      );
       return;
     }
 
     if (!user?.id) {
-      setMessage("❌ Utilisateur non identifié.");
+      setMessage(`❌ ${t("withdraw.form.errors.noUser")}`);
       return;
     }
 
@@ -56,16 +63,14 @@ const Retraits = () => {
         amount: amountNumber,
       };
 
-      console.log("Payload retrait :", payload);
-
       await axiosDeposit.post("/withdrawals/", payload);
 
-      setMessage("✅ Demande de retrait envoyée avec succès !");
+      setMessage(`✅ ${t("withdraw.form.success")}`);
       setForm({ address: "", amount: "" });
     } catch (err) {
-      console.error(err);
       setMessage(
-        err.response?.data?.detail || "❌ Une erreur est survenue lors du retrait."
+        err.response?.data?.detail ||
+          `❌ ${t("withdraw.form.errors.generic")}`
       );
     } finally {
       setSubmitting(false);
@@ -75,40 +80,39 @@ const Retraits = () => {
   if (!method) {
     return (
       <div className="withdraw-container">
-        <p>Aucune méthode sélectionnée. Retournez en arrière pour en choisir une.</p>
+        <p>{t("withdraw.noMethod")}</p>
+
         <motion.button
           className="back-button"
           onClick={() => navigate("/withdraw-methods")}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
-          ← Retour
+          ← {t("withdraw.back")}
         </motion.button>
       </div>
     );
   }
 
   return (
-    <motion.div
-      className="withdraw-container"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <motion.div className="withdraw-container">
       <div className="withdraw-header">
         <img
           src={method.icon_url}
           alt={method.name}
           className="withdraw-method-icon"
         />
+
         <h2>{method.name}</h2>
-        <p className="withdraw-country">Pays : {method.country || "Non spécifié"}</p>
+
+        <p className="withdraw-country">
+          {t("withdraw.country")} :{" "}
+          {method.country || t("withdraw.noCountry")}
+        </p>
       </div>
 
       <div className="withdraw-form">
         <input
           name="address"
-          placeholder="Adresse / numéro de compte"
+          placeholder={t("withdraw.form.address")}
           value={form.address}
           onChange={handleChange}
         />
@@ -116,19 +120,19 @@ const Retraits = () => {
         <input
           name="amount"
           type="number"
-          placeholder="Montant à retirer (min 1.2 BKC)"
+          placeholder={t("withdraw.form.amount", { min: MIN_AMOUNT })}
           value={form.amount}
           onChange={handleChange}
         />
 
         <motion.button
           className="withdraw-button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           disabled={submitting}
           onClick={handleSubmit}
         >
-          {submitting ? "Envoi..." : "Valider le retrait"}
+          {submitting
+            ? t("withdraw.form.sending")
+            : t("withdraw.form.submit")}
         </motion.button>
       </div>
 
@@ -137,10 +141,8 @@ const Retraits = () => {
       <motion.button
         className="back-button"
         onClick={() => navigate("/withdraw-methods")}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
       >
-        ⬅ Retour aux méthodes
+        ⬅ {t("withdraw.backMethods")}
       </motion.button>
     </motion.div>
   );

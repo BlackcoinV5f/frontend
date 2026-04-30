@@ -1,0 +1,115 @@
+{
+  "auth": {
+    "welcome": "Bienvenido a BlackCoin",
+    "question": "¿Qué deseas hacer?",
+    "loading": "Cargando...",
+    "register": "Registrarse",
+    "login": "Iniciar sesión"
+  },
+
+  "register": {
+    "title": "Crear una cuenta",
+    "personalInfo": "Información personal",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "birthDate": "Fecha de nacimiento",
+
+    "contactInfo": "Información de contacto",
+    "phoneNumber": "Número de teléfono",
+    "email": "Correo electrónico",
+    "telegramUsername": "Usuario de Telegram",
+
+    "security": "Seguridad",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+
+    "submit": "Crear mi cuenta",
+    "loading": "Creando cuenta...",
+    "success": "Registro exitoso. Por favor, revisa tu correo electrónico.",
+
+    "criteria": {
+      "length": "Al menos 8 caracteres",
+      "uppercase": "Una letra mayúscula",
+      "number": "Un número",
+      "specialChar": "Un carácter especial"
+    },
+
+    "errors": {
+      "missingFields": "Por favor completa todos los campos.",
+      "invalidEmail": "Correo electrónico inválido.",
+      "invalidPhoneNumber": "Número de teléfono inválido.",
+      "invalidTelegramUsername": "Usuario de Telegram inválido.",
+      "passwordMismatch": "Las contraseñas no coinciden.",
+      "passwordWeak": "La contraseña es demasiado débil.",
+      "invalidBirthDate": "Fecha de nacimiento inválida.",
+      "ageTooYoung": "Debes tener al menos 13 años para registrarte.",
+      "generic": "Ha ocurrido un error. Inténtalo de nuevo."
+    }
+  },
+
+  "login": {
+    "title": "Iniciar sesión",
+    "emailOrUsername": "Correo o usuario",
+    "password": "Contraseña",
+
+    "placeholder": {
+      "emailOrUsername": "email@example.com o usuario",
+      "password": "••••••••"
+    },
+
+    "errors": {
+      "missingEmail": "Por favor ingresa tu correo o usuario.",
+      "missingPassword": "Por favor ingresa tu contraseña.",
+      "generic": "Error al iniciar sesión. Verifica tus datos."
+    },
+
+    "button": {
+      "login": "Iniciar sesión",
+      "loading": "Iniciando sesión..."
+    },
+
+    "register": {
+      "text": "¿Aún no tienes cuenta?",
+      "link": "Crear una cuenta"
+    }
+  },
+
+  "verifyEmail": {
+    "title": "Verificación de correo",
+    "checkAccount": "Revisa tu cuenta asociada a",
+    "codeLabel": "Tu código de verificación:",
+    "expiresIn": "Expira en",
+    "placeholder": "Ingresa el código de 6 dígitos",
+    "verifyButton": "Verificar código",
+    "error": "Error de verificación",
+    "expired": "El código ha expirado. Solicita uno nuevo."
+  },
+
+  "welcome": {
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error.",
+
+    "step1": {
+      "title": "¡Bienvenido {{name}}!",
+      "description": "Gracias por unirte a nuestra comunidad. Tu seguridad es nuestra prioridad.",
+      "warning": "Nunca compartas tu información sensible.",
+      "continue": "Continuar"
+    },
+
+    "step2": {
+      "title": "Activa tu cuenta",
+      "points": "Puntos",
+      "processing": "Procesando...",
+      "finish": "Finalizar",
+      "completeAll": "Completa todas las tareas"
+    },
+
+    "task": {
+      "join": "Unirse a {{name}}",
+      "points": "+{{points}} pts",
+      "visitFirst": "Visita primero",
+      "wait": "Espera 10 segundos...",
+      "validate": "Validar"
+    }
+  }
+}

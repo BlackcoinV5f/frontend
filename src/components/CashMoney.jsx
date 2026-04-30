@@ -7,13 +7,14 @@ import { useTranslation } from "react-i18next";
 import "./CashMoney.css";
 
 const CashMoney = () => {
-  const { t, i18n } = useTranslation();
+  // ✅ namespace correct
+  const { t, i18n } = useTranslation("transactions");
+
   const { user } = useUser();
   const controls = useAnimation();
 
   const [animate, setAnimate] = useState(false);
 
-  // hook données
   const { data, isLoading, isError } = useCashMoney();
 
   const cashBalance = data?.cash_balance ?? 0;
@@ -55,7 +56,7 @@ const CashMoney = () => {
       transition={{ duration: 0.4 }}
     >
       <p className="cashmoney-label">
-        {t("cash.real_balance")}
+        {t("cash.realBalance")} {/* ✅ corrigé */}
       </p>
 
       <motion.div
@@ -70,10 +71,13 @@ const CashMoney = () => {
         ) : (
           <>
             <GiCash className="cash-icon" />
-            {cashBalance.toLocaleString(i18n.language, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}{" "}
+            {cashBalance.toLocaleString(
+              i18n.language.split("-")[0], // ✅ plus propre
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }
+            )}{" "}
             USDT
           </>
         )}

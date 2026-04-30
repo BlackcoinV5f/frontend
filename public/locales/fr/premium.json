@@ -1,0 +1,77 @@
+{
+  "actions": {
+    "category": {
+      "finance": "Finance",
+      "real_estate": "Immobilier",
+      "opportunity": "Opportunités",
+      "myAssets": "Mes actifs"
+    },
+
+    "noActions": "Aucune action disponible",
+    "fetchError": "❌ Erreur lors du chargement des actions",
+
+    "myAssetsTitle": "Mes actifs",
+    "noAssets": "Vous n'avez encore aucun actif"
+  },
+
+  "action": {
+    "category": "Catégorie",
+    "type": "Type",
+    "pricePerPart": "Prix par part",
+    "totalParts": "Parts totales",
+    "dailyEarnings": "Gains journaliers",
+    "status": "Statut",
+
+    "category_values": {
+      "finance": "Finance",
+      "real_estate": "Immobilier",
+      "opportunity": "Opportunité"
+    },
+
+    "type_values": {
+      "individual": "Individuelle",
+      "shared": "Commune"
+    },
+
+    "status_values": {
+      "available": "Disponible",
+      "paid": "Payé",
+      "in_progress": "En cours",
+      "claimable": "À réclamer",
+      "pending": "En attente",
+      "completed": "Terminé"
+    },
+
+    "button": {
+      "contribute": "Contribuer",
+      "unavailable": "Indisponible",
+      "start": "Démarrer",
+      "viewTasks": "Voir les tâches",
+      "claim": "Réclamer",
+      "pending": "En attente ⏳",
+      "completed": "Terminé",
+      "loading": "⏳ En cours..."
+    },
+
+    "feedback": {
+      "mustLogin": "⚠️ Vous devez être connecté pour agir.",
+      "buySuccess": "✅ Achat du pack \"{{name}}\" réussi !",
+      "startSuccess": "🚀 Pack \"{{name}}\" démarré !",
+      "claimSuccess": "💰 Gains du pack \"{{name}}\" réclamés avec succès !",
+      "error": "❌ Erreur lors de l’action."
+    }
+  },
+
+  "packs": {
+    "discovery": "Pack Découverte",
+    "growth": "Pack Croissance",
+    "dynamic": "Pack Dynamique",
+    "premium": "Pack Premium",
+    "expert": "Pack Expert",
+    "supreme": "Pack Suprême",
+    "prestige": "Pack Prestige",
+    "elite": "Pack Élitaire",
+    "royal": "Pack Royal",
+    "ultimate": "Pack Ultime"
+  }
+}

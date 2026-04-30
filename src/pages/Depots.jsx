@@ -1,13 +1,16 @@
-// src/pages/Depots.jsx
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAdm } from "../contexts/AdmContext";
 import { useUser } from "../contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import "./Depots.css";
 
 export default function Depots() {
+  // ✅ namespace correct
+  const { t } = useTranslation("transactions");
+
   const { id } = useParams();
   const { axiosDeposit } = useAdm();
   const { user } = useUser();
@@ -28,24 +31,15 @@ export default function Depots() {
   const [submitting, setSubmitting] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
 
-  // ✅ React Query pour récupérer la méthode de dépôt
-  const {
-    data: method,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: method, isLoading, isError } = useQuery({
     queryKey: ["depositMethod", id],
     queryFn: async () => {
       const res = await axiosDeposit.get(`/transaction-methods/${id}`);
       return res.data;
     },
     enabled: !!id,
-    staleTime: Infinity,
-    cacheTime: Infinity,
-    refetchOnWindowFocus: false,
   });
 
-  // Fermer le menu au clic en dehors
   React.useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -56,22 +50,23 @@ export default function Depots() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async () => {
     if (!form.username || !form.phone || !form.amount || !form.transaction_id) {
-      setMessage("❌ Tous les champs sont obligatoires !");
+      setMessage(`❌ ${t("deposit.form.errors.required")}`);
       return;
     }
 
     const amountNumber = parseFloat(form.amount);
     if (isNaN(amountNumber) || amountNumber <= 0) {
-      setMessage("❌ Montant invalide !");
+      setMessage(`❌ ${t("deposit.form.errors.invalidAmount")}`);
       return;
     }
 
     if (!user?.id) {
-      setMessage("❌ Impossible d'identifier l'utilisateur.");
+      setMessage(`❌ ${t("deposit.form.errors.noUser")}`);
       return;
     }
 
@@ -90,49 +85,66 @@ export default function Depots() {
         country: method.country,
       };
 
-      console.log("Payload dépôt :", payload);
-
       await axiosDeposit.post("/deposits/", payload);
 
-      setMessage("✅ Dépôt envoyé avec succès !");
+      setMessage(`✅ ${t("deposit.form.success")}`);
       setForm({ ...form, amount: "", transaction_id: "" });
-    } catch (err) {
-      console.error(err);
-      setMessage("❌ Une erreur est survenue lors du dépôt.");
+    } catch {
+      setMessage(`❌ ${t("deposit.form.errors.generic")}`);
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (isLoading) return <p>Chargement...</p>;
-  if (isError) return <p>❌ Impossible de charger la méthode de dépôt</p>;
-  if (!method) return <p>Méthode non trouvée</p>;
+  if (isLoading) return <p>{t("deposit.loading", "Chargement...")}</p>;
+  if (isError) return <p>❌ {t("deposit.error")}</p>;
+  if (!method) return <p>{t("deposit.notFound")}</p>;
 
   return (
-    <motion.div
-      className="deposit-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <motion.div className="deposit-container">
       <div className="deposit-header">
         <img src={method.icon_url} alt={method.name} className="deposit-method-icon" />
         <h2>{method.name}</h2>
       </div>
 
-      {method.country && <p>Pays : {method.country}</p>}
+      {method.country && <p>{t("deposit.country")} : {method.country}</p>}
+
       <p className="deposit-account">
-        📱 Compte / adresse : <strong>{method.account_number || "+2250123456789"}</strong>
+        📱 {t("deposit.account")} :{" "}
+        <strong>{method.account_number || "+2250123456789"}</strong>
       </p>
 
       <div className="deposit-form">
-        <input name="username" placeholder="Nom d'utilisateur" value={form.username} onChange={handleChange} />
-        <input name="phone" placeholder="Numéro de téléphone" value={form.phone} onChange={handleChange} />
+        <input
+          name="username"
+          placeholder={t("deposit.form.username")}
+          value={form.username}
+          onChange={handleChange}
+        />
+
+        <input
+          name="phone"
+          placeholder={t("deposit.form.phone")}
+          value={form.phone}
+          onChange={handleChange}
+        />
 
         <div className="amount-container">
-          <input name="amount" type="number" placeholder="Montant" value={form.amount} onChange={handleChange} />
-          <div className="currency-dropdown" ref={dropdownRef} onClick={() => setCurrencyOpen(!currencyOpen)}>
+          <input
+            name="amount"
+            type="number"
+            placeholder={t("deposit.form.amount")}
+            value={form.amount}
+            onChange={handleChange}
+          />
+
+          <div
+            className="currency-dropdown"
+            ref={dropdownRef}
+            onClick={() => setCurrencyOpen(!currencyOpen)}
+          >
             <div className="currency-selected">{form.currency}</div>
+
             {currencyOpen && (
               <div className="currency-list">
                 {currencies.map((cur) => (
@@ -154,19 +166,19 @@ export default function Depots() {
 
         <input
           name="transaction_id"
-          placeholder="ID de la transaction"
+          placeholder={t("deposit.form.transactionId")}
           value={form.transaction_id}
           onChange={handleChange}
         />
 
         <motion.button
           className="deposit-button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           disabled={submitting}
           onClick={handleSubmit}
         >
-          {submitting ? "Envoi..." : "Valider le dépôt"}
+          {submitting
+            ? t("deposit.form.sending")
+            : t("deposit.form.submit")}
         </motion.button>
       </div>
 
@@ -175,10 +187,8 @@ export default function Depots() {
       <motion.button
         className="back-button"
         onClick={() => navigate("/deposit-methods")}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
       >
-        ⬅ Retour aux méthodes
+        ⬅ {t("deposit.backMethods")}
       </motion.button>
     </motion.div>
   );

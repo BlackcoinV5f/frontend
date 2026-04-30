@@ -1,0 +1,58 @@
+{
+  "bonus": {
+    "authRequired": "Login required",
+    "title": "Bonus Program",
+    "subtitle": "Claim 0.3 BKC every 24 hours",
+
+    "loading": "Loading...",
+    "available": "Available",
+    "availableIn": "Available in:",
+
+    "points": {
+      "title": "Your Points"
+    },
+
+    "conditions": {
+      "title": "Conditions",
+      "hasPack": "Active pack",
+      "hasDeposit": "Deposit completed",
+      "friendsCount": "Referrals ({{count}}/{{required}})"
+    },
+
+    "claiming": "Claiming...",
+    "claim": "Claim 0.3 BKC",
+
+    "success": {
+      "claimed": "Bonus successfully claimed!"
+    },
+
+    "errors": {
+      "generic": "Error while loading",
+      "claim": "Error while claiming"
+    },
+
+    "friends": {
+      "title": "Referral Program",
+      "description": "Invite your friends and earn rewards together!",
+
+      "yourCode": "Your referral code",
+      "generate": "Generate my referral code",
+      "generating": "Generating...",
+
+      "copy": "Copy",
+      "copied": "Copied!",
+
+      "yourReferrals": "Your referrals",
+      "referral": "Referral",
+
+      "empty": {
+        "title": "You haven't invited any friends yet",
+        "subtitle": "Share your referral code to start earning rewards!"
+      },
+
+      "errors": {
+        "copy": "Error copying referral code"
+      }
+    }
+  }
+}

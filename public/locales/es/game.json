@@ -1,0 +1,42 @@
+{
+  "game": {
+    "player": "Jugador",
+    "balance": "Saldo",
+    "bet": "Apuesta",
+
+    "start": "Iniciar partida",
+    "loot": "Botín obtenido",
+
+    "items": "{{count}} objeto",
+    "items_plural": "{{count}} objetos",
+
+    "cashout": "Retirar",
+
+    "invalid_bet": "Apuesta inválida",
+    "insufficient_balance": "Saldo insuficiente",
+    "start_error": "Error al iniciar la partida",
+
+    "lose": "Lo siento, has perdido tu apuesta.",
+    "play_error": "Error durante la partida",
+
+    "cashout_success": "Retiro exitoso: {{amount}} pts",
+    "cashout_error": "Error al retirar"
+  },
+
+  "trade": {
+    "balance": "Saldo",
+    "no_history": "Sin historial",
+
+    "bet1": "Apuesta 1",
+    "bet2": "Apuesta 2",
+    "play": "Jugar",
+
+    "bet_required": "Realiza al menos una apuesta",
+    "insufficient_balance": "Saldo insuficiente",
+
+    "start_error": "Error al iniciar la partida",
+
+    "cashout_success": "Retiro exitoso: {{amount}} pts",
+    "cashout_error": "Error al retirar"
+  }
+}

@@ -1,0 +1,144 @@
+/* =========================
+   🌍 ROOT (important)
+========================= */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+/* =========================
+   📱 APP CONTAINER
+========================= */
+.app-container {
+  height: 100vh; /* 🔥 indispensable */
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #0a1a3a, #0d234f);
+  color: white;
+}
+
+/* =========================
+   📜 ZONE SCROLLABLE
+========================= */
+.cards-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 80px 10px 100px; /* 🔥 top + bottom (header + navbar) */
+
+  scroll-behavior: smooth;
+}
+
+/* scrollbar */
+.cards-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cards-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* =========================
+   📦 CARD
+========================= */
+.action-card {
+  width: 280px;
+  margin: 15px auto;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+
+  transition: 0.2s;
+}
+
+.action-card:hover {
+  transform: translateY(-5px);
+}
+
+/* =========================
+   HEADER
+========================= */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.icon-container {
+  width: 46px;
+  height: 46px;
+  background: #1f2937;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pack-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.action-name {
+  font-weight: 600;
+}
+
+/* =========================
+   BODY
+========================= */
+.card-body p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.card-body span {
+  color: #9ca3af;
+}
+
+.card-body strong {
+  color: #22c55e;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.card-footer {
+  margin-top: 15px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.contribute-btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  min-width: 130px;
+  background: #3b82f6;
+  color: white;
+}
+
+.contribute-btn.start {
+  background: #16a34a;
+}
+
+.contribute-btn.claim {
+  background: #facc15;
+  color: #111827;
+}
+
+.contribute-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

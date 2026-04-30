@@ -1,4 +1,3 @@
-// src/pages/ValidateTask.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,16 +10,13 @@ import {
 } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import "./ValidateTask.css";
 
-const platformIcons = {
-  YouTube: <span style={{ color: "#FF0000" }}>▶</span>,
-  Facebook: <span style={{ color: "#1877F2" }}>f</span>,
-  TikTok: <span style={{ color: "#000000" }}>♫</span>,
-  Twitter: <span style={{ color: "#1DA1F2" }}>🐦</span>,
-};
-
 const ValidateTask = () => {
+  // ✅ namespace correct
+  const { t } = useTranslation("tasks");
+
   const { taskId } = useParams();
   const navigate = useNavigate();
   const { axiosInstance, user } = useUser();
@@ -31,12 +27,7 @@ const ValidateTask = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [rewardDetails, setRewardDetails] = useState(null);
 
-  // ✅ React Query (comme Check.jsx)
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["task", taskId],
     queryFn: async () => {
       const res = await axiosInstance.get("/tasks/");
@@ -45,24 +36,24 @@ const ValidateTask = () => {
       );
     },
     enabled: !!user && !!taskId,
-    staleTime: Infinity,
-    gcTime: Infinity,
-    refetchOnWindowFocus: false,
   });
 
-  // ✅ Redirection après succès
+  // =========================
+  // 🔄 REDIRECTION SUCCESS
+  // =========================
   useEffect(() => {
     if (isSuccess) {
-      const timer = setTimeout(() => {
-        navigate("/tasks");
-      }, 3000);
+      const timer = setTimeout(() => navigate("/tasks"), 3000);
       return () => clearTimeout(timer);
     }
   }, [isSuccess, navigate]);
 
+  // =========================
+  // ✅ VALIDATION
+  // =========================
   const handleValidation = async () => {
     if (!code.trim()) {
-      setError("Veuillez entrer un code de validation");
+      setError(t("validatePage.empty_code"));
       return;
     }
 
@@ -78,160 +69,119 @@ const ValidateTask = () => {
       setRewardDetails(res.data.reward);
       setIsSuccess(true);
     } catch (err) {
-      console.error("❌ Erreur validation :", err);
-
       if (err.response?.status === 400) {
-        setError(err.response.data?.detail || "Code invalide");
+        setError(t("validatePage.invalid_code"));
       } else if (err.response?.status === 401) {
-        setError("⚠️ Non autorisé. Veuillez vous reconnecter.");
+        setError(t("validatePage.unauthorized"));
       } else {
-        setError("Erreur lors de la validation");
+        setError(t("validatePage.error"));
       }
     } finally {
       setIsValidating(false);
     }
   };
 
-  // ❌ Pas connecté
+  // =========================
+  // ❌ NOT LOGGED
+  // =========================
   if (!user) {
     return (
       <div className="validate-container">
-        ⚠️ Connecte-toi pour valider une tâche
+        {t("validatePage.login_required")}
       </div>
     );
   }
 
-  // ⏳ Loading
+  // =========================
+  // ⏳ LOADING
+  // =========================
   if (isLoading) {
     return (
       <div className="validate-container">
-        Chargement...
+        {t("validatePage.loading", "Chargement...")}
       </div>
     );
   }
 
-  // ❌ Erreur
+  // =========================
+  // ❌ ERROR / NOT FOUND
+  // =========================
   if (isError || !data) {
     return (
-      <motion.div
-        className="validate-container error"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <p>❌ Tâche introuvable.</p>
+      <div className="validate-container error">
+        <p>{t("validatePage.not_found")}</p>
         <button onClick={() => navigate("/tasks")}>
-          Retour aux tâches
+          {t("validatePage.back_tasks")}
         </button>
-      </motion.div>
+      </div>
     );
   }
 
   const task = data;
 
+  // =========================
+  // 🧱 RENDER
+  // =========================
   return (
-    <motion.div
-      className="validate-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <motion.button
-        className="back-button"
-        onClick={() => navigate("/tasks")}
-        whileHover={{ x: -5 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <FaArrowLeft /> Retour
-      </motion.button>
+    <div className="validate-container">
+      <button onClick={() => navigate("/tasks")}>
+        <FaArrowLeft /> {t("validatePage.back")}
+      </button>
 
       <AnimatePresence mode="wait">
         {isSuccess ? (
-          <motion.div
-            key="success"
-            className="success-container"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-          >
-            <motion.div
-              className="success-icon"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-            >
-              <FaCheck size={60} />
-            </motion.div>
+          <div className="success-container">
+            <FaCheck size={60} />
+            <h2>{t("validatePage.success")}</h2>
 
-            <h2>Tâche validée avec succès 🎉</h2>
-
-            <motion.div
-              className="reward-breakdown"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="reward-item">
-                <FaCoins color="#FFD700" /> +{rewardDetails?.balance} pts
+            <div>
+              <div>
+                <FaCoins /> +{rewardDetails?.balance}{" "}
+                {t("validatePage.points")}
               </div>
-              <div className="reward-item">
-                <FaWallet color="#4CAF50" /> +{rewardDetails?.bonus} pts
+              <div>
+                <FaWallet /> +{rewardDetails?.bonus}{" "}
+                {t("validatePage.points")}
               </div>
-              <div className="reward-total">
-                Total gagné : {rewardDetails?.total} pts
+              <div>
+                {t("validatePage.total", {
+                  amount: rewardDetails?.total,
+                })}
               </div>
-            </motion.div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="form"
-            className="validation-form"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <motion.div
-              className="task-header"
-              style={{ backgroundColor: `${task.color || "#ccc"}20` }}
-            >
-              <div className="platform-icon">
-                {platformIcons[task.platform]}
-              </div>
-              <h2>Validation</h2>
-            </motion.div>
-
-            <p>Entrez le code de validation fourni après la tâche</p>
-
-            <div className="input-container">
-              <input
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="Code de validation"
-                className={error ? "error-input" : ""}
-              />
-              {error && (
-                <p className="error-message">
-                  <FaTimes /> {error}
-                </p>
-              )}
             </div>
+          </div>
+        ) : (
+          <div className="validation-form">
+            <h2>{t("validatePage.title")}</h2>
 
-            <motion.button
-              className={`validate-button ${isValidating ? "validating" : ""}`}
-              onClick={handleValidation}
-              disabled={isValidating}
-              whileHover={!isValidating ? { scale: 1.05 } : {}}
-              whileTap={!isValidating ? { scale: 0.95 } : {}}
-            >
+            <p>{t("validatePage.instructions")}</p>
+
+            <input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder={t("validatePage.placeholder")}
+            />
+
+            {error && (
+              <p>
+                <FaTimes /> {error}
+              </p>
+            )}
+
+            <button onClick={handleValidation} disabled={isValidating}>
               {isValidating ? (
                 <span className="spinner"></span>
               ) : (
                 <>
-                  <FaCheck /> Valider
+                  <FaCheck /> {t("validatePage.submit")}
                 </>
               )}
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };
 

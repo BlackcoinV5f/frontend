@@ -3,11 +3,14 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useUser } from "../contexts/UserContext";
 import { useBalance } from "../hooks/useBalance";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import "./tradegame.css";
 
 export default function TradeGame() {
   const { axiosInstance, user } = useUser();
   const queryClient = useQueryClient();
+  const { t } = useTranslation("game");
+  const [message, setMessage] = useState(null);
   
   // État des mises
   const [bet1, setBet1] = useState("");
@@ -264,12 +267,12 @@ export default function TradeGame() {
     const b2 = Number(bet2 || 0);
     
     if (b1 <= 0 && b2 <= 0) {
-      alert("Placez au moins une mise.");
+      setMessage({ type: "error", text: t("trade.bet_required") });
       return;
     }
     
-    if (b1 > balance || b2 > balance) {
-      alert("Solde insuffisant.");
+    if (b1 + b2 > balance) {
+      setMessage({ type: "error", text: t("trade.insufficient_balance") });
       return;
     }
     
@@ -280,7 +283,10 @@ export default function TradeGame() {
       
       const data = res.data;
       if (data?.error) {
-        alert(data.error);
+        setMessage({
+  type: "error",
+  text: data.error || t("trade.start_error")
+});
         return;
       }
       
@@ -298,7 +304,7 @@ export default function TradeGame() {
       
     } catch (err) {
       console.error("Erreur lors du lancement:", err);
-      alert("Erreur lors du lancement de la partie.");
+      setMessage({ type: "error", text: t("trade.start_error") });
     }
   }, [bet1, bet2, balance, axiosInstance, connectWebSocket, refreshBalance]);
   
@@ -313,19 +319,22 @@ export default function TradeGame() {
       
       const data = res.data;
       if (data?.error) {
-        alert(data.error);
+        setMessage({
+  type: "error",
+  text: data.error || t("trade.start_error")
+});
         return;
       }
       
       // Message de confirmation animé
-      setCashoutMsg(`✅ Cashout réussi ! Gain: ${data.gain} pts`);
+      setCashoutMsg(t("trade.cashout_success", { amount: data.gain }));
       setTimeout(() => setCashoutMsg(null), 2500);
       
       await refreshBalance();
       
     } catch (err) {
       console.error("Erreur lors du cashout:", err);
-      alert("Erreur lors du cashout.");
+      setMessage({ type: "error", text: t("trade.cashout_error") });
     }
   }, [gameId, axiosInstance, refreshBalance]);
   
@@ -334,9 +343,18 @@ export default function TradeGame() {
   
   return (
     <div className="tradegame-container">
+
+      {message && (
+  <div className={`game-message ${message.type}`}>
+    {message.text}
+    <button onClick={() => setMessage(null)}>
+  {t("trade.close", "✖")}
+</button>
+  </div>
+)}
       {/* Balance */}
       <div className="tradegame-balance">
-        💰 Solde: <span>{typeof balance === 'number' ? balance.toFixed(2) : '0.00'}</span> pts
+        💰 {t("trade.balance")}: <span>{typeof balance === 'number' ? balance.toFixed(2) : '0.00'}</span> pts
       </div>
       
       {/* Plateau de jeu */}
@@ -394,7 +412,7 @@ export default function TradeGame() {
       <div className="tradegame-history">
         <div className="history-list">
           {history.length === 0 ? (
-            <span>Aucun historique</span>
+            <span>{t("trade.no_history")}</span>
           ) : (
             history.map((m, i) => {
               const value = Number(m);
@@ -422,7 +440,7 @@ export default function TradeGame() {
             type="number"
             value={bet1}
             onChange={(e) => setBet1(e.target.value)}
-            placeholder="Mise 1"
+            placeholder={`${t("trade.bet1")} (pts)`}
             min="0"
             step="0.01"
             disabled={!!gameId && !isCrashed}
@@ -432,7 +450,7 @@ export default function TradeGame() {
               className="tradegame-btn cashout1"
               onClick={() => handleCashout("bet1")}
             >
-              💸 Cashout 1
+              💸 {t("trade.cashout")}
             </button>
           ) : (
             <button
@@ -440,7 +458,7 @@ export default function TradeGame() {
               onClick={handlePlay}
               disabled={(!bet1 || Number(bet1) <= 0) && (!bet2 || Number(bet2) <= 0)}
             >
-              ▶️ Jouer
+              ▶️ {t("trade.play")}
             </button>
           )}
         </div>
@@ -452,7 +470,7 @@ export default function TradeGame() {
             type="number"
             value={bet2}
             onChange={(e) => setBet2(e.target.value)}
-            placeholder="Mise 2"
+            placeholder={t("trade.bet2")}
             min="0"
             step="0.01"
             disabled={!!gameId && !isCrashed}
@@ -462,7 +480,7 @@ export default function TradeGame() {
               className="tradegame-btn cashout2"
               onClick={() => handleCashout("bet2")}
             >
-              💸 Cashout 2
+              💸 {t("trade.cashout")}
             </button>
           ) : (
             <button
@@ -470,7 +488,7 @@ export default function TradeGame() {
               onClick={handlePlay}
               disabled={(!bet1 || Number(bet1) <= 0) && (!bet2 || Number(bet2) <= 0)}
             >
-              ▶️ Jouer
+              ▶️ {t("trade.play")}
             </button>
           )}
         </div>

@@ -8,31 +8,41 @@ import { useTranslation } from "react-i18next";
 import "./Tasks.css";
 
 const Tasks = () => {
-  const { t } = useTranslation();
+  // ✅ namespace correct
+  const { t } = useTranslation("tasks");
+
   const { user } = useUser();
   const navigate = useNavigate();
 
   const { data, isLoading, isError, startTask } = useTasks();
   const [tasks, setTasks] = useState([]);
 
+  // =========================
+  // 🔄 FORMAT DATA
+  // =========================
   useEffect(() => {
     if (!data?.tasks) return;
 
-    const styledTasks = data.tasks.map((t) => ({
-      ...t,
-      icon: t.logo ? `/${t.logo}` : "/default.png",
+    const styledTasks = data.tasks.map((task) => ({
+      ...task,
+      icon: task.logo ? `/${task.logo}` : "/default.png",
       color: "#ccc",
-      time_left: t.time_left || 0,
+      time_left: task.time_left || 0,
     }));
 
     setTasks(styledTasks);
   }, [data]);
 
+  // =========================
+  // ⏱ TIMER
+  // =========================
   useEffect(() => {
     const interval = setInterval(() => {
       setTasks((prev) =>
-        prev.map((t) =>
-          t.time_left > 0 ? { ...t, time_left: t.time_left - 1 } : t
+        prev.map((task) =>
+          task.time_left > 0
+            ? { ...task, time_left: task.time_left - 1 }
+            : task
         )
       );
     }, 1000);
@@ -40,14 +50,20 @@ const Tasks = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // =========================
+  // ❌ NOT LOGGED
+  // =========================
   if (!user) {
     return (
       <div className="tasks-container">
-        ⚠️ {t("tasks.login_required")}
+        {t("tasksPage.login_required")}
       </div>
     );
   }
 
+  // =========================
+  // ⏳ LOADING
+  // =========================
   if (isLoading) {
     return (
       <div className="loading-spinner">
@@ -59,19 +75,29 @@ const Tasks = () => {
     );
   }
 
+  // =========================
+  // ❌ ERROR
+  // =========================
   if (isError) {
     return (
       <div className="tasks-container">
-        ❌ {t("tasks.error")}
+        {t("tasksPage.error")}
       </div>
     );
   }
 
+  // =========================
+  // 📊 PROGRESS
+  // =========================
   const completedCount = data?.completedCount || 0;
-  const totalTasks = tasks.length + completedCount;
+  const totalTasks = (data?.tasks?.length || 0) + completedCount;
+
   const progress =
     totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
+  // =========================
+  // 🎯 ACTIONS
+  // =========================
   const handleTaskClick = (task) => {
     startTask.mutate(task.id);
     window.open(task.link, "_blank");
@@ -81,6 +107,9 @@ const Tasks = () => {
     navigate(`/tasks/${task.id}/validate`);
   };
 
+  // =========================
+  // ⏱ FORMAT TIME
+  // =========================
   const formatTime = (seconds) => {
     if (!seconds || seconds <= 0) return "00:00";
     const mins = Math.floor(seconds / 60);
@@ -90,10 +119,13 @@ const Tasks = () => {
       .padStart(2, "0")}`;
   };
 
+  // =========================
+  // 🧱 RENDER
+  // =========================
   return (
     <motion.div className="tasks-container">
       <div className="tasks-header">
-        <h2>📋 {t("tasks.title")}</h2>
+        <h2>{t("tasksPage.title")}</h2>
 
         <div className="progress-container">
           <div className="progress-bar">
@@ -108,7 +140,7 @@ const Tasks = () => {
 
       <div className="tasks-list">
         <AnimatePresence>
-          {tasks.map((task, index) => {
+          {tasks.map((task) => {
             const isValid = task.completed;
 
             return (
@@ -123,30 +155,30 @@ const Tasks = () => {
                     <div className="task-points">
                       <FaTrophy />
                       <span>
-                        {task.reward_points} {t("tasks.points")}
+                        {task.reward_points} {t("tasksPage.points")}
                       </span>
                     </div>
                   </div>
 
                   {isValid ? (
                     <div className="completed-badge">
-                      ✅ {t("tasks.completed")}
+                      {t("tasksPage.completed")}
                     </div>
                   ) : task.started_at && task.time_left > 0 ? (
                     <div>
                       <FaClock />
                       <span>{formatTime(task.time_left)}</span>
                       <button disabled>
-                        <FaCheck /> {t("tasks.validate")}
+                        <FaCheck /> {t("tasksPage.validate")}
                       </button>
                     </div>
                   ) : task.started_at ? (
                     <button onClick={() => handleValidateClick(task)}>
-                      <FaCheck /> {t("tasks.validate")}
+                      <FaCheck /> {t("tasksPage.validate")}
                     </button>
                   ) : (
                     <button onClick={() => handleTaskClick(task)}>
-                      <FaExternalLinkAlt /> {t("tasks.start")}
+                      <FaExternalLinkAlt /> {t("tasksPage.start")}
                     </button>
                   )}
                 </div>
@@ -157,7 +189,7 @@ const Tasks = () => {
 
         {tasks.length === 0 && (
           <div className="no-tasks">
-            🎉 {t("tasks.done")}
+            {t("tasksPage.done")}
           </div>
         )}
       </div>

@@ -1,0 +1,64 @@
+{
+  "tasksPage": {
+    "title": "Tâches à accomplir",
+    "login_required": "Connecte-toi pour voir les tâches",
+    "error": "Erreur de chargement des tâches",
+    "completed": "Complétée",
+    "validate": "Valider",
+    "start": "Commencer",
+    "points": "pts",
+    "done": "Vous avez terminé toutes les tâches !"
+  },
+
+  "validatePage": {
+    "login_required": "Connecte-toi pour valider une tâche",
+    "not_found": "Tâche introuvable",
+    "back_tasks": "Retour aux tâches",
+    "back": "Retour",
+    "title": "Validation",
+    "instructions": "Entrez le code de validation fourni après la tâche",
+    "placeholder": "Code de validation",
+    "submit": "Valider",
+    "success": "Tâche validée avec succès 🎉",
+    "points": "pts",
+    "total": "Total gagné : {{amount}} pts",
+    "empty_code": "Veuillez entrer un code de validation",
+    "invalid_code": "Code invalide",
+    "unauthorized": "Non autorisé. Veuillez vous reconnecter.",
+    "error": "Erreur lors de la validation"
+  },
+
+  "dailyPage": {
+    "login_required": "Connecte-toi",
+    "error": "Erreur",
+    "pack_title": "Tâches du Pack #{{id}}",
+    "no_tasks": "Aucune tâche disponible",
+    "start": "Commencer",
+    "validate": "Valider",
+    "done": "Complétée",
+    "completed": "Tâche complétée !",
+    "all_done": "Toutes les tâches terminées !",
+    "claim": "Réclamer",
+    "reward": "Récompense",
+    "reward_message": "Récompense reçue",
+    "start_error": "Impossible de démarrer la tâche",
+    "complete_error": "Impossible de compléter",
+    "claim_error": "Impossible de réclamer"
+  },
+
+  "taskspk": {
+    "join_telegram": "Rejoignez notre canal Telegram officiel",
+    "like_facebook": "Partagez et aimez notre page Facebook",
+    "follow_twitter": "Suivez notre compte officiel sur X",
+    "subscribe_youtube": "Abonnez-vous à notre chaîne YouTube officielle",
+    "watch_tiktok": "Regardez et aimez nos vidéos TikTok"
+  },
+
+  "platform": {
+    "telegram": "Telegram",
+    "facebook": "Facebook",
+    "twitter": "X (Twitter)",
+    "youtube": "YouTube",
+    "tiktok": "TikTok"
+  }
+}

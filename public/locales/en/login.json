@@ -1,0 +1,115 @@
+{
+  "auth": {
+    "welcome": "Welcome to BlackCoin",
+    "question": "What would you like to do?",
+    "loading": "Loading...",
+    "register": "Sign up",
+    "login": "Log in"
+  },
+
+  "register": {
+    "title": "Create an account",
+    "personalInfo": "Personal information",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "birthDate": "Date of birth",
+
+    "contactInfo": "Contact information",
+    "phoneNumber": "Phone number",
+    "email": "Email",
+    "telegramUsername": "Telegram username",
+
+    "security": "Security",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+
+    "submit": "Create my account",
+    "loading": "Creating account...",
+    "success": "Registration successful. Please check your email.",
+
+    "criteria": {
+      "length": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "number": "One number",
+      "specialChar": "One special character"
+    },
+
+    "errors": {
+      "missingFields": "Please fill in all fields.",
+      "invalidEmail": "Invalid email address.",
+      "invalidPhoneNumber": "Invalid phone number.",
+      "invalidTelegramUsername": "Invalid Telegram username.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordWeak": "Password is too weak.",
+      "invalidBirthDate": "Invalid date of birth.",
+      "ageTooYoung": "You must be at least 13 years old to register.",
+      "generic": "An error occurred. Please try again."
+    }
+  },
+
+  "login": {
+    "title": "Login",
+    "emailOrUsername": "Email or username",
+    "password": "Password",
+
+    "placeholder": {
+      "emailOrUsername": "email@example.com or username",
+      "password": "••••••••"
+    },
+
+    "errors": {
+      "missingEmail": "Please enter your email or username.",
+      "missingPassword": "Please enter your password.",
+      "generic": "Login failed. Please check your credentials."
+    },
+
+    "button": {
+      "login": "Log in",
+      "loading": "Logging in..."
+    },
+
+    "register": {
+      "text": "Not registered yet?",
+      "link": "Create an account"
+    }
+  },
+
+  "verifyEmail": {
+    "title": "Email verification",
+    "checkAccount": "Check your account associated with",
+    "codeLabel": "Your verification code:",
+    "expiresIn": "Expires in",
+    "placeholder": "Enter the 6-digit code",
+    "verifyButton": "Verify code",
+    "error": "Verification error",
+    "expired": "The code has expired. Please request a new one."
+  },
+
+  "welcome": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+
+    "step1": {
+      "title": "Welcome {{name}}!",
+      "description": "Thank you for joining our community. Your security is our priority.",
+      "warning": "Never share your sensitive information.",
+      "continue": "Continue"
+    },
+
+    "step2": {
+      "title": "Activate your account",
+      "points": "Points",
+      "processing": "Processing...",
+      "finish": "Finish",
+      "completeAll": "Complete all tasks"
+    },
+
+    "task": {
+      "join": "Join {{name}}",
+      "points": "+{{points}} pts",
+      "visitFirst": "Visit first",
+      "wait": "Wait 10 seconds...",
+      "validate": "Validate"
+    }
+  }
+}

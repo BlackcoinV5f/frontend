@@ -1,0 +1,64 @@
+{
+  "tasksPage": {
+    "title": "Tasks to Complete",
+    "login_required": "Log in to view tasks",
+    "error": "Error loading tasks",
+    "completed": "Completed",
+    "validate": "Validate",
+    "start": "Start",
+    "points": "pts",
+    "done": "You have completed all tasks!"
+  },
+
+  "validatePage": {
+    "login_required": "Log in to validate a task",
+    "not_found": "Task not found",
+    "back_tasks": "Back to tasks",
+    "back": "Back",
+    "title": "Validation",
+    "instructions": "Enter the validation code provided after completing the task",
+    "placeholder": "Validation code",
+    "submit": "Validate",
+    "success": "Task successfully validated 🎉",
+    "points": "pts",
+    "total": "Total earned: {{amount}} pts",
+    "empty_code": "Please enter a validation code",
+    "invalid_code": "Invalid code",
+    "unauthorized": "Unauthorized. Please log in again.",
+    "error": "Error during validation"
+  },
+
+  "dailyPage": {
+    "login_required": "Log in",
+    "error": "Error",
+    "pack_title": "Pack Tasks #{{id}}",
+    "no_tasks": "No tasks available",
+    "start": "Start",
+    "validate": "Validate",
+    "done": "Completed",
+    "completed": "Task completed!",
+    "all_done": "All tasks completed!",
+    "claim": "Claim",
+    "reward": "Reward",
+    "reward_message": "Reward received",
+    "start_error": "Unable to start task",
+    "complete_error": "Unable to complete task",
+    "claim_error": "Unable to claim reward"
+  },
+
+  "taskspk": {
+    "join_telegram": "Join our official Telegram channel",
+    "like_facebook": "Like and share our Facebook page",
+    "follow_twitter": "Follow our official account on X",
+    "subscribe_youtube": "Subscribe to our official YouTube channel",
+    "watch_tiktok": "Watch and like our TikTok videos"
+  },
+
+  "platform": {
+    "telegram": "Telegram",
+    "facebook": "Facebook",
+    "twitter": "X (Twitter)",
+    "youtube": "YouTube",
+    "tiktok": "TikTok"
+  }
+}

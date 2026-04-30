@@ -8,11 +8,11 @@ const SplashScreen = ({ onFinish }) => {
 
   useEffect(() => {
     if (!onFinish) {
-      console.error("⚠️ ERREUR : onFinish n'est pas défini !");
+      console.error("⚠️ onFinish manquant");
       return;
     }
 
-    // Animation de la barre de progression
+    // 🔥 Progress fluide et sécurisé
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -23,10 +23,10 @@ const SplashScreen = ({ onFinish }) => {
       });
     }, 50);
 
-    // Animation de disparition
+    // 🔥 Fin du splash
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(() => onFinish(), 500); // Attend que l'animation se termine
+      setTimeout(() => onFinish(), 600); // synchronisé avec animation
     }, 5000);
 
     return () => {
@@ -40,10 +40,15 @@ const SplashScreen = ({ onFinish }) => {
       {isVisible && (
         <motion.div
           className="splash-container"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 1, scale: 1 }}
+          exit={{
+            opacity: 0,
+            scale: 1.08,
+            filter: "blur(6px)",
+          }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
         >
+          {/* Particles */}
           <div className="particles">
             {[...Array(20)].map((_, i) => (
               <motion.div
@@ -53,62 +58,58 @@ const SplashScreen = ({ onFinish }) => {
                 animate={{
                   opacity: [0, 0.6, 0],
                   y: [0, -50, -100],
-                  x: [0, Math.random() * 100 - 50, Math.random() * 100 - 50]
+                  x: [0, Math.random() * 100 - 50, Math.random() * 100 - 50],
                 }}
                 transition={{
                   duration: 2 + Math.random() * 3,
                   repeat: Infinity,
-                  delay: Math.random() * 2
+                  delay: Math.random() * 2,
                 }}
               />
             ))}
           </div>
 
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", damping: 10, stiffness: 100 }}
-          >
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
+          {/* 🔥 LOGO CENTRÉ + ANIMÉ */}
+          <div className="center-logo">
+            <motion.img
+              src="/logo.png"
+              alt="Logo"
               className="splash-logo"
-              onLoad={() => console.log("Logo chargé")}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{
+                scale: [1, 1.05, 1],
+                opacity: 1,
+              }}
+              transition={{
+                scale: {
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                },
+                opacity: { duration: 0.8 },
+              }}
             />
-          </motion.div>
+          </div>
 
-          <motion.div 
-            className="loading-container"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="loading-bar">
-              <motion.div
-                className="loading-progress"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.1 }}
-              />
+          {/* 🔽 CONTENU EN BAS */}
+          <div className="bottom-content">
+            <div className="loading-container">
+              <div className="loading-bar">
+                <motion.div
+                  className="loading-progress"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.15 }}
+                />
+              </div>
+
+              <div className="progress-text">{progress}%</div>
             </div>
-            <motion.div
-              className="progress-text"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              {progress}%
-            </motion.div>
-          </motion.div>
 
-          <motion.div
-            className="brand-text"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            Chargement de l'expérience...
-          </motion.div>
+            <div className="brand-text">
+              Chargement de l'expérience...
+            </div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

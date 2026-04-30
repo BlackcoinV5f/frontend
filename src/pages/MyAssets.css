@@ -1,0 +1,97 @@
+/* =========================
+   🌍 PAGE BACKGROUND
+========================= */
+.my-assets-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+}
+
+/* =========================
+   📦 SCROLL CARD (comme info-container)
+========================= */
+.assets-card {
+  width: 100%;
+  max-width: 800px;
+
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+
+  padding: 2rem;
+  border-radius: 16px;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  overflow-y: auto;
+  max-height: 80vh; /* 🔥 scroll interne */
+}
+
+/* =========================
+   🧾 TITLE
+========================= */
+.title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* =========================
+   📦 GRID
+========================= */
+.assets-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =========================
+   TEXT
+========================= */
+.error,
+.no-assets {
+  text-align: center;
+  margin-top: 20px;
+  color: #cbd5e1;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+.assets-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.assets-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* Scrollbar générale */
+.info-container::-webkit-scrollbar,
+.assets-card::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Fond de la barre */
+.info-container::-webkit-scrollbar-track,
+.assets-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Barre (le curseur) */
+.info-container::-webkit-scrollbar-thumb,
+.assets-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2); /* 🔥 couleur */
+  border-radius: 10px;
+}
+
+/* Hover (optionnel mais stylé) */
+.info-container::-webkit-scrollbar-thumb:hover,
+.assets-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}

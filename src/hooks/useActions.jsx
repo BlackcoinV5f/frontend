@@ -1,35 +1,28 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../contexts/UserContext";
 
-export const useActions = (activeTab) => {
+export const useActions = (category) => {
   const { user, axiosInstance } = useUser();
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ["actions", activeTab, user?.id],
+    queryKey: ["actions", category, user?.id],
 
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id || !category) return [];
 
-      if (activeTab === "myactif") {
-        const res = await axiosInstance.get("/actions/my-packs");
-        return res.data || [];
-      }
-
-      const res = await axiosInstance.get(`/actions/category/${activeTab}`);
+      const res = await axiosInstance.get(`/actions/category/${category}`);
       return res.data || [];
     },
 
-    enabled: !!user?.id,
+    enabled: !!user?.id && !!category,
 
     keepPreviousData: true,
-
-    staleTime: 1000 * 60 * 5, // 🔥 important
+    staleTime: 1000 * 60 * 5,
   });
 
-  // ✅ remplace refetch proprement
   const refresh = () => {
-    queryClient.invalidateQueries(["actions", activeTab, user?.id]);
+    queryClient.invalidateQueries(["actions", category, user?.id]);
   };
 
   return {

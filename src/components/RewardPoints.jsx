@@ -7,16 +7,17 @@ import { useTranslation } from "react-i18next";
 import "./RewardPoints.css";
 
 const RewardPoints = () => {
-  const { t, i18n } = useTranslation();
+  // ✅ namespace correct
+  const { t, i18n } = useTranslation("transactions");
+
   const { user } = useUser();
   const controls = useAnimation();
 
   const [animate, setAnimate] = useState(false);
 
-  // données
   const { data, isLoading, isError } = useRewardPoints();
 
-  const rewardPoints = data?.balance ?? 0;
+  const rewardPoints = Number(data?.balance ?? 0);
 
   // animation déclenchée
   useEffect(() => {
@@ -53,7 +54,7 @@ const RewardPoints = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      onClick={() => setAnimate(true)}
+      onClick={() => !isLoading && setAnimate(true)} // ✅ évite animation inutile
     >
       {/* animation rotation */}
       <div className="coins-animation">
@@ -80,7 +81,9 @@ const RewardPoints = () => {
           </span>
         ) : (
           <>
-            {rewardPoints.toLocaleString(i18n.language)}{" "}
+            {rewardPoints.toLocaleString(
+              i18n.language.split("-")[0] // ✅ corrigé
+            )}{" "}
             <span className="unit">BKC</span>
           </>
         )}

@@ -1,0 +1,77 @@
+{
+  "actions": {
+    "category": {
+      "finance": "Finanzas",
+      "real_estate": "Bienes raíces",
+      "opportunity": "Oportunidades",
+      "myAssets": "Mis activos"
+    },
+
+    "noActions": "No hay acciones disponibles",
+    "fetchError": "❌ Error al cargar las acciones",
+
+    "myAssetsTitle": "Mis activos",
+    "noAssets": "Aún no tienes activos"
+  },
+
+  "action": {
+    "category": "Categoría",
+    "type": "Tipo",
+    "pricePerPart": "Precio por participación",
+    "totalParts": "Participaciones totales",
+    "dailyEarnings": "Ganancias diarias",
+    "status": "Estado",
+
+    "category_values": {
+      "finance": "Finanzas",
+      "real_estate": "Bienes raíces",
+      "opportunity": "Oportunidad"
+    },
+
+    "type_values": {
+      "individual": "Individual",
+      "shared": "Compartido"
+    },
+
+    "status_values": {
+      "available": "Disponible",
+      "paid": "Pagado",
+      "in_progress": "En progreso",
+      "claimable": "Disponible para reclamar",
+      "pending": "Pendiente",
+      "completed": "Completado"
+    },
+
+    "button": {
+      "contribute": "Invertir",
+      "unavailable": "No disponible",
+      "start": "Iniciar",
+      "viewTasks": "Ver tareas",
+      "claim": "Reclamar",
+      "pending": "Pendiente ⏳",
+      "completed": "Completado",
+      "loading": "⏳ Procesando..."
+    },
+
+    "feedback": {
+      "mustLogin": "⚠️ Debes iniciar sesión para continuar.",
+      "buySuccess": "✅ ¡Compra del pack \"{{name}}\" exitosa!",
+      "startSuccess": "🚀 ¡Pack \"{{name}}\" iniciado!",
+      "claimSuccess": "💰 ¡Ganancias del pack \"{{name}}\" reclamadas con éxito!",
+      "error": "❌ Error en la acción."
+    }
+  },
+
+  "packs": {
+    "discovery": "Pack Descubrimiento",
+    "growth": "Pack Crecimiento",
+    "dynamic": "Pack Dinámico",
+    "premium": "Pack Premium",
+    "expert": "Pack Experto",
+    "supreme": "Pack Supremo",
+    "prestige": "Pack Prestigio",
+    "elite": "Pack Élite",
+    "royal": "Pack Real",
+    "ultimate": "Pack Definitivo"
+  }
+}

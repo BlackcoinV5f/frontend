@@ -71,6 +71,8 @@ const Depots = lazy(() => import("./pages/Depots"));
 const Retraits = lazy(() => import("./pages/Retraits"));
 const RetraitMethode = lazy(() => import("./pages/RetraitMethode"));
 
+const MyAssets = lazy(() => import("./pages/MyAssets"));
+
 // ========================
 // 🔐 PROTECTED ROUTE
 // ========================
@@ -113,6 +115,20 @@ function AppContent() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // 🔥 BLOQUE TOUT SI SPLASH
+  if (showSplash) {
+  return (
+    <div className="app-wrapper">
+      <div className="app-container">
+        <Suspense fallback={<LoadingSpinner />}>
+          <SplashScreen onFinish={handleFinishSplash} />
+        </Suspense>
+      </div>
+    </div>
+  );
+}
+
+  // 🔄 LOADING GLOBAL USER
   if (loading) {
     return (
       <div className="loading-container">
@@ -122,20 +138,14 @@ function AppContent() {
     );
   }
 
+  // ✅ APP NORMALE
   return (
     <div className="app-wrapper">
       <div className="app-container">
         <Suspense fallback={<LoadingSpinner />}>
 
-          {/* Splash */}
-          {showSplash && (
-            <SplashScreen onFinish={handleFinishSplash} />
-          )}
-
-          {/* Navbar */}
           {!hideBars && <Navbar user={user} />}
 
-          {/* Routes */}
           <main className="content">
             <ErrorBoundary>
               <Routes>
@@ -165,6 +175,7 @@ function AppContent() {
                 <Route path="/trade-game" element={<ProtectedRoute><TradeGame /></ProtectedRoute>} />
                 <Route path="/actions" element={<ProtectedRoute><Actions /></ProtectedRoute>} />
                 <Route path="/bonus" element={<ProtectedRoute><Bonus /></ProtectedRoute>} />
+                <Route path="/my-assets" element={<ProtectedRoute><MyAssets /></ProtectedRoute>} />
 
                 {/* Airdrop */}
                 <Route path="/airdrop" element={<ProtectedRoute><Airdrop /></ProtectedRoute>} />
@@ -190,7 +201,6 @@ function AppContent() {
             </ErrorBoundary>
           </main>
 
-          {/* Footer */}
           {!hideBars && <Footer />}
 
         </Suspense>

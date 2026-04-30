@@ -277,5 +277,195 @@
     "start": "Start",
     "points": "pts",
     "done": "You have completed all tasks!"
+  },
+
+  "validate": {
+    "login_required": "Log in to validate a task",
+    "not_found": "Task not found",
+    "back_tasks": "Back to tasks",
+    "back": "Back",
+    "title": "Validation",
+    "instructions": "Enter the validation code provided after the task",
+    "placeholder": "Validation code",
+    "submit": "Validate",
+    "success": "Task successfully validated 🎉",
+    "points": "pts",
+    "total": "Total earned: {{amount}} pts",
+    "empty_code": "Please enter a validation code",
+    "invalid_code": "Invalid code",
+    "unauthorized": "Unauthorized. Please log in again.",
+    "error": "Validation error"
+  },
+
+  "daily": {
+    "login_required": "Log in",
+    "error": "Error",
+    "pack_title": "Pack Tasks #{{id}}",
+    "no_tasks": "No tasks available",
+    "start": "Start",
+    "validate": "Validate",
+    "done": "Completed",
+    "completed": "Task completed!",
+    "all_done": "All tasks completed!",
+    "claim": "Claim",
+    "reward": "Reward",
+    "reward_message": "Reward received",
+    "start_error": "Unable to start task",
+    "complete_error": "Unable to complete",
+    "claim_error": "Unable to claim"
+  },
+
+  "deposits": {
+    "loading": "Loading deposit methods...",
+    "error": "Failed to load deposit methods",
+    "empty": "No methods available",
+    "title": "Choose a deposit method",
+    "back": "Back to wallet"
+  },
+
+  "deposit": {
+    "errors": {
+      "load": "Unable to load deposit method",
+      "not_found": "Method not found",
+      "submit": "An error occurred during the deposit"
+    },
+    "country": "Country",
+    "account": "Account / address",
+    "back_methods": "Back to methods",
+    "form": {
+      "username": "Username",
+      "phone": "Phone number",
+      "amount": "Amount",
+      "transaction_id": "Transaction ID",
+      "submit": "Submit deposit",
+      "sending": "Sending...",
+      "validation": {
+        "required": "All fields are required",
+        "invalid_amount": "Invalid amount",
+        "no_user": "Unable to identify user"
+      },
+      "success": "Deposit submitted successfully"
+    }
+  },
+
+  "withdraws": {
+    "loading": "Loading methods...",
+    "error": "Failed to load withdrawal methods",
+    "empty": "No withdrawal methods available",
+    "title": "Choose your withdrawal method",
+    "no_country": "Country not specified"
+  },
+
+  "withdraw": {
+    "no_method": "No method selected. Go back to choose one.",
+    "back": "Back",
+    "back_methods": "Back to methods",
+    "country": "Country",
+    "no_country": "Not specified",
+    "form": {
+      "address": "Address / account number",
+      "amount": "Amount to withdraw (min 1.2 BKC)",
+      "submit": "Submit withdrawal",
+      "sending": "Sending...",
+      "required": "All fields are required",
+      "min_amount": "The minimum withdrawal amount is 1.2 BKC",
+      "no_user": "User not identified",
+      "success": "Withdrawal request sent successfully",
+      "error": "An error occurred during withdrawal"
+    }
+  },
+
+  "history": {
+    "title": "History",
+    "loading": "Loading history...",
+    "error": "Unable to load transaction history",
+    "empty_title": "No transactions found",
+    "empty_text": "Your transactions will appear here",
+    "count": "{{count}} transaction",
+    "not_specified": "Not specified",
+    "table": {
+      "method": "Method",
+      "amount": "Amount",
+      "status": "Status",
+      "date": "Date"
+    },
+    "status": {
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "pending": "Pending",
+      "unknown": "Unknown"
+    }
+  },
+
+  "game": {
+    "player": "Player",
+    "balance": "Balance",
+    "bet": "Bet",
+    "start": "Start game",
+    "loot": "LOOT OBTAINED",
+    "items": "{{count}} item",
+    "cashout": "CASH OUT",
+
+    "invalid_bet": "Invalid bet",
+    "insufficient_balance": "Insufficient balance",
+    "start_error": "Error starting game",
+    "lose": "Too bad 😢 You lost your bet!",
+    "play_error": "Game error",
+    "cashout_success": "💰 Cashout successful: {{amount}} pts",
+    "cashout_error": "Cashout error"
+  },
+
+  "trade": {
+    "balance": "Balance",
+    "no_history": "No history",
+    "bet1": "Bet 1",
+    "bet2": "Bet 2",
+    "play": "Play",
+
+    "bet_required": "Place at least one bet",
+    "insufficient_balance": "Insufficient balance",
+    "start_error": "Error starting the game",
+    "cashout_success": "✅ Cashout successful! Gain: {{amount}} pts",
+    "cashout_error": "Error during cashout"
+  },
+
+  "packs": {
+    "discovery": "Discovery Pack",
+    "growth": "Growth Pack",
+    "dynamic": "Dynamic Pack",
+    "premium": "Premium Pack",
+    "expert": "Expert Pack",
+    "supreme": "Supreme Pack",
+    "prestige": "Prestige Pack",
+    "elite": "Elite Pack",
+    "royal": "Royal Pack",
+    "ultimate": "Ultimate Pack"
+  },
+
+  "taskspk": {
+    "join_telegram": "Join our official Telegram channel",
+    "like_facebook": "Like and share our Facebook page",
+    "follow_twitter": "Follow our official account on X",
+    "subscribe_youtube": "Subscribe to our official YouTube channel",
+    "watch_tiktok": "Watch and like our TikTok videos"
+  },
+
+  "platform": {
+    "telegram": "Telegram",
+    "facebook": "Facebook",
+    "twitter": "X (Twitter)",
+    "youtube": "YouTube",
+    "tiktok": "TikTok"
+  },
+
+  "actionbkd": {
+    "status": {
+      "available": "Available",
+      "paid": "Paid",
+      "in_progress": "In progress",
+      "claimable": "Claimable",
+      "pending": "Pending",
+      "completed": "Completed"
+    }
   }
 }

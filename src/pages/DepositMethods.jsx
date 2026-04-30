@@ -1,16 +1,17 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { useDepositMethods } from "../hooks/useDepositMethods";
+import { useTranslation } from "react-i18next";
 import "./DepositMethods.css";
 
 export default function DepositMethods() {
+  // ✅ namespace correct
+  const { t } = useTranslation("transactions");
+
   const navigate = useNavigate();
-
-  const { data, isLoading, isError } = useDepositMethods();
-
-  const methods = useMemo(() => data || [], [data]);
+  const { data = [], isLoading, isError } = useDepositMethods();
 
   const goToDeposit = useCallback(
     (id) => {
@@ -23,30 +24,34 @@ export default function DepositMethods() {
     navigate("/wallet");
   }, [navigate]);
 
+  // ================= STATES =================
+
   if (isLoading) {
     return (
       <div className="methods-loading">
         <div className="spinner" />
-        <p>Chargement des méthodes de dépôt...</p>
+        <p>{t("deposits.loading")}</p>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="methods-loading">
-        ❌ Impossible de charger les méthodes de dépôt
+      <div className="methods-error">
+        ❌ {t("deposits.error")}
       </div>
     );
   }
 
-  if (!methods.length) {
+  if (!data.length) {
     return (
-      <div className="methods-loading">
-        ⚠️ Aucune méthode disponible
+      <div className="methods-empty">
+        ⚠️ {t("deposits.empty")}
       </div>
     );
   }
+
+  // ================= RENDER =================
 
   return (
     <motion.div
@@ -55,13 +60,15 @@ export default function DepositMethods() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
+      {/* HEADER */}
       <div className="methods-header">
         <FaMoneyBillWave className="methods-header-icon" />
-        <h2>Choisissez une méthode de dépôt</h2>
+        <h2>{t("deposits.title")}</h2>
       </div>
 
+      {/* METHODS */}
       <div className="methods-grid">
-        {methods.map((method) => (
+        {data.map((method) => (
           <motion.div
             key={method.id}
             className="method-card"
@@ -92,13 +99,14 @@ export default function DepositMethods() {
         ))}
       </div>
 
+      {/* BACK */}
       <motion.button
         className="back-button"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={goBack}
       >
-        ⬅ Retour au Wallet
+        ⬅ {t("deposits.back")}
       </motion.button>
     </motion.div>
   );

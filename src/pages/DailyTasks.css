@@ -17,7 +17,7 @@
   overflow-y: auto;
   box-sizing: border-box;
   flex: 1;
-  padding-bottom: 150px; /* ✅ PLUS D'ESPACE pour la barre du bas */
+  padding-bottom: 150px;
   position: relative;
 }
 
@@ -41,7 +41,7 @@
     radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
   pointer-events: none;
-  z-index: 0; /* ✅ ASSURE que c'est en arrière-plan */
+  z-index: 0;
 }
 
 /* Titre avec animation */
@@ -57,7 +57,7 @@
   background-clip: text;
   animation: titleGlow 3s ease-in-out infinite alternate;
   position: relative;
-  z-index: 1; /* ✅ AU-DESSUS du fond */
+  z-index: 1;
 }
 
 @keyframes titleGlow {
@@ -75,7 +75,7 @@
   padding: 0;
   margin: 0;
   position: relative;
-  z-index: 1; /* ✅ AU-DESSUS du fond */
+  z-index: 1;
 }
 
 /* Item de tâche avec animations */
@@ -86,15 +86,15 @@
   padding: 16px 20px;
   margin-bottom: 12px;
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(19, 20, 20, 0.9) 0%, rgba(13, 13, 14, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(19, 20, 20, 0.95) 0%, rgba(13, 13, 14, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
   animation: slideInUp 0.6s ease-out;
   animation-fill-mode: both;
-  z-index: 1; /* ✅ AU-DESSUS du fond */
+  z-index: 1;
 }
 
 /* Animation d'entrée séquentielle pour les items */
@@ -102,6 +102,8 @@
 .task-item:nth-child(2) { animation-delay: 0.2s; }
 .task-item:nth-child(3) { animation-delay: 0.3s; }
 .task-item:nth-child(4) { animation-delay: 0.4s; }
+.task-item:nth-child(5) { animation-delay: 0.5s; }
+.task-item:nth-child(6) { animation-delay: 0.6s; }
 
 @keyframes slideInUp {
   from {
@@ -138,7 +140,7 @@
 }
 
 .task-item.completed {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  background: linear-gradient(135deg, rgba(209, 250, 229, 0.95) 0%, rgba(167, 243, 208, 0.95) 100%);
   color: #065f46;
   font-weight: 600;
   border: 1px solid #10b981;
@@ -147,7 +149,7 @@
 
 @keyframes completedPulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  50% { transform: scale(1.02); }
   100% { transform: scale(1); }
 }
 
@@ -155,23 +157,35 @@
   flex: 1;
   font-size: 1.1rem;
   font-weight: 500;
+  color: #ffffff;
+}
+
+.task-item.completed span {
+  color: #065f46;
+}
+
+/* Conteneur des boutons d'action */
+.task-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 /* Boutons avec animations avancées */
 .action-btn {
   position: relative;
-  padding: 14px 28px;
+  padding: 10px 20px;
   border-radius: 50px;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 140px;
+  min-width: 100px;
   text-align: center;
   overflow: hidden;
   backdrop-filter: blur(10px);
-  z-index: 2; /* ✅ BIEN VISIBLE */
+  z-index: 2;
 }
 
 .action-btn::before {
@@ -196,8 +210,8 @@
 }
 
 .play-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
 }
 
 .countdown-btn {
@@ -207,156 +221,8 @@
 }
 
 .countdown-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6);
-}
-
-.status-completed {
-  color: #16a34a;
-  font-weight: 700;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-5px);
-  }
-  60% {
-    transform: translateY(-3px);
-  }
-}
-
-/* ✅ CORRECTION : Message toutes tâches terminées - VISIBLE */
-.all-completed-msg {
-  margin-top: 40px;
-  padding: 30px;
-  text-align: center;
-  background: linear-gradient(135deg, rgba(159, 231, 185, 0.3) 0%, rgba(21, 71, 55, 0.3) 100%);
-  border-radius: 20px;
-  border: 2px solid rgba(16, 185, 129, 0.8); /* ✅ BORDURE PLUS FONCÉE */
-  backdrop-filter: blur(15px);
-  animation: celebration 2s ease-out, float 3s ease-in-out infinite;
-  position: relative;
-  overflow: visible; /* ✅ CHANGÉ de hidden à visible */
-  margin-bottom: 80px; /* ✅ PLUS D'ESPACE en bas */
-  z-index: 10; /* ✅ TRÈS ÉLEVÉ pour être au-dessus */
-  min-height: 180px; /* ✅ HAUTEUR MINIMALE garantie */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-@keyframes celebration {
-  0% {
-    opacity: 0;
-    transform: scale(0.8) translateY(50px);
-  }
-  70% {
-    transform: scale(1.05) translateY(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.all-completed-msg::before {
-  content: '🎉';
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 2.5rem;
-  animation: confetti 2s ease-out infinite;
-  z-index: 11; /* ✅ AU-DESSUS du message */
-}
-
-@keyframes confetti {
-  0%, 100% {
-    transform: translateX(-50%) rotate(0deg);
-  }
-  25% {
-    transform: translateX(-50%) rotate(-10deg);
-  }
-  75% {
-    transform: translateX(-50%) rotate(10deg);
-  }
-}
-
-.all-completed-msg p {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #16a34a;
-  margin-bottom: 20px;
-  text-shadow: 0 2px 10px rgba(246, 252, 248, 0.3);
-  animation: textGlow 2s ease-in-out infinite alternate;
-  z-index: 12; /* ✅ AU-DESSUS */
-}
-
-@keyframes textGlow {
-  from {
-    text-shadow: 0 2px 10px rgba(22, 163, 74, 0.3);
-  }
-  to {
-    text-shadow: 0 2px 20px rgba(22, 163, 74, 0.6), 0 2px 30px rgba(22, 163, 74, 0.4);
-  }
-}
-
-/* ✅ CORRECTION : Bouton Claim BIEN VISIBLE */
-.all-completed-msg .claim-btn {
-  display: block !important; /* ✅ FORCE l'affichage */
-  margin: 25px auto 0 !important;
-  padding: 16px 40px !important;
-  font-size: 1.2rem !important;
-  font-weight: 700 !important;
-  color: white !important;
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%) !important;
-  background-size: 200% 200% !important;
-  border: none !important;
-  border-radius: 50px !important;
-  cursor: pointer !important;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: 
-    0 6px 20px rgba(16, 185, 129, 0.4),
-    0 0 0 0 rgba(16, 185, 129, 0.5) !important;
-  min-width: 220px !important;
-  position: relative !important;
-  overflow: hidden !important;
-  animation: claimPulse 2s infinite, backgroundShift 3s ease infinite !important;
-  z-index: 20 !important; /* ✅ TRÈS ÉLEVÉ */
-  opacity: 1 !important; /* ✅ FORCE la visibilité */
-  visibility: visible !important; /* ✅ FORCE la visibilité */
-}
-
-@keyframes claimPulse {
-  0% {
-    box-shadow: 
-      0 6px 20px rgba(16, 185, 129, 0.4),
-      0 0 0 0 rgba(16, 185, 129, 0.5);
-  }
-  70% {
-    box-shadow: 
-      0 6px 20px rgba(16, 185, 129, 0.4),
-      0 0 0 15px rgba(237, 238, 238, 0);
-  }
-  100% {
-    box-shadow: 
-      0 6px 20px rgba(16, 185, 129, 0.4),
-      0 0 0 0 rgba(16, 185, 129, 0);
-  }
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
 }
 
 @keyframes backgroundShift {
@@ -365,33 +231,38 @@
   100% { background-position: 0% 50%; }
 }
 
-.all-completed-msg .claim-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
+/* Timer Container */
+.timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 120px;
+}
+
+.timer-text {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+  margin: 0;
+}
+
+.progress-bar {
   width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.6s ease;
+  background: linear-gradient(90deg, #00ffae, #00c3ff);
+  transition: width 1s linear;
+  border-radius: 10px;
 }
 
-.all-completed-msg .claim-btn:hover::before {
-  left: 100%;
-}
-
-.all-completed-msg .claim-btn:hover {
-  transform: translateY(-5px) scale(1.05) !important;
-  box-shadow: 
-    0 12px 30px rgba(16, 185, 129, 0.6),
-    0 0 0 0 rgba(16, 185, 129, 0.5) !important;
-}
-
-.all-completed-msg .claim-btn:active {
-  transform: translateY(-2px) scale(1.02) !important;
-}
-
-/* Modal avec animations */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -448,6 +319,7 @@
   height: 4px;
   background: linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6);
   animation: progressBar 3s linear infinite;
+  background-size: 200% 100%;
 }
 
 @keyframes progressBar {
@@ -488,37 +360,137 @@
   box-shadow: 0 6px 20px rgba(22, 163, 74, 0.6);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .daily-tasks-container {
-    padding: 15px;
-    padding-bottom: 150px; /* ✅ ENCORE PLUS d'espace sur mobile */
-  }
-  
+@media (max-width: 480px) {
   .daily-tasks-container h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
   
-  .task-item {
-    padding: 12px 16px;
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
+  .task-item span {
+    font-size: 1rem;
   }
   
-  .all-completed-msg {
-    padding: 25px 20px;
-    margin: 30px 0 60px 0;
-    min-height: 160px;
+  .action-btn {
+    padding: 6px 12px;
+    min-width: 70px;
+    font-size: 11px;
   }
   
-  .all-completed-msg p {
-    font-size: 1.2rem;
+  .timer-text {
+    font-size: 12px;
   }
-  
-  .all-completed-msg .claim-btn {
-    padding: 14px 32px !important;
-    font-size: 1.1rem !important;
-    min-width: 200px !important;
+}
+
+/* =========================
+   🎉 ALL COMPLETED BLOCK
+========================= */
+.all-completed-msg {
+  margin-top: 40px;
+  padding: 35px 25px;
+  text-align: center;
+  background: linear-gradient(135deg, #10b981, #047857);
+  border-radius: 20px;
+  color: white;
+  animation: fadeInUp 0.6s ease;
+}
+
+.all-completed-msg p {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* 🎁 CLAIM BUTTON */
+.claim-btn {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.claim-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.6);
+}
+
+/* animation entrée */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-btn.active {
+  background: linear-gradient(135deg, #1f2937, #111827);
+  color: white;
+  padding: 10px;
+  border-radius: 20px;
+  width: 140px;
+}
+
+.timer-text {
+  font-size: 13px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ffae, #00c3ff);
+}
+
+/* =========================
+   🎯 ACTION BUTTON (VALIDATE)
+========================= */
+
+.action-btn {
+  padding: 10px 16px;
+  min-width: 110px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* 🔵 état actif */
+.action-btn.ready {
+  background: linear-gradient(135deg, #00c3ff, #007bff);
+  color: white;
+}
+
+.action-btn.ready:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 195, 255, 0.6);
+}
+
+/* 🟢 terminé */
+.action-btn.completed {
+  background: linear-gradient(135deg, #10b981, #047857);
+  color: white;
+}
+
+/* ⚪ en attente */
+.action-btn:disabled {
+  background: #2a2a2a;
+  color: #888;
+  cursor: not-allowed;
 }

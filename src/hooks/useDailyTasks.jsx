@@ -5,51 +5,82 @@ export const useDailyTasks = (packId) => {
   const { user, axiosInstance } = useUser();
   const queryClient = useQueryClient();
 
+  // =========================
+  // 📥 FETCH TASKS
+  // =========================
   const query = useQuery({
     queryKey: ["dailyTasks", packId, user?.id],
 
     queryFn: async () => {
+      if (!packId) return [];
+
       const res = await axiosInstance.get(
-        `/actions/packs/${packId}/daily-tasks`
+        `/actions/packs/${packId}/daily-tasks` // ✅ FIX PRINCIPAL
       );
+
       return res.data || [];
     },
 
     enabled: !!user && !!packId,
-    staleTime: Infinity,
-    gcTime: Infinity,
+    staleTime: 1000 * 30, // ⚠️ évite Infinity (meilleur comportement)
+    gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   });
 
-  // 🔥 START
+  // =========================
+  // ▶️ START TASK
+  // =========================
   const startTask = useMutation({
     mutationFn: ({ taskId }) =>
-      axiosInstance.post(`/actions/packs/daily-tasks/${taskId}/start`),
+      axiosInstance.post(
+        `/actions/packs/daily-tasks/${taskId}/start`
+      ),
 
     onSuccess: () => {
-      queryClient.invalidateQueries(["dailyTasks", packId, user?.id]);
+      queryClient.invalidateQueries({
+        queryKey: ["dailyTasks", packId, user?.id],
+      });
     },
   });
 
-  // 🔥 COMPLETE
+  // =========================
+  // ✅ COMPLETE TASK
+  // =========================
   const completeTask = useMutation({
     mutationFn: ({ taskId }) =>
-      axiosInstance.post(`/actions/packs/daily-tasks/${taskId}/complete`),
+      axiosInstance.post(
+        `/actions/packs/daily-tasks/${taskId}/complete`
+      ),
 
     onSuccess: () => {
-      queryClient.invalidateQueries(["dailyTasks", packId, user?.id]);
+      queryClient.invalidateQueries({
+        queryKey: ["dailyTasks", packId, user?.id],
+      });
     },
   });
 
-  // 🔥 CLAIM
+  // =========================
+  // 💰 CLAIM REWARD
+  // =========================
   const claimReward = useMutation({
     mutationFn: () =>
-      axiosInstance.post(`/actions/claim/${packId}`),
+      axiosInstance.post(`/my-assets/claim/${packId}`),
 
     onSuccess: () => {
-      queryClient.invalidateQueries(["dailyTasks", packId, user?.id]);
-      queryClient.invalidateQueries(["actions"]);
-      queryClient.invalidateQueries(["balance"]);
+      // 🔄 refresh tasks
+      queryClient.invalidateQueries({
+        queryKey: ["dailyTasks", packId, user?.id],
+      });
+
+      // 🔄 refresh assets
+      queryClient.invalidateQueries({
+        queryKey: ["myAssets", user?.id],
+      });
+
+      // 🔄 refresh balance
+      queryClient.invalidateQueries({
+        queryKey: ["balance"],
+      });
     },
   });
 

@@ -1,0 +1,58 @@
+{
+  "bonus": {
+    "authRequired": "Connexion requise",
+    "title": "Programme de bonus",
+    "subtitle": "Réclamez 0.3 BKC toutes les 24h",
+
+    "loading": "Chargement...",
+    "available": "Disponible",
+    "availableIn": "Disponible dans :",
+
+    "points": {
+      "title": "Vos points"
+    },
+
+    "conditions": {
+      "title": "Conditions",
+      "hasPack": "Pack actif",
+      "hasDeposit": "Dépôt effectué",
+      "friendsCount": "Parrainage ({{count}}/{{required}})"
+    },
+
+    "claiming": "Réclamation en cours...",
+    "claim": "Réclamer 0.3 BKC",
+
+    "success": {
+      "claimed": "Bonus réclamé avec succès !"
+    },
+
+    "errors": {
+      "generic": "Erreur lors du chargement",
+      "claim": "Erreur lors de la réclamation"
+    },
+
+    "friends": {
+      "title": "Programme de parrainage",
+      "description": "Invitez vos amis et gagnez des récompenses ensemble !",
+
+      "yourCode": "Votre code promo",
+      "generate": "Générer mon code promo",
+      "generating": "Génération en cours...",
+
+      "copy": "Copier",
+      "copied": "Copié !",
+
+      "yourReferrals": "Vos filleuls",
+      "referral": "Filleul",
+
+      "empty": {
+        "title": "Vous n'avez pas encore invité d'amis",
+        "subtitle": "Partagez votre code promo pour commencer à gagner des récompenses !"
+      },
+
+      "errors": {
+        "copy": "Erreur lors de la copie du code promo"
+      }
+    }
+  }
+}

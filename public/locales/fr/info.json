@@ -1,0 +1,30 @@
+{
+  "info": {
+    "title": "Informations officielles — BLACKCOIN",
+
+    "intro": "L’équipe <1>BLACKCOIN</1> développe activement le projet avec de nombreuses fonctionnalités majeures en préparation.",
+
+    "socials": {
+      "telegram": "Telegram",
+      "twitter": "X (Twitter)",
+      "facebook": "Facebook",
+      "youtube": "YouTube",
+      "instagram": "Instagram",
+      "tiktok": "TikTok"
+    },
+
+    "about": {
+      "title": "À propos du projet",
+      "text1": "BLACKCOIN est une initiative collaborative internationale lancée le 21 mars 2024, visant à construire un écosystème numérique solide, transparent et durable.",
+      "text2": "Pour consulter le Livre Blanc, la Feuille de route et la Politique de confidentialité, veuillez visiter notre site officiel."
+    },
+
+    "communication": {
+      "title": "Communication officielle",
+      "text1": "Toutes les informations officielles, mises à jour et annonces importantes concernant BLACKCOIN sont publiées exclusivement via notre site officiel et nos réseaux sociaux.",
+      "text2": "Nous vous invitons à toujours vérifier les informations via nos canaux officiels afin d’éviter toute confusion."
+    },
+
+    "footer": "Merci de faire partie de l’évolution de BLACKCOIN."
+  }
+}

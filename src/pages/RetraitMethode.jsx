@@ -2,11 +2,14 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useWithdrawMethods } from "../hooks/useWithdrawMethods";
+import { useTranslation } from "react-i18next";
 import "./RetraitMethode.css";
 
 export default function RetraitMethode() {
-  const navigate = useNavigate();
+  // ✅ namespace correct
+  const { t } = useTranslation("transactions");
 
+  const navigate = useNavigate();
   const { data: methods, isLoading, isError } = useWithdrawMethods();
 
   const handleSelectMethod = (method) => {
@@ -16,7 +19,7 @@ export default function RetraitMethode() {
   if (isLoading) {
     return (
       <p className="withdraw-loading">
-        Chargement des méthodes...
+        {t("withdraws.loading")}
       </p>
     );
   }
@@ -24,7 +27,7 @@ export default function RetraitMethode() {
   if (isError) {
     return (
       <p className="withdraw-error">
-        ❌ Impossible de charger les méthodes de retrait
+        ❌ {t("withdraws.error")}
       </p>
     );
   }
@@ -32,7 +35,7 @@ export default function RetraitMethode() {
   if (!methods || methods.length === 0) {
     return (
       <p className="withdraw-empty">
-        Aucune méthode de retrait disponible.
+        {t("withdraws.empty")}
       </p>
     );
   }
@@ -40,13 +43,13 @@ export default function RetraitMethode() {
   return (
     <div className="withdraw-container">
       <h2 className="withdraw-title">
-        💸 Choisissez votre méthode de retrait
+        💸 {t("withdraws.title")}
       </h2>
 
       <div className="withdraw-list">
         {methods.map((method) => (
           <motion.div
-            key={method.id} // ✅ fix important (pas index)
+            key={method.id}
             className="withdraw-card"
             onClick={() => handleSelectMethod(method)}
             whileHover={{ scale: 1.05 }}
@@ -61,7 +64,9 @@ export default function RetraitMethode() {
 
             <div className="withdraw-info">
               <h3>{method.name}</h3>
-              <p>{method.country || "Pays non spécifié"}</p>
+              <p>
+                {method.country || t("withdraws.noCountry")} {/* ✅ corrigé */}
+              </p>
             </div>
           </motion.div>
         ))}

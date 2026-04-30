@@ -1,0 +1,42 @@
+{
+  "game": {
+    "player": "Joueur",
+    "balance": "Solde",
+    "bet": "Mise",
+
+    "start": "Démarrer la partie",
+    "loot": "Butin obtenu",
+
+    "items": "{{count}} objet",
+    "items_plural": "{{count}} objets",
+
+    "cashout": "Encaisser",
+
+    "invalid_bet": "Mise invalide",
+    "insufficient_balance": "Solde insuffisant",
+    "start_error": "Erreur lors du démarrage de la partie",
+
+    "lose": "Dommage, vous avez perdu votre mise.",
+    "play_error": "Erreur pendant la partie",
+
+    "cashout_success": "Encaissement réussi : {{amount}} pts",
+    "cashout_error": "Erreur lors de l'encaissement"
+  },
+
+  "trade": {
+    "balance": "Solde",
+    "no_history": "Aucun historique",
+
+    "bet1": "Mise 1",
+    "bet2": "Mise 2",
+    "play": "Jouer",
+
+    "bet_required": "Placez au moins une mise",
+    "insufficient_balance": "Solde insuffisant",
+
+    "start_error": "Erreur lors du lancement de la partie",
+
+    "cashout_success": "Encaissement réussi : {{amount}} pts",
+    "cashout_error": "Erreur lors de l'encaissement"
+  }
+}

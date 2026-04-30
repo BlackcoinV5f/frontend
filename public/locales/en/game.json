@@ -1,0 +1,42 @@
+{
+  "game": {
+    "player": "Player",
+    "balance": "Balance",
+    "bet": "Bet",
+
+    "start": "Start Game",
+    "loot": "Loot obtained",
+
+    "items": "{{count}} item",
+    "items_plural": "{{count}} items",
+
+    "cashout": "Cash Out",
+
+    "invalid_bet": "Invalid bet",
+    "insufficient_balance": "Insufficient balance",
+    "start_error": "Error starting the game",
+
+    "lose": "Too bad, you lost your bet.",
+    "play_error": "Error during the game",
+
+    "cashout_success": "Cash out successful: {{amount}} pts",
+    "cashout_error": "Error during cash out"
+  },
+
+  "trade": {
+    "balance": "Balance",
+    "no_history": "No history",
+
+    "bet1": "Bet 1",
+    "bet2": "Bet 2",
+    "play": "Play",
+
+    "bet_required": "Place at least one bet",
+    "insufficient_balance": "Insufficient balance",
+
+    "start_error": "Error starting the game",
+
+    "cashout_success": "Cash out successful: {{amount}} pts",
+    "cashout_error": "Error during cash out"
+  }
+}

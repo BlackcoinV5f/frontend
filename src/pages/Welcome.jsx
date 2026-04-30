@@ -19,66 +19,26 @@ import {
 import axios from "axios";
 import "./Welcome.css";
 
-/* ============================
-   CONFIGURATION DES TÂCHES
-============================ */
+/* ============================ */
 
 const TASKS_CONFIG = [
-  {
-    key: "telegram",
-    icon: <FaTelegram size={24} />,
-    name: "Telegram",
-    link: "https://t.me/+2VYCu2Ygs0Q1YTk0",
-    points: 1000,
-    color: "#0088cc",
-  },
-  {
-    key: "facebook",
-    icon: <FaFacebook size={24} />,
-    name: "Facebook",
-    link: "https://www.facebook.com/share/1CjsWSj1P3/",
-    points: 1000,
-    color: "#1877F2",
-  },
-  {
-    key: "twitter",
-    icon: <FaTwitter size={24} />,
-    name: "Twitter",
-    link: "https://x.com/BlackcoinON",
-    points: 1000,
-    color: "#1DA1F2",
-  },
-  {
-    key: "youtube",
-    icon: <FaYoutube size={24} />,
-    name: "YouTube",
-    link: "https://www.youtube.com/@Blackcoinchaine",
-    points: 1000,
-    color: "#FF0000",
-  },
-  {
-    key: "tiktok",
-    icon: <FaTiktok size={24} />,
-    name: "TikTok",
-    link: "https://www.tiktok.com/@blackcoin_official",
-    points: 1000,
-    color: "#000000",
-  },
+  { key: "telegram", icon: <FaTelegram size={24} />, name: "Telegram", link: "https://t.me/+2VYCu2Ygs0Q1YTk0", points: 1000, color: "#0088cc" },
+  { key: "facebook", icon: <FaFacebook size={24} />, name: "Facebook", link: "https://www.facebook.com/share/1CjsWSj1P3/", points: 1000, color: "#1877F2" },
+  { key: "twitter", icon: <FaTwitter size={24} />, name: "Twitter", link: "https://x.com/BlackcoinON", points: 1000, color: "#1DA1F2" },
+  { key: "youtube", icon: <FaYoutube size={24} />, name: "YouTube", link: "https://www.youtube.com/@Blackcoinchaine", points: 1000, color: "#FF0000" },
+  { key: "tiktok", icon: <FaTiktok size={24} />, name: "TikTok", link: "https://www.tiktok.com/@blackcoin_official", points: 1000, color: "#000000" },
 ];
 
-const TOTAL_AVAILABLE_POINTS = TASKS_CONFIG.reduce(
-  (acc, t) => acc + t.points,
-  0
-);
+const TOTAL_AVAILABLE_POINTS = TASKS_CONFIG.reduce((acc, t) => acc + t.points, 0);
 
-/* ============================
-   COMPONENT PRINCIPAL
-============================ */
+/* ============================ */
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { user, persistUserData } = useUser();
-  const { t } = useTranslation();
+
+  // ✅ namespace
+  const { t } = useTranslation("login");
 
   const [step, setStep] = useState(1);
   const [tasks, setTasks] = useState(() =>
@@ -92,9 +52,7 @@ export default function Welcome() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login", { replace: true });
-    }
+    if (!user) navigate("/login", { replace: true });
   }, [user, navigate]);
 
   const totalPoints = useMemo(() => {
@@ -132,9 +90,9 @@ export default function Welcome() {
       navigate("/login", { replace: true });
     } catch (err) {
       const message =
-        err.response?.data?.detail ||
-        err.message ||
-        t("welcome.error");
+        typeof err?.response?.data?.detail === "string"
+          ? err.response.data.detail
+          : t("welcome.error");
 
       setError(message);
     } finally {
@@ -170,20 +128,16 @@ export default function Welcome() {
   );
 }
 
-/* ============================
-   STEP 1
-============================ */
+/* ============================ */
 
 function Step1({ user, handleNext }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("login");
 
   return (
     <motion.div className="welcome-step">
       <div className="welcome-card">
         <h2>{t("welcome.step1.title", { name: user.first_name })}</h2>
-
         <p>{t("welcome.step1.description")}</p>
-
         <p className="warning-text">{t("welcome.step1.warning")}</p>
 
         <div className="security-badge">
@@ -198,9 +152,7 @@ function Step1({ user, handleNext }) {
   );
 }
 
-/* ============================
-   STEP 2
-============================ */
+/* ============================ */
 
 function Step2({
   tasks,
@@ -211,7 +163,7 @@ function Step2({
   handleTaskComplete,
   handleNext,
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("login");
 
   return (
     <motion.div className="welcome-step">
@@ -219,7 +171,7 @@ function Step2({
         <h2>{t("welcome.step2.title")}</h2>
 
         <div className="total-points">
-          {t("welcome.step2.points")} :
+          {t("welcome.step2.points")}{" "}
           <strong>
             {totalPoints}/{TOTAL_AVAILABLE_POINTS}
           </strong>
@@ -232,13 +184,12 @@ function Step2({
         )}
 
         <div className="tasks-list scrollable">
-          {TASKS_CONFIG.map((task, index) => (
+          {TASKS_CONFIG.map((task) => (
             <TaskItem
               key={task.key}
               task={task}
               completed={tasks[task.key]}
               loading={loading}
-              index={index}
               onComplete={handleTaskComplete}
             />
           ))}
@@ -266,12 +217,11 @@ function Step2({
   );
 }
 
-/* ============================
-   TASK ITEM
-============================ */
+/* ============================ */
 
-function TaskItem({ task, completed, loading, onComplete, index }) {
-  const { t } = useTranslation();
+function TaskItem({ task, completed, loading, onComplete }) {
+  const { t } = useTranslation("login");
+
   const [visited, setVisited] = useState(false);
   const [delayActive, setDelayActive] = useState(false);
 
@@ -279,11 +229,7 @@ function TaskItem({ task, completed, loading, onComplete, index }) {
     if (completed) return;
 
     setVisited(true);
-    setDelayActive(false);
-
-    setTimeout(() => {
-      setDelayActive(true);
-    }, 10000);
+    setTimeout(() => setDelayActive(true), 10000);
   };
 
   const handleValidate = () => {
@@ -293,31 +239,19 @@ function TaskItem({ task, completed, loading, onComplete, index }) {
   };
 
   return (
-    <motion.div
-      className={`task-item ${completed ? "completed" : ""}`}
-      style={{ borderLeft: `4px solid ${task.color}` }}
-    >
+    <motion.div className={`task-item ${completed ? "completed" : ""}`}>
       <div className="task-icon">{task.icon}</div>
 
       <div className="task-content">
-        <a
-          href={task.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleVisit}
-        >
+        <a href={task.link} target="_blank" rel="noopener noreferrer" onClick={handleVisit}>
           {t("welcome.task.join", { name: task.name })}
         </a>
 
-        <span>
-          {t("welcome.task.points", { points: task.points })}
-        </span>
+        <span>{t("welcome.task.points", { points: task.points })}</span>
       </div>
 
       {completed ? (
-        <div className="task-status">
-          <FaCheck />
-        </div>
+        <FaCheck />
       ) : (
         <button onClick={handleValidate} disabled={!delayActive || loading}>
           {!visited
