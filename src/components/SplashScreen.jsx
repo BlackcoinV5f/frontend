@@ -12,7 +12,6 @@ const SplashScreen = ({ onFinish }) => {
       return;
     }
 
-    // 🔥 Progress fluide et sécurisé
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -23,10 +22,9 @@ const SplashScreen = ({ onFinish }) => {
       });
     }, 50);
 
-    // 🔥 Fin du splash
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(() => onFinish(), 600); // synchronisé avec animation
+      setTimeout(() => onFinish(), 600);
     }, 5000);
 
     return () => {
@@ -48,6 +46,16 @@ const SplashScreen = ({ onFinish }) => {
           }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
         >
+          {/* 🔝 BARRE EN HAUT */}
+          <div className="top-loading">
+            <motion.div
+              className="top-progress"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.15 }}
+            />
+          </div>
+
           {/* Particles */}
           <div className="particles">
             {[...Array(20)].map((_, i) => (
@@ -69,15 +77,15 @@ const SplashScreen = ({ onFinish }) => {
             ))}
           </div>
 
-          {/* 🔥 LOGO CENTRÉ + ANIMÉ */}
+          {/* 🔥 LOGO PLUS GRAND */}
           <div className="center-logo">
             <motion.img
               src="/logo.png"
               alt="Logo"
               className="splash-logo"
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.8, opacity: 0 }}
               animate={{
-                scale: [1, 1.05, 1],
+                scale: [1, 1.1, 1],
                 opacity: 1,
               }}
               transition={{
@@ -91,25 +99,8 @@ const SplashScreen = ({ onFinish }) => {
             />
           </div>
 
-          {/* 🔽 CONTENU EN BAS */}
-          <div className="bottom-content">
-            <div className="loading-container">
-              <div className="loading-bar">
-                <motion.div
-                  className="loading-progress"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.15 }}
-                />
-              </div>
-
-              <div className="progress-text">{progress}%</div>
-            </div>
-
-            <div className="brand-text">
-              Chargement de l'expérience...
-            </div>
-          </div>
+          {/* 🔽 POURCENTAGE SEUL (texte supprimé) */}
+          <div className="progress-text">{progress}%</div>
         </motion.div>
       )}
     </AnimatePresence>

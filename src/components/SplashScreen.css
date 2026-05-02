@@ -105,3 +105,43 @@
     filter: drop-shadow(0 0 5px rgba(0, 198, 255, 0.3));
   }
 }
+
+/* 🔝 Barre en haut */
+.top-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.top-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #00c6ff, #0072ff); /* 🔥 couleur modifiable */
+}
+
+/* 🔥 Logo plus grand */
+.splash-logo {
+  width: 180px; /* augmente ici */
+  height: auto;
+  object-fit: contain;
+}
+
+/* Centrage */
+.center-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Texte % */
+.progress-text {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: white;
+}
