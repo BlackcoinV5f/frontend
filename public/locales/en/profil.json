@@ -1,27 +1,25 @@
 {
+  "common": {
+    "loading": "Loading..."
+  },
+
   "userProfile": {
     "header": {
       "close": "Close"
     },
-
     "status": {
       "verified": "Verified",
       "pending": "Pending"
     },
-
     "profileCompletion": "Profile completion",
-
     "personalInfo": "Personal information",
-    "email": "Email",
+    "email": "Email address",
     "phone": "Phone",
     "country": "Country",
-
     "welcomeTasks": "Onboarding tasks",
     "completed": "Completed",
     "inProgress": "In progress",
-
     "warningIncomplete": "Complete your profile to access all features",
-
     "actions": {
       "verifyKyc": "Verify my identity (KYC)",
       "editProfile": "Edit profile",
@@ -32,25 +30,50 @@
 
   "check": {
     "title": "Eligibility Check",
-    "warning": "Criteria may evolve as the project develops.",
-
+    "warning": "Criteria may evolve with the project.",
     "error": {
       "default": "Error",
-      "fallback": "Unable to verify"
+      "fallback": "Unable to check",
+      "full": "Error: {{message}}"
     },
-
-    "progress": "{{completed}} / {{total}} validated",
-
-    "eligible": "You are eligible for the airdrop",
-    "notEligible": "Required conditions not met",
-
+    "progress": "{{completed}} / {{total}} completed",
+    "eligible": "You are eligible for the airdrop 🎉",
+    "notEligible": "You do not meet the requirements yet",
     "criteria": {
-      "friends": "{{count}} friends",
-      "tasks": "{{count}} tasks",
+      "friends": "{{count}} invited friends",
+      "tasks": "{{count}} completed tasks",
       "pack": "Active pack required",
-      "points": "{{count}} points",
+      "points": "{{count}} accumulated points",
       "days": "{{count}} days of activity",
-      "level": "Minimum level {{level}} (mining)"
+      "level": "Level {{level}} reached"
+    },
+    "icons": {
+      "valid": "✅",
+      "invalid": "❌",
+      "optional": "⚪"
+    },
+    "status": {
+      "valid": "valid",
+      "invalid": "invalid",
+      "optional": "optional"
+    }
+  },
+
+  "airdropClaim": {
+    "title": "Airdrop",
+    "fields": {
+      "uid": "UID / Identifier",
+      "uidPlaceholder": "Your UID / Email",
+      "wallet": "Wallet address",
+      "bkc": "BKC address",
+      "memo": "Memo (optional)",
+      "memoPlaceholder": "Memo if required"
+    },
+    "actions": {
+      "submit": "Submit request"
+    },
+    "messages": {
+      "success": "Request submitted"
     }
   }
 }

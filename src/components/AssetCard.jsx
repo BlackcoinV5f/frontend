@@ -11,11 +11,11 @@ const AssetCard = ({ asset }) => {
   const { start, claim } = useActionMutations();
   const [loading, setLoading] = useState(false);
 
+  // ✅ NORMALISATION PROPRE (logique indépendante de la langue)
   const status = asset.status?.toLowerCase();
 
-  const canStart = status === "payé" || status === "paid";
-  const canOpenTasks =
-    status === "en_cours" || status === "in_progress";
+  const canStart = status === "paid";
+  const canOpenTasks = status === "in_progress";
   const canClaim = status === "claimable";
 
   const isDisabled =
@@ -64,9 +64,23 @@ const AssetCard = ({ asset }) => {
       </div>
 
       <div className="card-body">
-        <p><span>Catégorie :</span> {asset.category}</p>
-        <p><span>Investi :</span> <strong>{asset.total_invested_usdt} USDT</strong></p>
-        <p><span>Gains journaliers :</span> <strong>{asset.daily_earnings_bkc} BKC</strong></p>
+        <p>
+          <span>{t("action.category")} :</span>{" "}
+          {t(
+            `action.category_values.${asset.category}`,
+            asset.category
+          )}
+        </p>
+
+        <p>
+          <span>{t("action.invested")} :</span>{" "}
+          <strong>{asset.total_invested_usdt} USDT</strong>
+        </p>
+
+        <p>
+          <span>{t("action.dailyEarnings")} :</span>{" "}
+          <strong>{asset.daily_earnings_bkc} BKC</strong>
+        </p>
       </div>
 
       <div className="card-footer">

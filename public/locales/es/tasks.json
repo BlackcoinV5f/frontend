@@ -1,6 +1,6 @@
 {
   "tasksPage": {
-    "title": "Tareas a completar",
+    "title": "Tareas por completar",
     "login_required": "Inicia sesión para ver las tareas",
     "error": "Error al cargar las tareas",
     "completed": "Completada",
@@ -22,16 +22,16 @@
     "success": "Tarea validada con éxito 🎉",
     "points": "pts",
     "total": "Total ganado: {{amount}} pts",
-    "empty_code": "Por favor introduce un código de validación",
+    "empty_code": "Por favor, introduce un código de validación",
     "invalid_code": "Código inválido",
-    "unauthorized": "No autorizado. Inicia sesión nuevamente.",
+    "unauthorized": "No autorizado. Por favor, inicia sesión nuevamente.",
     "error": "Error durante la validación"
   },
 
   "dailyPage": {
     "login_required": "Inicia sesión",
     "error": "Error",
-    "pack_title": "Tareas del Pack #{{id}}",
+    "pack_title": "Paquete de tareas #{{id}}",
     "no_tasks": "No hay tareas disponibles",
     "start": "Comenzar",
     "validate": "Validar",
@@ -39,8 +39,14 @@
     "completed": "¡Tarea completada!",
     "all_done": "¡Todas las tareas completadas!",
     "claim": "Reclamar",
-    "reward": "Recompensa",
-    "reward_message": "Recompensa recibida",
+
+    "reward": {
+      "title": "Recompensa",
+      "claimed": "Has recibido +{{amount}} BKC",
+      "wallet": "Saldo de la cartera: {{balance}} BKC",
+      "next": "Próxima reclamación: {{date}}"
+    },
+
     "start_error": "No se pudo iniciar la tarea",
     "complete_error": "No se pudo completar la tarea",
     "claim_error": "No se pudo reclamar la recompensa"
@@ -48,10 +54,10 @@
 
   "taskspk": {
     "join_telegram": "Únete a nuestro canal oficial de Telegram",
-    "like_facebook": "Comparte y da me gusta a nuestra página de Facebook",
+    "like_facebook": "Dale like y comparte nuestra página de Facebook",
     "follow_twitter": "Sigue nuestra cuenta oficial en X",
     "subscribe_youtube": "Suscríbete a nuestro canal oficial de YouTube",
-    "watch_tiktok": "Mira y da like a nuestros videos de TikTok"
+    "watch_tiktok": "Mira y dale like a nuestros videos en TikTok"
   },
 
   "platform": {

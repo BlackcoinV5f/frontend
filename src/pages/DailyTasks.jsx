@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import "./DailyTasks.css";
 
 export default function DailyTasks() {
-  const { t } = useTranslation("tasks");
+  const { t, i18n } = useTranslation("tasks");
   const { packId } = useParams();
   const { user } = useUser();
   const navigate = useNavigate();
@@ -31,9 +31,9 @@ export default function DailyTasks() {
   const TASK_DURATION = 3600;
 
   // =========================
-  // ⏱ TIME CALC
+  // ⏱ TIME CALC (optimisé)
   // =========================
-  const getRemainingTime = (started_at) => {
+  const getRemainingTime = useCallback((started_at) => {
     if (!started_at) return null;
 
     const start = new Date(started_at).getTime();
@@ -41,7 +41,7 @@ export default function DailyTasks() {
 
     const elapsed = (Date.now() - start) / 1000;
     return Math.max(0, TASK_DURATION - elapsed);
-  };
+  }, []);
 
   // =========================
   // 🔄 SYNC DATA
@@ -49,13 +49,15 @@ export default function DailyTasks() {
   useEffect(() => {
     if (!data) return;
 
-    const enriched = data.map((task) => ({
+    const cleanData = data?.data || data;
+
+    const enriched = cleanData.map((task) => ({
       ...task,
       time_left: getRemainingTime(task.started_at),
     }));
 
     setTasks(enriched);
-  }, [data]);
+  }, [data, getRemainingTime]);
 
   // =========================
   // ⏱ TIMER
@@ -71,7 +73,7 @@ export default function DailyTasks() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [getRemainingTime]);
 
   // =========================
   // 🚫 AUTH
@@ -117,12 +119,12 @@ export default function DailyTasks() {
   // =========================
   const handleStart = async (task) => {
     try {
-      const res = await startTask.mutateAsync({ taskId: task.id });
+      setMessage(null);
 
-      const startedAt =
-        res?.started_at ||
-        res?.data?.started_at ||
-        new Date().toISOString();
+      const res = await startTask.mutateAsync({ taskId: task.id });
+      const result = res?.data || res;
+
+      const startedAt = result?.started_at || new Date().toISOString();
 
       setTasks((prev) =>
         prev.map((t) =>
@@ -150,6 +152,8 @@ export default function DailyTasks() {
   // =========================
   const handleComplete = async (task) => {
     try {
+      setMessage(null);
+
       await completeTask.mutateAsync({ taskId: task.id });
 
       setTasks((prev) =>
@@ -176,8 +180,12 @@ export default function DailyTasks() {
   // =========================
   const handleClaim = async () => {
     try {
+      setMessage(null);
+
       const res = await claimReward.mutateAsync(packId);
-      setRewardInfo(res);
+      const result = res?.data || res;
+
+      setRewardInfo(result);
       setModalVisible(true);
     } catch (error) {
       setMessage(
@@ -208,8 +216,8 @@ export default function DailyTasks() {
             className={`task-item ${task.completed ? "completed" : ""}`}
           >
             <span>
-              {t(`taskspk.${task.description}`)} (
-              {t(`platform.${task.platform}`)})
+              {t(`taskspk.${task.description}`, task.description)} (
+              {t(`platform.${task.platform}`, task.platform)})
             </span>
 
             {!task.completed && (
@@ -274,11 +282,34 @@ export default function DailyTasks() {
       {modalVisible && rewardInfo && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>🎉 {t("dailyPage.reward")}</h3>
-            <p>{rewardInfo.message}</p>
+            <h3>🎉 {t("dailyPage.reward.title")}</h3>
+
+            <p>
+              💰{" "}
+              {t("dailyPage.reward.claimed", {
+                amount: rewardInfo.claimed_amount,
+              })}
+            </p>
+
+            <p>
+              🧾{" "}
+              {t("dailyPage.reward.wallet", {
+                balance: rewardInfo.wallet_balance,
+              })}
+            </p>
+
+            <p>
+              ⏳{" "}
+              {t("dailyPage.reward.next", {
+                date: new Date(
+                  rewardInfo.next_claim_available
+                ).toLocaleString(i18n.language),
+              })}
+            </p>
+
             <button
               className="ok-btn"
-              onClick={() => navigate("/actions")}
+              onClick={() => setModalVisible(false)}
             >
               {t("common.ok")}
             </button>

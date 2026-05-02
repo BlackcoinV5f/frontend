@@ -5,86 +5,86 @@
   width: 100%;
   min-height: 100vh;
 
-  padding-top: 90px;     /* espace navbar */
-  padding-bottom: 90px;  /* espace bottom nav */
-  padding-left: 16px;
-  padding-right: 16px;
+  /* Ajusté pour éviter que le titre soit caché */
+  padding: 120px 16px 100px;
 
   background: linear-gradient(135deg, #0b0f1a, #1a1f2f);
   color: #ffffff;
   font-family: 'Inter', sans-serif;
 
-  overflow-x: hidden;   /* on garde seulement ça */
+  overflow-x: hidden;
+}
+
+/* =========================
+   HEADER (titre + bouton)
+========================= */
+.airdrop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 24px;
 }
 
 /* =========================
    TITRE PAGE
 ========================= */
 .airdrop-title {
-  text-align: center;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-top: 60px; /* ← ajuste ici (10px, 20px, etc.) */
 }
 
 /* =========================
-   CHECK BUTTON (ALIGNÉ À DROITE)
+   CHECK BUTTON (BIEN À DROITE)
 ========================= */
-.airdrop-check-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 32px;
-}
-
 .airdrop-check-btn {
-  height: 52px;
-  padding: 0 8px;
+  height: 44px;
+  padding: 0 12px;
 
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+
+  margin-left: auto; /* force à droite */
+  margin-top: 55px; /* ↓ descend le logo */
 
   background: linear-gradient(135deg, #00c853, #00a86b);
-  border-radius: 28px;
+  border-radius: 24px;
   cursor: pointer;
 
-  box-shadow: 0 6px 18px rgba(0, 200, 83, 0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 200, 83, 0.3);
+  transition: all 0.2s ease;
 }
 
 .airdrop-check-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0, 200, 83, 0.45);
 }
 
-/* Logo Check */
+/* Logo */
 .check-logo {
-  width: 30px;       /* taille confortable */
-  height: 36px;
-  object-fit: contain;
-  flex-shrink: 0;
-  
+  width: 24px;
+  height: 24px;
+
+   margin-top: 4px; /* ↓ descend le logo */
 }
 
-/* Texte Check */
+/* Texte */
 .check-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.4px;
-  color: #ffffff;
 }
 
 /* =========================
    SECTIONS
 ========================= */
 .airdrop-section {
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 
 .section-header h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 14px;
+  font-size: 14px;
+  margin-bottom: 12px;
   color: #a5b4fc;
 }
 
@@ -93,6 +93,7 @@
 ========================= */
 .airdrop-grid {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 14px;
 }
 
@@ -107,75 +108,41 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 
-  text-align: center;
   cursor: pointer;
+  text-align: center;
 
   border: 1px solid rgba(165, 180, 252, 0.15);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .airdrop-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(165, 180, 252, 0.35);
 }
 
 /* =========================
-   LOGOS PLATEFORMES
+   LOGOS
 ========================= */
 .platform-logo {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
+  width: 40px;
+  height: 40px;
   margin-bottom: 8px;
 }
 
 /* =========================
-   TEXTE DES CARDS
+   TEXTE
 ========================= */
 .airdrop-card span {
   font-size: 12px;
-  font-weight: 500;
-  color: #e6e8ff;
 }
 
 /* =========================
-   RESPONSIVE
+   RESPONSIVE (CORRIGÉ)
 ========================= */
 @media (max-width: 480px) {
-  .airdrop-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .airdrop-header {
+    flex-direction: row; /* IMPORTANT: ne pas casser l'alignement */
+    justify-content: space-between;
+    align-items: center;
   }
-
-  .airdrop-check-wrapper {
-    justify-content: center; /* sur mobile : centré */
-  }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .airdrop-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 769px) {
-  .airdrop-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.airdrop-page {
-  height: 100vh;              /* important */
-  overflow-y: auto;           /* scroll activé */
-  overflow-x: hidden;
-
-  padding-top: 90px;          /* = hauteur navbar */
-  padding-bottom: 90px;       /* = hauteur bottom nav */
-  padding-left: 16px;
-  padding-right: 16px;
-
-  background: linear-gradient(135deg, #0b0f1a, #1a1f2f);
-  color: #ffffff;
-  font-family: 'Inter', sans-serif;
 }

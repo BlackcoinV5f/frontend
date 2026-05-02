@@ -39,8 +39,14 @@
     "completed": "Tâche complétée !",
     "all_done": "Toutes les tâches terminées !",
     "claim": "Réclamer",
-    "reward": "Récompense",
-    "reward_message": "Récompense reçue",
+
+    "reward": {
+      "title": "Récompense",
+      "claimed": "Vous avez reçu +{{amount}} BKC",
+      "wallet": "Solde du wallet : {{balance}} BKC",
+      "next": "Prochaine réclamation : {{date}}"
+    },
+
     "start_error": "Impossible de démarrer la tâche",
     "complete_error": "Impossible de compléter",
     "claim_error": "Impossible de réclamer"

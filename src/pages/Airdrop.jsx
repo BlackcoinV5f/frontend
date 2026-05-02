@@ -44,12 +44,11 @@ const Airdrop = () => {
 
   return (
     <div className="airdrop-page">
-      
-      {/* 🔹 Page Title */}
-      <h2 className="airdrop-title">Airdrop Claim</h2>
 
-      {/* 🔹 Check Button (aligné à droite) */}
-      <div className="airdrop-check-wrapper">
+      {/* 🔹 HEADER (titre + bouton à droite) */}
+      <div className="airdrop-header">
+        <h2 className="airdrop-title">Airdrop Claim</h2>
+
         <div className="airdrop-check-btn" onClick={goToCheck}>
           <img
             src={CheckLogo}

@@ -1,27 +1,25 @@
 {
+  "common": {
+    "loading": "Cargando..."
+  },
+
   "userProfile": {
     "header": {
       "close": "Cerrar"
     },
-
     "status": {
       "verified": "Verificado",
       "pending": "Pendiente"
     },
-
     "profileCompletion": "Progreso del perfil",
-
     "personalInfo": "Información personal",
     "email": "Correo electrónico",
     "phone": "Teléfono",
     "country": "País",
-
     "welcomeTasks": "Tareas iniciales",
     "completed": "Completadas",
-    "inProgress": "En progreso",
-
+    "inProgress": "En curso",
     "warningIncomplete": "Completa tu perfil para acceder a todas las funciones",
-
     "actions": {
       "verifyKyc": "Verificar mi identidad (KYC)",
       "editProfile": "Editar perfil",
@@ -32,25 +30,50 @@
 
   "check": {
     "title": "Verificación de elegibilidad",
-    "warning": "Los criterios pueden cambiar a medida que evoluciona el proyecto.",
-
+    "warning": "Los criterios pueden cambiar con el proyecto.",
     "error": {
       "default": "Error",
-      "fallback": "No se puede verificar"
+      "fallback": "No se pudo verificar",
+      "full": "Error: {{message}}"
     },
-
-    "progress": "{{completed}} / {{total}} validados",
-
-    "eligible": "Eres elegible para el airdrop",
-    "notEligible": "No se cumplen las condiciones requeridas",
-
+    "progress": "{{completed}} / {{total}} completados",
+    "eligible": "Eres elegible para el airdrop 🎉",
+    "notEligible": "Aún no cumples los requisitos",
     "criteria": {
-      "friends": "{{count}} amigos",
-      "tasks": "{{count}} tareas",
+      "friends": "{{count}} amigos invitados",
+      "tasks": "{{count}} tareas completadas",
       "pack": "Se requiere un pack activo",
-      "points": "{{count}} puntos",
-      "days": "{{count}} días de uso",
-      "level": "Nivel mínimo {{level}} (minería)"
+      "points": "{{count}} puntos acumulados",
+      "days": "{{count}} días de actividad",
+      "level": "Nivel {{level}} alcanzado"
+    },
+    "icons": {
+      "valid": "✅",
+      "invalid": "❌",
+      "optional": "⚪"
+    },
+    "status": {
+      "valid": "válido",
+      "invalid": "no válido",
+      "optional": "opcional"
+    }
+  },
+
+  "airdropClaim": {
+    "title": "Airdrop",
+    "fields": {
+      "uid": "UID / Identificador",
+      "uidPlaceholder": "Tu UID / Correo",
+      "wallet": "Dirección del wallet",
+      "bkc": "Dirección BKC",
+      "memo": "Memo (opcional)",
+      "memoPlaceholder": "Memo si es necesario"
+    },
+    "actions": {
+      "submit": "Enviar solicitud"
+    },
+    "messages": {
+      "success": "Solicitud enviada"
     }
   }
 }

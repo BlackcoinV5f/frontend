@@ -11,15 +11,16 @@
     "fetchError": "❌ Error loading actions",
 
     "myAssetsTitle": "My Assets",
-    "noAssets": "You don’t have any assets yet"
+    "noAssets": "You do not have any assets yet"
   },
 
   "action": {
     "category": "Category",
     "type": "Type",
-    "pricePerPart": "Price per share",
-    "totalParts": "Total shares",
-    "dailyEarnings": "Daily earnings",
+    "invested": "Invested",
+    "pricePerPart": "Price per Share",
+    "totalParts": "Total Shares",
+    "dailyEarnings": "Daily Earnings",
     "status": "Status",
 
     "category_values": {
@@ -36,29 +37,27 @@
     "status_values": {
       "available": "Available",
       "paid": "Paid",
-      "in_progress": "In progress",
-      "claimable": "Claimable",
+      "in_progress": "In Progress",
       "pending": "Pending",
       "completed": "Completed"
     },
 
     "button": {
-      "contribute": "Invest",
+      "contribute": "Contribute",
       "unavailable": "Unavailable",
       "start": "Start",
-      "viewTasks": "View tasks",
-      "claim": "Claim",
+      "viewTasks": "View Tasks",
       "pending": "Pending ⏳",
       "completed": "Completed",
-      "loading": "⏳ Processing..."
+      "loading": "⏳ Loading..."
     },
 
     "feedback": {
       "mustLogin": "⚠️ You must be logged in to proceed.",
-      "buySuccess": "✅ Pack \"{{name}}\" purchased successfully!",
+      "buySuccess": "✅ Successfully purchased pack \"{{name}}\"!",
       "startSuccess": "🚀 Pack \"{{name}}\" started!",
       "claimSuccess": "💰 Earnings from pack \"{{name}}\" successfully claimed!",
-      "error": "❌ Action failed."
+      "error": "❌ Error during action."
     }
   },
 

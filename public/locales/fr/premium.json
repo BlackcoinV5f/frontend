@@ -17,6 +17,7 @@
   "action": {
     "category": "Catégorie",
     "type": "Type",
+    "invested": "Investi",
     "pricePerPart": "Prix par part",
     "totalParts": "Parts totales",
     "dailyEarnings": "Gains journaliers",
@@ -37,7 +38,6 @@
       "available": "Disponible",
       "paid": "Payé",
       "in_progress": "En cours",
-      "claimable": "À réclamer",
       "pending": "En attente",
       "completed": "Terminé"
     },
@@ -47,7 +47,6 @@
       "unavailable": "Indisponible",
       "start": "Démarrer",
       "viewTasks": "Voir les tâches",
-      "claim": "Réclamer",
       "pending": "En attente ⏳",
       "completed": "Terminé",
       "loading": "⏳ En cours..."

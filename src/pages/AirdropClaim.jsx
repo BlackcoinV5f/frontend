@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./AirdropClaim.css";
 
 // plateformes autorisées
@@ -16,6 +17,12 @@ const PLATFORMS = {
 
 const AirdropClaim = () => {
   const { platformId } = useParams();
+  const { t, ready } = useTranslation("profil");
+
+  // ⛔ attendre que les traductions soient chargées
+  if (!ready) {
+    return <div className="loading">Chargement...</div>;
+  }
 
   // 🔐 Sécurité : plateforme inconnue
   if (!PLATFORMS[platformId]) {
@@ -31,9 +38,11 @@ const AirdropClaim = () => {
   });
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
@@ -47,68 +56,76 @@ const AirdropClaim = () => {
     };
 
     console.log("Airdrop claim:", payload);
-    alert("Demande envoyée (mock)");
+
+    alert(t("airdropClaim.messages.success"));
   };
 
   return (
     <div className="airdrop-claim-page">
-      <h2>Airdrop – {platform.label}</h2>
+      <h2>
+        {t("airdropClaim.title")} – {platform.label}
+      </h2>
 
       <form className="airdrop-form" onSubmit={handleSubmit}>
-        {/* Exchange uniquement */}
+        
+        {/* Exchange */}
         {platform.type === "exchange" && (
           <label>
-            Identifiant / UID
+            {t("airdropClaim.fields.uid")}
             <input
               type="text"
               name="identifier"
               value={form.identifier}
               onChange={handleChange}
-              placeholder="Votre UID / Email"
+              placeholder={t("airdropClaim.fields.uidPlaceholder")}
               required
             />
           </label>
         )}
 
-        {/* Wallet uniquement */}
+        {/* Wallet */}
         {platform.type === "wallet" && (
           <label>
-            Adresse du wallet
+            {t("airdropClaim.fields.wallet")}
             <input
               type="text"
               name="identifier"
               value={form.identifier}
               onChange={handleChange}
-              placeholder="Adresse du wallet"
+              placeholder={t("airdropClaim.fields.wallet")}
               required
             />
           </label>
         )}
 
+        {/* BKC */}
         <label>
-          Adresse BKC
+          {t("airdropClaim.fields.bkc")}
           <input
             type="text"
             name="bkcAddress"
             value={form.bkcAddress}
             onChange={handleChange}
-            placeholder="Adresse BKC"
+            placeholder={t("airdropClaim.fields.bkc")}
             required
           />
         </label>
 
+        {/* Memo */}
         <label>
-          Memo (optionnel)
+          {t("airdropClaim.fields.memo")}
           <input
             type="text"
             name="memo"
             value={form.memo}
             onChange={handleChange}
-            placeholder="Memo si nécessaire"
+            placeholder={t("airdropClaim.fields.memoPlaceholder")}
           />
         </label>
 
-        <button type="submit">Envoyer la demande</button>
+        <button type="submit">
+          {t("airdropClaim.actions.submit")}
+        </button>
       </form>
     </div>
   );

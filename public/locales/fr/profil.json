@@ -1,31 +1,29 @@
 {
+  "common": {
+    "loading": "Chargement..."
+  },
+
   "userProfile": {
     "header": {
       "close": "Fermer"
     },
-
     "status": {
       "verified": "Vérifié",
       "pending": "En attente"
     },
-
-    "profileCompletion": "Complétion du profil",
-
+    "profileCompletion": "Progression du profil",
     "personalInfo": "Informations personnelles",
-    "email": "Email",
+    "email": "Adresse email",
     "phone": "Téléphone",
     "country": "Pays",
-
     "welcomeTasks": "Tâches d'initiation",
     "completed": "Complétées",
     "inProgress": "En cours",
-
     "warningIncomplete": "Complétez votre profil pour accéder à toutes les fonctionnalités",
-
     "actions": {
       "verifyKyc": "Vérifier mon identité (KYC)",
       "editProfile": "Modifier le profil",
-      "save": "Sauvegarder",
+      "save": "Enregistrer",
       "logout": "Se déconnecter"
     }
   },
@@ -33,24 +31,49 @@
   "check": {
     "title": "Vérification d’éligibilité",
     "warning": "Les critères peuvent évoluer avec le projet.",
-
     "error": {
       "default": "Erreur",
-      "fallback": "Impossible de vérifier"
+      "fallback": "Impossible de vérifier",
+      "full": "Erreur : {{message}}"
     },
-
-    "progress": "{{completed}} / {{total}} validés",
-
-    "eligible": "Vous êtes éligible à l'airdrop",
-    "notEligible": "Conditions obligatoires non remplies",
-
+    "progress": "{{completed}} / {{total}} complétés",
+    "eligible": "Vous êtes éligible à l’airdrop 🎉",
+    "notEligible": "Vous ne remplissez pas encore les conditions",
     "criteria": {
-      "friends": "{{count}} amis",
-      "tasks": "{{count}} tâches",
+      "friends": "{{count}} amis invités",
+      "tasks": "{{count}} tâches complétées",
       "pack": "Pack actif requis",
-      "points": "{{count}} points",
-      "days": "{{count}} jours d'utilisation",
-      "level": "Niveau {{level}} minimum (mining)"
+      "points": "{{count}} points accumulés",
+      "days": "{{count}} jours d’activité",
+      "level": "Niveau {{level}} atteint"
+    },
+    "icons": {
+      "valid": "✅",
+      "invalid": "❌",
+      "optional": "⚪"
+    },
+    "status": {
+      "valid": "valide",
+      "invalid": "non valide",
+      "optional": "optionnel"
+    }
+  },
+
+  "airdropClaim": {
+    "title": "Airdrop",
+    "fields": {
+      "uid": "Identifiant / UID",
+      "uidPlaceholder": "Votre UID / Email",
+      "wallet": "Adresse du wallet",
+      "bkc": "Adresse BKC",
+      "memo": "Memo (optionnel)",
+      "memoPlaceholder": "Memo si nécessaire"
+    },
+    "actions": {
+      "submit": "Envoyer la demande"
+    },
+    "messages": {
+      "success": "Demande envoyée"
     }
   }
 }

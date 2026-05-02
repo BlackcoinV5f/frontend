@@ -2,21 +2,22 @@
   "actions": {
     "category": {
       "finance": "Finanzas",
-      "real_estate": "Bienes raíces",
+      "real_estate": "Bienes Raíces",
       "opportunity": "Oportunidades",
-      "myAssets": "Mis activos"
+      "myAssets": "Mis Activos"
     },
 
     "noActions": "No hay acciones disponibles",
     "fetchError": "❌ Error al cargar las acciones",
 
-    "myAssetsTitle": "Mis activos",
-    "noAssets": "Aún no tienes activos"
+    "myAssetsTitle": "Mis Activos",
+    "noAssets": "Aún no tienes ningún activo"
   },
 
   "action": {
     "category": "Categoría",
     "type": "Tipo",
+    "invested": "Invertido",
     "pricePerPart": "Precio por participación",
     "totalParts": "Participaciones totales",
     "dailyEarnings": "Ganancias diarias",
@@ -24,7 +25,7 @@
 
     "category_values": {
       "finance": "Finanzas",
-      "real_estate": "Bienes raíces",
+      "real_estate": "Bienes Raíces",
       "opportunity": "Oportunidad"
     },
 
@@ -36,42 +37,40 @@
     "status_values": {
       "available": "Disponible",
       "paid": "Pagado",
-      "in_progress": "En progreso",
-      "claimable": "Disponible para reclamar",
+      "in_progress": "En curso",
       "pending": "Pendiente",
       "completed": "Completado"
     },
 
     "button": {
-      "contribute": "Invertir",
+      "contribute": "Contribuir",
       "unavailable": "No disponible",
       "start": "Iniciar",
       "viewTasks": "Ver tareas",
-      "claim": "Reclamar",
       "pending": "Pendiente ⏳",
       "completed": "Completado",
-      "loading": "⏳ Procesando..."
+      "loading": "⏳ Cargando..."
     },
 
     "feedback": {
       "mustLogin": "⚠️ Debes iniciar sesión para continuar.",
-      "buySuccess": "✅ ¡Compra del pack \"{{name}}\" exitosa!",
-      "startSuccess": "🚀 ¡Pack \"{{name}}\" iniciado!",
-      "claimSuccess": "💰 ¡Ganancias del pack \"{{name}}\" reclamadas con éxito!",
-      "error": "❌ Error en la acción."
+      "buySuccess": "✅ Compra del paquete \"{{name}}\" realizada con éxito.",
+      "startSuccess": "🚀 ¡Paquete \"{{name}}\" iniciado!",
+      "claimSuccess": "💰 Ganancias del paquete \"{{name}}\" reclamadas con éxito.",
+      "error": "❌ Error durante la acción."
     }
   },
 
   "packs": {
-    "discovery": "Pack Descubrimiento",
-    "growth": "Pack Crecimiento",
-    "dynamic": "Pack Dinámico",
-    "premium": "Pack Premium",
-    "expert": "Pack Experto",
-    "supreme": "Pack Supremo",
-    "prestige": "Pack Prestigio",
-    "elite": "Pack Élite",
-    "royal": "Pack Real",
-    "ultimate": "Pack Definitivo"
+    "discovery": "Paquete Descubrimiento",
+    "growth": "Paquete Crecimiento",
+    "dynamic": "Paquete Dinámico",
+    "premium": "Paquete Premium",
+    "expert": "Paquete Experto",
+    "supreme": "Paquete Supremo",
+    "prestige": "Paquete Prestigio",
+    "elite": "Paquete Élite",
+    "royal": "Paquete Real",
+    "ultimate": "Paquete Definitivo"
   }
 }
