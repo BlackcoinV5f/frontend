@@ -1,3 +1,4 @@
+// src/pages/VerifyEmail.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
@@ -5,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import "./VerifyEmail.css";
 
 const VerifyEmail = () => {
-  // ✅ namespace ajouté
   const { t } = useTranslation("login");
 
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const VerifyEmail = () => {
 
   const {
     verifyEmailCode,
+    resendCode,
     isAuthenticated,
     loading,
     setError,
@@ -22,37 +23,69 @@ const VerifyEmail = () => {
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [pendingCode, setPendingCode] = useState(null);
+  const [expiresAt, setExpiresAt] = useState(null); // 🔥 timestamp réel
   const [timeLeft, setTimeLeft] = useState(0);
+  const [cooldown, setCooldown] = useState(0);
   const [feedback, setFeedback] = useState({ error: null, success: null });
 
+  // 🔥 INIT ROBUSTE
   useEffect(() => {
-    const raw = localStorage.getItem("pendingUser");
+    let pending = null;
 
-    const pending = raw
-      ? JSON.parse(raw)
-      : location.state?.email
-      ? { email: location.state.email }
-      : null;
+    try {
+      const raw = localStorage.getItem("pendingUser");
+      if (raw) pending = JSON.parse(raw);
+    } catch {
+      pending = null;
+    }
+
+    if (!pending && location.state?.email) {
+      pending = {
+        email: location.state.email,
+        expires_at: Date.now() + 5 * 60 * 1000,
+      };
+    }
 
     if (!isAuthenticated && !pending) {
       navigate("/register", { replace: true });
       return;
     }
 
-    setEmail(pending?.email || user?.email || "");
+    const finalEmail = pending?.email || user?.email || "";
+    setEmail(finalEmail);
+
     setPendingCode(pending?.verification_code || null);
-    setTimeLeft(pending?.expires_in || 0);
+
+    const exp = pending?.expires_at || Date.now() + 5 * 60 * 1000;
+    setExpiresAt(exp);
+
   }, [isAuthenticated, user, navigate, location.state]);
 
+  // 🔥 TIMER FIABLE
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (!expiresAt) return;
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      const remaining = Math.max(
+        0,
+        Math.floor((expiresAt - Date.now()) / 1000)
+      );
+      setTimeLeft(remaining);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timeLeft]);
+  }, [expiresAt]);
+
+  // 🔥 COOLDOWN
+  useEffect(() => {
+    if (cooldown <= 0) return;
+
+    const interval = setInterval(() => {
+      setCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [cooldown]);
 
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -60,27 +93,76 @@ const VerifyEmail = () => {
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
+  // 🔥 VERIFY
   const handleVerification = useCallback(async () => {
-    if (verificationCode.length !== 6 || loading) return;
+  if (verificationCode.length !== 6 || loading) return;
 
-    setFeedback({ error: null, success: null });
-    setError(null);
+  setFeedback({ error: null, success: null });
+  setError(null);
 
-    try {
-      await verifyEmailCode(verificationCode);
+  try {
+    const ok = await verifyEmailCode({
+      email,
+      code: verificationCode,
+    });
 
-      localStorage.removeItem("pendingUser");
+    // 🔥 même si fetch échoue, on avance
+    localStorage.removeItem("pendingUser");
 
+    // 🔥 sécuriser redirection
+    if (ok !== false) {
       navigate("/welcome", { replace: true });
-    } catch (err) {
-      // ✅ fallback sécurisé
-      const msg = typeof err?.message === "string"
+    }
+
+  } catch (err) {
+    const msg =
+      typeof err?.message === "string"
         ? err.message
         : t("verifyEmail.error");
 
-      setFeedback({ error: msg, success: null });
+    // 🔥 cas spécial : déjà vérifié
+    if (msg.toLowerCase().includes("déjà vérifié")) {
+      navigate("/login", { replace: true });
+      return;
     }
-  }, [verificationCode, verifyEmailCode, navigate, setError, loading, t]);
+
+    setFeedback({ error: msg, success: null });
+  }
+}, [verificationCode, email, verifyEmailCode, navigate, setError, loading, t]);
+
+  // 🔥 RESEND PROPRE
+  const handleResend = async () => {
+    if (cooldown > 0) return;
+
+    setFeedback({ error: null, success: null });
+
+    try {
+      const res = await resendCode(email);
+
+      const newExpiresAt = Date.now() + (res.expires_in || 300) * 1000;
+
+      localStorage.setItem(
+        "pendingUser",
+        JSON.stringify({
+          email,
+          verification_code: res.verification_code,
+          expires_at: newExpiresAt,
+        })
+      );
+
+      setPendingCode(res.verification_code);
+      setExpiresAt(newExpiresAt);
+      setCooldown(60);
+
+      setFeedback({ success: "Code renvoyé", error: null });
+
+    } catch (err) {
+      setFeedback({
+        error: err?.message || "Erreur lors du renvoi",
+        success: null,
+      });
+    }
+  };
 
   return (
     <div className="verify-email-container">
@@ -94,18 +176,17 @@ const VerifyEmail = () => {
           </p>
         )}
 
-        {pendingCode && timeLeft > 0 && (
+        {pendingCode && (
           <div className="code-box">
             <p>{t("verifyEmail.codeLabel")}</p>
-
             <div className="code">{pendingCode}</div>
-
-            <p className="timer">
-              {t("verifyEmail.expiresIn")}{" "}
-              <strong>{formatTime(timeLeft)}</strong>
-            </p>
           </div>
         )}
+
+        <p className="timer">
+          {t("verifyEmail.expiresIn")}{" "}
+          <strong>{formatTime(timeLeft)}</strong>
+        </p>
 
         <div className="code-input-container">
           <input
@@ -131,6 +212,16 @@ const VerifyEmail = () => {
           {t("verifyEmail.verifyButton")}
         </button>
 
+        <button
+          onClick={handleResend}
+          disabled={cooldown > 0}
+          className="resend-button"
+        >
+          {cooldown > 0
+            ? `Renvoyer dans ${cooldown}s`
+            : "Renvoyer le code"}
+        </button>
+
         {feedback.error && (
           <div className="alert error">{feedback.error}</div>
         )}
@@ -142,6 +233,7 @@ const VerifyEmail = () => {
         {timeLeft <= 0 && (
           <p className="expired">{t("verifyEmail.expired")}</p>
         )}
+
       </div>
     </div>
   );

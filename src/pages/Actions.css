@@ -107,3 +107,67 @@
   margin-top: 50px;
   font-style: italic;
 }
+
+/* ===============================
+   PAGE PRINCIPALE
+   =============================== */
+.actions-page {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 100vh;
+  width: 100%;
+
+  /* 🔥 fond bleu */
+  background: radial-gradient(
+    circle at top left,
+    #0b1a2f,
+    #0d2240,
+    #081426
+  );
+
+  color: white;
+  font-family: "Inter", sans-serif;
+
+  padding-top: 120px;
+
+  /* ❗ IMPORTANT */
+  overflow: visible; /* autorise affichage complet */
+}
+
+/* ===============================
+   BARRE CATÉGORIES
+   =============================== */
+.categories-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+
+  background: rgba(15, 25, 45, 0.9);
+  backdrop-filter: blur(8px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  padding: 6px 6px;
+
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.categories-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===============================
+   CONTENU (SCROLL ICI)
+   =============================== */
+.actions-content {
+  flex: 1;
+
+  overflow-y: auto; /* ✅ LE VRAI SCROLL */
+  padding: 20px;
+  padding-bottom: 120px;
+}

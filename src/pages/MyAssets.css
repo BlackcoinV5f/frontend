@@ -95,3 +95,53 @@
 .assets-card::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
 }
+
+
+/* =========================
+   PAGE FULL BACKGROUND
+========================= */
+.my-assets-page {
+  position: relative;
+
+  width: 100%;
+  min-height: 100vh;
+
+  /* 🔥 IMPORTANT */
+  margin: 0;
+  box-sizing: border-box;
+
+  /* 🔥 couvre toute la largeur visuelle */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 80px 20px 100px; /* top navbar + bottom bar */
+
+  background: linear-gradient(
+    135deg,
+    #0b1a2f,
+    #0d2240,
+    #081426
+  );
+}
+
+/* =========================
+   CARD
+========================= */
+.assets-card {
+  width: 100%;
+  max-width: 800px;
+
+  background: rgba(20, 25, 45, 0.95);
+  color: white;
+
+  padding: 2rem;
+  border-radius: 16px;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* 🔥 SCROLL INTERNE PROPRE */
+  max-height: 75vh;
+  overflow-y: auto;
+}

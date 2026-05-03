@@ -9,7 +9,22 @@ const Navbar = ({ user }) => {
   const navigate = useNavigate();
   const { data, isLoading } = useBalance();
 
+  // 🔥 blocage onboarding
+  const isBlocked = user && !user.has_completed_welcome_tasks;
+
+  const handleNavigation = (path) => {
+    if (isBlocked) {
+      navigate("/welcome");
+      return;
+    }
+    navigate(path);
+  };
+
   const handleProfileClick = () => {
+    if (isBlocked) {
+      navigate("/welcome");
+      return;
+    }
     navigate("/profile");
   };
 
@@ -44,7 +59,10 @@ const Navbar = ({ user }) => {
       <nav className="navbar">
 
         {/* 👤 Profil */}
-        <span onClick={handleProfileClick} className="nav-item cursor-pointer">
+        <span
+          onClick={handleProfileClick}
+          className={`nav-item cursor-pointer ${isBlocked ? "disabled" : ""}`}
+        >
           {avatarSrc ? (
             <img
               src={avatarSrc}
@@ -77,18 +95,24 @@ const Navbar = ({ user }) => {
         </span>
 
         {/* 🔥 Points */}
-        <Link to="/balance" className="nav-item">
+        <span
+          onClick={() => handleNavigation("/balance")}
+          className={`nav-item cursor-pointer ${isBlocked ? "disabled" : ""}`}
+        >
           <FaFire className="nav-icon small-icon" />
           <span className="small-text">
             {isLoading ? "..." : `${formatPoints(rawPoints)} pts`}
           </span>
-        </Link>
+        </span>
 
         {/* ⚙️ Settings */}
-        <Link to="/settings" className="nav-item">
+        <span
+          onClick={() => handleNavigation("/settings")}
+          className={`nav-item cursor-pointer ${isBlocked ? "disabled" : ""}`}
+        >
           <FaCog className="nav-icon small-icon" />
           <span className="small-text">Settings</span>
-        </Link>
+        </span>
 
       </nav>
     </header>
@@ -100,6 +124,7 @@ Navbar.propTypes = {
     username: PropTypes.string,
     first_name: PropTypes.string,
     avatar_url: PropTypes.string,
+    has_completed_welcome_tasks: PropTypes.bool,
   }),
 };
 

@@ -1,34 +1,46 @@
+/* ================= WRAPPER (COUVRE TOUT) ================= */
+.check-page-wrapper {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+
+  padding: 80px 10px 80px;
+  box-sizing: border-box;
+
+  /* 🔥 FOND QUI ÉCRASE LE BLEU */
+  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 100%);
+}
+
+/* ================= PAGE (APP MOBILE) ================= */
 .check-page {
   width: 100%;
   max-width: 480px;
-  margin: 0 auto;
+
   padding: 16px;
   box-sizing: border-box;
 
   font-family: 'Segoe UI', sans-serif;
-  background: #1f1f2e;
   color: #f0f0f0;
 
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  /* ❗ IMPORTANT */
+  background: transparent;
 
+  border-radius: 16px;
   text-align: center;
   animation: fadeIn 0.8s ease-in;
 }
 
-/* Evite que ça colle au top (navbar) */
-.check-page-wrapper {
-  padding: 80px 10px 80px; /* top + bottom space */
-}
-
-/* TITRE */
+/* ================= TITRE ================= */
 h2 {
   margin-bottom: 15px;
   font-size: 1.3rem;
   color: #ffd700;
 }
 
-/* WARNING */
+/* ================= WARNING ================= */
 .eligibility-warning {
   font-size: 0.85rem;
   color: #ffa500;
@@ -36,7 +48,7 @@ h2 {
   line-height: 1.4;
 }
 
-/* BARRE */
+/* ================= BARRE ================= */
 .eligibility-progress-bar {
   background: #2c2c3c;
   border-radius: 12px;
@@ -46,9 +58,9 @@ h2 {
 }
 
 .eligibility-progress-fill {
-  background: #4caf50;
+  background: linear-gradient(90deg, #ffd700, #ffed4e);
   height: 100%;
-  color: #fff;
+  color: #000;
   font-size: 0.85rem;
   font-weight: bold;
 
@@ -59,27 +71,28 @@ h2 {
   transition: width 0.6s ease;
 }
 
-/* LISTE */
+/* ================= LIST ================= */
 .criteria-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* ITEM */
+/* ================= ITEM ================= */
 .criteria-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
   padding: 12px;
-  background: #2c2c3c;
+
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
 
   font-size: 0.9rem;
 }
 
-/* TEXTE LONG = pas de débordement */
+/* TEXTE */
 .criteria-item span:first-child {
   text-align: left;
   word-break: break-word;
@@ -92,12 +105,7 @@ h2 {
   text-align: right;
 }
 
-/* OPTIONNEL */
-.optional {
-  opacity: 0.6;
-}
-
-/* RESULT */
+/* ================= RESULT ================= */
 .eligibility-result {
   margin-top: 20px;
   font-size: 1rem;
@@ -105,18 +113,17 @@ h2 {
 }
 
 .eligible {
-  color: #4caf50;
+  color: #22c55e;
 }
 
 .not-eligible {
-  color: #f44336;
+  color: #ff4d4f;
 }
 
-/* RESPONSIVE */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 480px) {
   .check-page {
     padding: 12px;
-    border-radius: 12px;
   }
 
   h2 {

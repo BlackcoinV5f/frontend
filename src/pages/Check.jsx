@@ -22,22 +22,26 @@ export default function Check() {
     []
   );
 
-  // ✅ Loading (aucun fallback en dur)
+  // ================= LOADING =================
   if (!user || isLoading) {
     return (
-      <div className="check-page">
-        {t("common.loading")}
+      <div className="check-page-wrapper">
+        <div className="check-page">
+          {t("common.loading")}
+        </div>
       </div>
     );
   }
 
-  // ✅ Error (pas de concat string)
+  // ================= ERROR =================
   if (isError) {
     return (
-      <div className="check-page">
-        {t("check.error.full", {
-          message: error?.message || t("check.error.fallback"),
-        })}
+      <div className="check-page-wrapper">
+        <div className="check-page">
+          {t("check.error.full", {
+            message: error?.message || t("check.error.fallback"),
+          })}
+        </div>
       </div>
     );
   }
@@ -49,7 +53,6 @@ export default function Check() {
     (completed / criteria.length) * 100
   );
 
-  // ✅ valeurs dynamiques centralisées
   const valueMap = {
     friends: { count: data.friends_count || 0 },
     tasks: { count: data.tasks_count || 0 },
@@ -59,79 +62,80 @@ export default function Check() {
     level: { level: data.level || 0 },
   };
 
+  // ================= UI =================
   return (
-    <div className="check-page">
-      <h2>{t("check.title")}</h2>
+    <div className="check-page-wrapper">
+      <div className="check-page">
 
-      <p className="eligibility-warning">
-        {t("check.warning")}
-      </p>
+        <h2>{t("check.title")}</h2>
 
-      {/* Progress */}
-      <div className="eligibility-progress-bar">
-        <div
-          className="eligibility-progress-fill"
-          style={{ width: `${progressPercent}%` }}
-        >
-          {t("check.progress", {
-            completed,
-            total: criteria.length,
+        <p className="eligibility-warning">
+          {t("check.warning")}
+        </p>
+
+        {/* Progress */}
+        <div className="eligibility-progress-bar">
+          <div
+            className="eligibility-progress-fill"
+            style={{ width: `${progressPercent}%` }}
+          >
+            {t("check.progress", {
+              completed,
+              total: criteria.length,
+            })}
+          </div>
+        </div>
+
+        {/* Criteria */}
+        <div className="criteria-list">
+          {criteria.map((item, index) => {
+            const isValid = Boolean(data[item.key]);
+
+            return (
+              <div
+                key={item.key}
+                className={`criteria-item ${
+                  item.optional ? "optional" : ""
+                }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <span>
+                  {t(`check.criteria.${item.key}`, {
+                    ...valueMap[item.key],
+                    defaultValue: item.key,
+                  })}
+                </span>
+
+                <span
+                  className={isValid ? "achieved" : ""}
+                  aria-label={
+                    isValid
+                      ? t("check.status.valid")
+                      : item.optional
+                      ? t("check.status.optional")
+                      : t("check.status.invalid")
+                  }
+                >
+                  {isValid
+                    ? t("check.icons.valid")
+                    : item.optional
+                    ? t("check.icons.optional")
+                    : t("check.icons.invalid")}
+                </span>
+              </div>
+            );
           })}
         </div>
-      </div>
 
-      {/* Criteria */}
-      <div className="criteria-list">
-        {criteria.map((item, index) => {
-          const isValid = Boolean(data[item.key]);
+        {/* Result */}
+        <div className="eligibility-result">
+          {data.eligible ? (
+            <p className="eligible">{t("check.eligible")}</p>
+          ) : (
+            <p className="not-eligible">{t("check.notEligible")}</p>
+          )}
+        </div>
 
-          return (
-            <div
-              key={item.key}
-              className={`criteria-item ${
-                item.optional ? "optional" : ""
-              }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <span>
-                {t(`check.criteria.${item.key}`, {
-                  ...valueMap[item.key],
-                  defaultValue: item.key, // sécurité si clé absente
-                })}
-              </span>
-
-              <span
-                className={isValid ? "achieved" : ""}
-                aria-label={
-                  isValid
-                    ? t("check.status.valid")
-                    : item.optional
-                    ? t("check.status.optional")
-                    : t("check.status.invalid")
-                }
-              >
-                {isValid
-                  ? t("check.icons.valid")
-                  : item.optional
-                  ? t("check.icons.optional")
-                  : t("check.icons.invalid")}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Result */}
-      <div className="eligibility-result">
-        {data.eligible ? (
-          <p className="eligible">
-            {t("check.eligible")}
-          </p>
-        ) : (
-          <p className="not-eligible">
-            {t("check.notEligible")}
-          </p>
-        )}
       </div>
     </div>
   );

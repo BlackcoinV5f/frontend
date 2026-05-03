@@ -10,19 +10,28 @@ export const useBalance = () => {
     queryFn: async () => {
       const res = await axiosInstance.get("/balance/");
 
-      // ✅ sécurise le format (backend incohérent possible)
-      return res.data.balance ?? res.data.points ?? 0;
+      // 🔥 normalisation robuste
+      return (
+        res.data?.balance ??
+        res.data?.points ??
+        0
+      );
     },
 
     enabled: !!user?.id,
 
-    // ✅ IMPORTANT pour jeu temps réel
-    staleTime: 0,
+    // 🔥 cache intelligent
+    staleTime: 1000 * 30,      // 30s = pas de spam
+    cacheTime: 1000 * 60 * 5,  // 5min mémoire
 
-    // ❌ inutile ici (on contrôle manuellement)
+    // 🔥 éviter refetch inutiles
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
 
-    // ✅ évite crash UI
-    initialData: 0,
+    // 🔥 retry safe
+    retry: 1,
+
+    // 🔥 UX propre
+    placeholderData: (prev) => prev ?? undefined,
   });
 };

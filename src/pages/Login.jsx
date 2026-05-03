@@ -6,9 +6,7 @@ import { useTranslation } from "react-i18next";
 import "./Login.css";
 
 const Login = () => {
-  // ✅ namespace ajouté
   const { t } = useTranslation("login");
-
   const navigate = useNavigate();
   const { loginUser } = useUser();
 
@@ -27,7 +25,7 @@ const Login = () => {
     setError("");
 
     try {
-      // ✅ validation
+      // ✅ Validation
       if (!value) {
         throw new Error(t("login.errors.missingEmail"));
       }
@@ -38,24 +36,29 @@ const Login = () => {
 
       const isEmail = value.includes("@");
 
-      await loginUser({
+      // 🔥 IMPORTANT : récupérer le user
+      const user = await loginUser({
         email: isEmail ? value : undefined,
         username: !isEmail ? value : undefined,
         password: pwd,
       });
 
-      navigate("/home", { replace: true });
+      // 🔒 LOGIQUE CRITIQUE (rediriger correctement)
+      if (!user.has_completed_welcome_tasks) {
+        navigate("/welcome", { replace: true });
+      } else {
+        navigate("/home", { replace: true });
+      }
 
     } catch (err) {
       console.error("Login error:", err);
 
-      // ✅ message sécurisé + propre
       const backendMessage = err?.response?.data?.detail;
 
       const msg =
         typeof backendMessage === "string"
           ? backendMessage
-          : t("login.errors.generic");
+          : err.message || t("login.errors.generic");
 
       setError(msg);
 

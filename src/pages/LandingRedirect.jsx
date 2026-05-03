@@ -5,37 +5,53 @@ import { useUser } from "../contexts/UserContext";
 
 const LandingRedirect = () => {
   const navigate = useNavigate();
-  const { user, loading, isAuthenticated, isEmailVerified, fetchUserProfile } = useUser();
+  const {
+    user,
+    loading,
+    isAuthenticated,
+    isEmailVerified,
+    fetchUserProfile,
+  } = useUser();
 
   useEffect(() => {
     const go = async () => {
       if (loading) return;
 
       try {
-        // Si pas d’utilisateur en mémoire → tenter d’hydrater via cookie
-        if (!user) {
-          const u = await fetchUserProfile();
-          if (!u) {
+        let currentUser = user;
+
+        // 🔄 hydrater si nécessaire
+        if (!currentUser) {
+          currentUser = await fetchUserProfile();
+          if (!currentUser) {
             navigate("/auth-choice", { replace: true });
             return;
           }
         }
 
-        // Si on vient JUSTE de se connecter, on force /home
-        if (sessionStorage.getItem("justLoggedIn") === "1") {
-          sessionStorage.removeItem("justLoggedIn");
-          navigate("/home", { replace: true });
+        // 🔥 IMPORTANT : on supprime le bypass dangereux
+        sessionStorage.removeItem("justLoggedIn");
+
+        // 🔐 logique complète
+        if (!isAuthenticated) {
+          navigate("/auth-choice", { replace: true });
           return;
         }
 
-        // Sinon, logique d’atterrissage
-        if (!isAuthenticated) {
-          navigate("/auth-choice", { replace: true });
-        } else if (!isEmailVerified) {
+        if (!isEmailVerified) {
           navigate("/verify-email", { replace: true });
-        } else {
-          navigate("/home", { replace: true });
+          return;
         }
+
+        // 🚨 CRITIQUE : welcome obligatoire
+        if (!currentUser.has_completed_welcome_tasks) {
+          navigate("/welcome", { replace: true });
+          return;
+        }
+
+        // ✅ accès normal
+        navigate("/home", { replace: true });
+
       } catch (err) {
         console.error("Erreur dans LandingRedirect :", err);
         navigate("/auth-choice", { replace: true });

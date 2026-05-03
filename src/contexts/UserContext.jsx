@@ -213,30 +213,61 @@ export const UserProvider = ({ children }) => {
   );
 
   const verifyEmailCode = useCallback(
-    async (code) => {
+  async ({ email, code }) => {
+    try {
+      setError(null);
+
+      await axiosInstance.post("/auth/verify-email", {
+        email,
+        code,
+      });
+
+      localStorage.removeItem("pendingUser");
+
+      // 🔥 IMPORTANT : ne casse pas si fetch échoue
       try {
-        const pendingUser = JSON.parse(
-          localStorage.getItem("pendingUser") || "{}"
-        );
+        await fetchUserProfile();
+      } catch {}
 
-        if (!pendingUser.email) throw new Error("No pending email");
+      return true;
 
-        await axiosInstance.post("/auth/verify-email", {
-          email: pendingUser.email,
-          code,
-        });
+    } catch (err) {
+      const msg = err.response?.data?.detail || "Verification failed";
+      setError(msg);
+      throw new Error(msg);
+    }
+  },
+  [axiosInstance, fetchUserProfile]
+);
 
-        localStorage.removeItem("pendingUser");
+const resendCode = useCallback(
+  async (email) => {
+    try {
+      setError(null);
 
-        return await fetchUserProfile();
-      } catch (err) {
-        const msg = err.response?.data?.detail || "Verification failed";
-        setError(msg);
-        throw new Error(msg);
-      }
-    },
-    [axiosInstance, fetchUserProfile]
-  );
+      const { data } = await axiosInstance.post("/auth/resend-code", {
+        email,
+      });
+
+      // 🔥 MAJ localStorage
+      localStorage.setItem(
+        "pendingUser",
+        JSON.stringify({
+          email,
+          verification_code: data?.verification_code || null,
+          expires_in: data?.expires_in || 300,
+        })
+      );
+
+      return data;
+    } catch (err) {
+      const msg = err.response?.data?.detail || "Resend failed";
+      setError(msg);
+      throw new Error(msg);
+    }
+  },
+  [axiosInstance]
+);
 
   // ========================
   // INIT SESSION (SAFE)
@@ -262,6 +293,7 @@ export const UserProvider = ({ children }) => {
       verifyEmailCode,
       fetchUserProfile,
       persistUserData,
+      resendCode, // ✅ AJOUT ICI
 
       setError,
     }),
@@ -274,6 +306,7 @@ export const UserProvider = ({ children }) => {
       registerUser,
       verifyEmailCode,
       fetchUserProfile,
+      resendCode, // ✅ AJOUT ICI
       persistUserData,
     ]
   );
