@@ -31,20 +31,9 @@
   margin-bottom: 12px;
 }
 
-.icon-container {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  background: #1f2937;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .pack-icon {
-  width: 28px;
-  height: 28px;
+  width: 55px;
+  height: 55px;
   object-fit: contain;
 }
 
