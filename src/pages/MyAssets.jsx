@@ -18,23 +18,21 @@ const MyAssets = () => {
 
   return (
     <div className="my-assets-page">
-      <div className="assets-card">
-        <h2 className="title">{t("actions.myAssetsTitle")}</h2>
+      <h2 className="title">{t("actions.myAssetsTitle")}</h2>
 
-        {error && (
-          <p className="error">{t("actions.fetchError")}</p>
-        )}
+      {error && (
+        <p className="error">{t("actions.fetchError")}</p>
+      )}
 
-        {!error && assets.length === 0 ? (
-          <p className="no-assets">{t("actions.noAssets")}</p>
-        ) : (
-          <div className="assets-grid">
-            {assets.map((asset) => (
-              <AssetCard key={asset.id} asset={asset} />
-            ))}
-          </div>
-        )}
-      </div>
+      {!error && assets.length === 0 ? (
+        <p className="no-assets">{t("actions.noAssets")}</p>
+      ) : (
+        <div className="assets-grid">
+          {assets.map((asset) => (
+            <AssetCard key={asset.id} asset={asset} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

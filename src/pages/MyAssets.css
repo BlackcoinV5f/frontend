@@ -1,52 +1,62 @@
 /* =========================
-   🌍 PAGE BACKGROUND
+   🌍 PAGE WRAPPER
 ========================= */
 .my-assets-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 20px;
-}
-
-/* =========================
-   📦 SCROLL CARD (comme info-container)
-========================= */
-.assets-card {
   width: 100%;
-  max-width: 800px;
-
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  color: white;
-
-  padding: 2rem;
-  border-radius: 16px;
-
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
+  height: 100%;
+  min-height: 100%;
+  background: linear-gradient(135deg, #0a1a3a 0%, #0d234f 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 12px 70px;
+  box-sizing: border-box;
   overflow-y: auto;
-  max-height: 80vh; /* 🔥 scroll interne */
 }
 
 /* =========================
-   🧾 TITLE
+   🧾 TITRE STYLISÉ
 ========================= */
-.title {
+.my-assets-page .title {
   text-align: center;
-  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+
+  /* ✅ Dégradé doré sur le texte */
+  background: linear-gradient(90deg, #f59e0b, #facc15, #fde68a, #facc15, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  /* ✅ Soulignement décoratif */
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.my-assets-page .title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #f59e0b, #facc15);
 }
 
 /* =========================
-   📦 GRID
+   📦 GRILLE DE CARTES
 ========================= */
 .assets-grid {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  gap: 12px;
 }
 
 /* =========================
@@ -62,86 +72,19 @@
 /* =========================
    SCROLLBAR
 ========================= */
-.assets-card::-webkit-scrollbar {
+.my-assets-page::-webkit-scrollbar {
   width: 6px;
 }
 
-.assets-card::-webkit-scrollbar-thumb {
+.my-assets-page::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.my-assets-page::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
 
-/* Scrollbar générale */
-.info-container::-webkit-scrollbar,
-.assets-card::-webkit-scrollbar {
-  width: 6px;
-}
-
-/* Fond de la barre */
-.info-container::-webkit-scrollbar-track,
-.assets-card::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* Barre (le curseur) */
-.info-container::-webkit-scrollbar-thumb,
-.assets-card::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2); /* 🔥 couleur */
-  border-radius: 10px;
-}
-
-/* Hover (optionnel mais stylé) */
-.info-container::-webkit-scrollbar-thumb:hover,
-.assets-card::-webkit-scrollbar-thumb:hover {
+.my-assets-page::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
-}
-
-
-/* =========================
-   PAGE FULL BACKGROUND
-========================= */
-.my-assets-page {
-  position: relative;
-
-  width: 100%;
-  min-height: 100vh;
-
-  /* 🔥 IMPORTANT */
-  margin: 0;
-  box-sizing: border-box;
-
-  /* 🔥 couvre toute la largeur visuelle */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 80px 20px 100px; /* top navbar + bottom bar */
-
-  background: linear-gradient(
-    135deg,
-    #0b1a2f,
-    #0d2240,
-    #081426
-  );
-}
-
-/* =========================
-   CARD
-========================= */
-.assets-card {
-  width: 100%;
-  max-width: 800px;
-
-  background: rgba(20, 25, 45, 0.95);
-  color: white;
-
-  padding: 2rem;
-  border-radius: 16px;
-
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  /* 🔥 SCROLL INTERNE PROPRE */
-  max-height: 75vh;
-  overflow-y: auto;
 }

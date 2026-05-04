@@ -106,6 +106,7 @@ function AppContent() {
     setShowSplash(false);
   };
 
+  // ✅ /my-assets retiré — Navbar et Footer restent visibles sur cette page
   const hiddenRoutes = ["/black-ai"];
   const hideBars = hiddenRoutes.some((path) =>
     location.pathname.startsWith(path)
@@ -117,16 +118,16 @@ function AppContent() {
 
   // 🔥 BLOQUE TOUT SI SPLASH
   if (showSplash) {
-  return (
-    <div className="app-wrapper">
-      <div className="app-container">
-        <Suspense fallback={<LoadingSpinner />}>
-          <SplashScreen onFinish={handleFinishSplash} />
-        </Suspense>
+    return (
+      <div className="app-wrapper">
+        <div className="app-container">
+          <Suspense fallback={<LoadingSpinner />}>
+            <SplashScreen onFinish={handleFinishSplash} />
+          </Suspense>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   // 🔄 LOADING GLOBAL USER
   if (loading) {
@@ -197,6 +198,7 @@ function AppContent() {
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />
+
               </Routes>
             </ErrorBoundary>
           </main>
