@@ -2,23 +2,53 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useTranslation, Trans } from "react-i18next";
 import {
-  Send,        // Telegram
-  Twitter,     // X / Twitter
-  Facebook,    // Facebook
-  Youtube,     // YouTube
-  Instagram,   // Instagram
-  Music2,      // TikTok
-  Globe,       // Site web
+  Send,
+  Twitter,
+  Facebook,
+  Youtube,
+  Instagram,
+  Music2,
+  Globe,
 } from "lucide-react";
 import "./Info.css";
 
 const socials = [
-  { href: "...", Icon: Send,      label: "Telegram",  color: "#29b6f6" },
-  { href: "...", Icon: Twitter,   label: "X",         color: "#e2e8f0" },
-  { href: "...", Icon: Facebook,  label: "Facebook",  color: "#4267B2" },
-  { href: "...", Icon: Youtube,   label: "YouTube",   color: "#ff0000" },
-  { href: "...", Icon: Instagram, label: "Instagram", color: "#e1306c" },
-  { href: "...", Icon: Music2,    label: "TikTok",    color: "#facc15" },
+  {
+    href: "https://t.me/+2VYCu2Ygs0Q1YTk0",
+    Icon: Send,
+    label: "Telegram",
+    color: "#29b6f6",
+  },
+  {
+    href: "https://x.com/BlackcoinON",
+    Icon: Twitter,
+    label: "X",
+    color: "#e2e8f0",
+  },
+  {
+    href: "https://www.facebook.com/share/1CjsWSj1P3",
+    Icon: Facebook,
+    label: "Facebook",
+    color: "#4267B2",
+  },
+  {
+    href: "https://www.youtube.com/@Blackcoinchaine",
+    Icon: Youtube,
+    label: "YouTube",
+    color: "#ff0000",
+  },
+  {
+    href: "https://www.instagram.com/blackcoin_bkc",
+    Icon: Instagram,
+    label: "Instagram",
+    color: "#e1306c",
+  },
+  {
+    href: "https://www.tiktok.com/@blackcoin_official",
+    Icon: Music2,
+    label: "TikTok",
+    color: "#facc15",
+  },
 ];
 
 const Info = () => {
@@ -31,12 +61,10 @@ const Info = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {/* ── TITRE ── */}
       <div className="info-title-block">
         <h2 className="info-title">{t("info.title")}</h2>
       </div>
 
-      {/* ── INTRO ── */}
       <motion.div
         className="info-highlight"
         initial={{ opacity: 0 }}
@@ -49,11 +77,11 @@ const Info = () => {
         </Trans>
       </motion.div>
 
-      {/* ── ABOUT ── */}
       <div className="info-section">
         <h3 className="info-section-title">{t("info.about.title")}</h3>
         <p className="info-section-text">{t("info.about.text1")}</p>
         <p className="info-section-text">{t("info.about.text2")}</p>
+
         <motion.a
           href="https://blackcoinweb.com"
           target="_blank"
@@ -66,19 +94,23 @@ const Info = () => {
         </motion.a>
       </div>
 
-      {/* ── COMMUNICATION ── */}
       <div className="info-section info-section--important">
-        <h3 className="info-section-title">{t("info.communication.title")}</h3>
-        <p className="info-section-text">{t("info.communication.text1")}</p>
-        <p className="info-section-text">{t("info.communication.text2")}</p>
+        <h3 className="info-section-title">
+          {t("info.communication.title")}
+        </h3>
+        <p className="info-section-text">
+          {t("info.communication.text1")}
+        </p>
+        <p className="info-section-text">
+          {t("info.communication.text2")}
+        </p>
       </div>
 
-      {/* ── FOOTER ── */}
       <p className="info-footer">{t("info.footer")}</p>
 
-      {/* ── SOCIALS EN BAS ── */}
       <div className="info-socials">
         <p className="info-socials-label">Retrouvez-nous sur</p>
+
         <div className="social-grid">
           {socials.map(({ href, Icon, label, color }) => (
             <motion.a
@@ -97,7 +129,6 @@ const Info = () => {
           ))}
         </div>
       </div>
-
     </motion.div>
   );
 };
