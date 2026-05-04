@@ -1,75 +1,183 @@
+/* ============================
+   🌍 PAGE WRAPPER
+============================ */
 .info-container {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  background: linear-gradient(135deg, #0a1a3a 0%, #0d234f 100%);
   color: white;
-  padding: 2rem;
-  max-width: 800px;
-  margin: 2rem auto;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 56px 14px 48px;
+  box-sizing: border-box;
   overflow-y: auto;
-  max-height: 80vh;
 }
 
-.highlight {
-  background: rgba(255, 215, 0, 0.1);
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid gold;
+.info-container::-webkit-scrollbar { width: 6px; }
+.info-container::-webkit-scrollbar-track { background: transparent; }
+.info-container::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+}
+
+/* ============================
+   🧾 TITRE
+============================ */
+.info-title-block {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.info-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #facc15, #fde68a, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================
+   💡 HIGHLIGHT INTRO
+============================ */
+.info-highlight {
+  background: rgba(250, 204, 21, 0.07);
+  border-left: 3px solid #facc15;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin-bottom: 14px;
+}
+
+.info-highlight strong {
+  color: #facc15;
+}
+
+/* ============================
+   📦 SECTIONS
+============================ */
+.info-section {
+  position: relative;
+  background: linear-gradient(145deg, #0f172a, #1e293b);
+  border-radius: 12px;
+  padding: 14px 14px 14px 18px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+
+/* Trait doré gauche */
+.info-section::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12%;
+  height: 76%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #facc15, #f59e0b);
+}
+
+/* Section importante — trait bleu */
+.info-section--important::before {
+  background: linear-gradient(180deg, #3b82f6, #2563eb);
+}
+
+.info-section-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0 0 8px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.info-section-text {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0 0 6px;
+}
+
+.info-section-text:last-child { margin-bottom: 0; }
+
+/* ============================
+   🔗 LIEN OFFICIEL
+============================ */
+.info-official-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #38bdf8;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.info-official-link:hover { color: #7dd3fc; }
+
+/* ============================
+   📝 FOOTER NOTE
+============================ */
+.info-footer {
+  text-align: center;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #475569;
+  margin: 4px 0 20px;
+}
+
+/* ============================
+   📱 SOCIALS EN BAS
+============================ */
+.info-socials {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-socials-label {
+  font-size: 0.7rem;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
 }
 
 .social-grid {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin: 2rem 0;
+  gap: 12px;
 }
 
 .social-icon {
-  font-size: 2rem;
-  cursor: pointer;
-  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--social-color, #94a3b8);
+  text-decoration: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.roadmap {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin: 1.5rem 0;
-}
-
-.roadmap ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.roadmap li {
-  padding: 0.5rem;
-  margin: 0.5rem 0;
-  position: relative;
-  padding-left: 1.5rem;
-}
-
-.roadmap li:before {
-  content: "✓";
-  color: gold;
-  position: absolute;
-  left: 0;
-}
-
-.footer-note {
-  text-align: center;
-  font-style: italic;
-  opacity: 0.8;
-}
-
-/* Animations supplémentaires */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.info-container:hover {
-  animation: pulse 3s infinite;
+.social-icon:hover {
+  background: rgba(255,255,255,0.1);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--social-color, #94a3b8) 40%, transparent);
 }
