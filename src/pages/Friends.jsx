@@ -3,14 +3,9 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useUser } from "../contexts/UserContext";
 import { useFriends } from "../hooks/useFriends";
-
 import {
-  FaUserFriends,
-  FaCopy,
-  FaUserPlus,
-  FaClipboardList,
-  FaCheck,
-  FaMagic,
+  FaUserFriends, FaCopy, FaUserPlus,
+  FaClipboardList, FaCheck, FaMagic,
 } from "react-icons/fa";
 import { GiPartyPopper } from "react-icons/gi";
 import "./Friends.css";
@@ -24,44 +19,22 @@ const Friends = () => {
   const [copyError, setCopyError] = useState("");
 
   const promoCode = data?.promo_code || "";
-
-  // 🔥 FIX doublons + tri
   const referrals = [...new Set(data?.friends || [])].sort();
 
-  // 📋 COPY
   const handleCopyCode = async () => {
     if (!promoCode) return;
-
     try {
       await navigator.clipboard.writeText(promoCode);
       setIsCopied(true);
       setCopyError("");
-
       setTimeout(() => setIsCopied(false), 2000);
     } catch {
       setCopyError(t("bonus.friends.errors.copy"));
     }
   };
 
-  // ================= STATES =================
-
-  if (!user || isLoading) {
-    return (
-      <div className="friends-container">
-        {t("bonus.loading")}
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="friends-container">
-        {t("bonus.errors.generic")}
-      </div>
-    );
-  }
-
-  // ================= RENDER =================
+  if (!user || isLoading) return <div className="friends-container"><p>{t("bonus.loading")}</p></div>;
+  if (isError) return <div className="friends-container"><p>{t("bonus.errors.generic")}</p></div>;
 
   return (
     <motion.div
@@ -69,7 +42,7 @@ const Friends = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      {/* HEADER */}
+      {/* ── HEADER ── */}
       <div className="friends-header">
         <FaUserFriends />
         <h2>{t("bonus.friends.title")}</h2>
@@ -80,16 +53,14 @@ const Friends = () => {
         {t("bonus.friends.description")}
       </p>
 
-      {/* CODE */}
+      {/* ── SECTION CODE ── */}
       <div className="referral-section">
-        <h3>
-          <FaUserPlus /> {t("bonus.friends.yourCode")}
-        </h3>
+        <h3><FaUserPlus /> {t("bonus.friends.yourCode")}</h3>
 
         <button
+          className="generate-code-button"
           onClick={() => generateCode.mutate()}
           disabled={generateCode.isPending}
-          className="generate-code-button"
         >
           <FaMagic />
           {generateCode.isPending
@@ -100,17 +71,11 @@ const Friends = () => {
         {promoCode && (
           <div className="referral-link-container">
             <input value={promoCode} readOnly />
-
             <button onClick={handleCopyCode}>
-              {isCopied ? (
-                <>
-                  <FaCheck /> {t("bonus.friends.copied")}
-                </>
-              ) : (
-                <>
-                  <FaCopy /> {t("bonus.friends.copy")}
-                </>
-              )}
+              {isCopied
+                ? <><FaCheck /> {t("bonus.friends.copied")}</>
+                : <><FaCopy /> {t("bonus.friends.copy")}</>
+              }
             </button>
           </div>
         )}
@@ -118,7 +83,7 @@ const Friends = () => {
         {copyError && <p className="error">{copyError}</p>}
       </div>
 
-      {/* REFERRALS LIST */}
+      {/* ── SECTION REFERRALS ── */}
       <div className="invited-section">
         <h3>
           <FaClipboardList /> {t("bonus.friends.yourReferrals")} ({referrals.length})
@@ -135,16 +100,13 @@ const Friends = () => {
               <motion.div
                 key={index}
                 className="referral-item"
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                {/* Avatar */}
                 <div className="avatar">
                   {friend.charAt(0).toUpperCase()}
                 </div>
-
-                {/* Info */}
                 <div className="referral-info">
                   <span className="username">{friend}</span>
                   <span className="status">Active</span>
@@ -154,6 +116,7 @@ const Friends = () => {
           </div>
         )}
       </div>
+
     </motion.div>
   );
 };

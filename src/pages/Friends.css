@@ -1,270 +1,265 @@
 /* ============================
-   CONTAINER PRINCIPAL — VERSION CORRECTE
+   🌍 PAGE WRAPPER
 ============================ */
 .friends-container {
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-
-  /* IMPORTANT : PAS DE min-height, PAS DE height multiple */
-  height: calc(100vh - 120px); /* Header 60px + Bottom nav 60px */
-
-  padding: 25px 25px 40px; /* Un padding bas pour éviter que ça cache sous la nav */
-
-  background: linear-gradient(145deg, #1a1a2e, #16213e);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  height: 100%;
+  min-height: 100%;
+  background: linear-gradient(135deg, #0a1a3a 0%, #0d234f 100%);
   color: white;
-
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 14px 48px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
-.friends-container {
-  margin-top: 25px; /* ← petit espace entre la barre du haut et le bloc */
+.friends-container::-webkit-scrollbar { width: 6px; }
+.friends-container::-webkit-scrollbar-track { background: transparent; }
+.friends-container::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
 }
-
-/* ❤️ La zone doit être scrollable entre le header fixe et la navbar fixe */
-.friends-container {
-  position: relative;
-
-  /* Remplace 100vh par une hauteur calculée */
-  height: calc(100vh - 120px); /* 60px header + 60px bottom nav */
-  
-  overflow-y: auto !important;
-  overflow-x: hidden;
-
-  padding-bottom: 40px; /* éviter que le dernier élément passe sous la navbar */
-}
-
 
 /* ============================
-   HEADER
+   🧾 HEADER
 ============================ */
 .friends-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
-.header-icon {
-  font-size: 28px;
-  color: #00b4ff;
-  filter: drop-shadow(0 0 5px rgba(0, 180, 255, 0.5));
+.friends-header svg {
+  font-size: 1.2rem;
+  color: #facc15;
+  filter: drop-shadow(0 0 4px rgba(250,204,21,0.5));
 }
 
 .friends-header h2 {
-  font-size: 28px;
+  font-size: 1.2rem;
+  font-weight: 800;
   margin: 0;
-  background: linear-gradient(90deg, #ffffff, #00b4ff);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #facc15, #fde68a, #f59e0b);
   -webkit-background-clip: text;
-  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-
-/* ============================
-   DESCRIPTION
-============================ */
 .friends-description {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  color: #64748b;
   text-align: center;
-  margin-bottom: 30px;
+  margin: 0 0 20px;
+  line-height: 1.5;
 }
 
-
 /* ============================
-   SECTIONS
+   📦 SECTIONS
 ============================ */
 .referral-section,
 .invited-section {
-  background: rgba(30, 30, 50, 0.5);
-  border-radius: 15px;
-  padding: 20px;
-  margin-bottom: 25px;
+  position: relative;
+  background: linear-gradient(145deg, #0f172a, #1e293b);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+  overflow: hidden;
 }
 
-/* ❗ Suppression du scrolling interne + hauteur imposée */
-.invited-section {
-  padding-right: 10px;
+/* Trait doré gauche */
+.referral-section::before,
+.invited-section::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12%;
+  height: 76%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #facc15, #f59e0b);
 }
 
+.referral-section h3,
+.invited-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  margin: 0 0 12px;
+  padding-left: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.referral-section h3 svg,
+.invited-section h3 svg {
+  color: #facc15;
+  font-size: 0.8rem;
+}
 
 /* ============================
-   BOUTON GÉNÉRATION DE CODE
+   🔑 BOUTON GÉNÉRER CODE
 ============================ */
 .generate-code-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  gap: 7px;
+  padding: 0.42rem 1rem;
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
   cursor: pointer;
-  margin: 15px 0;
+  margin: 0 0 12px 8px;
+  box-shadow: 0 2px 10px rgba(99,102,241,0.35);
+  transition: filter 0.2s ease;
+  letter-spacing: 0.3px;
 }
 
-.generate-code-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+.generate-code-button:hover { filter: brightness(1.1); }
+.generate-code-button:disabled { opacity: 0.55; cursor: not-allowed; }
 
 /* ============================
-   ZONE LIEN DE PARRAINAGE
+   📋 ZONE CODE + COPY
 ============================ */
 .referral-link-container {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  position: relative;
+  gap: 8px;
+  padding-left: 8px;
 }
 
-.referral-link-input {
+.referral-link-container input {
   flex: 1;
-  padding: 12px 15px;
+  padding: 0.4rem 0.7rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.25);
+  color: #f1f5f9;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  outline: none;
 }
 
-.copy-button {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 180, 255, 0.3);
-  border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
+.referral-link-container button {
   display: flex;
   align-items: center;
   gap: 5px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(250,204,21,0.12);
+  color: #facc15;
+  border: 1px solid rgba(250,204,21,0.2);
+  transition: background 0.2s ease;
+  white-space: nowrap;
 }
 
-.copy-button.copied {
-  background: #4caf50;
+.referral-link-container button:hover {
+  background: rgba(250,204,21,0.2);
 }
-
 
 /* ============================
-   LISTE DES INVITÉS
+   👥 LISTE REFERRALS
 ============================ */
-.invited-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.invited-list li {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 12px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-left: 3px solid #00ff88;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #00b4ff, #00ff88);
-}
-
-.user-badge {
-  margin-left: auto;
-  background: rgba(0, 180, 255, 0.2);
-  color: #00b4ff;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-size: 12px;
-}
-
-
-/* ============================
-   ÉTAT VIDE
-============================ */
-.empty-invites {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 30px;
-  border-radius: 10px;
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-}
-
-.empty-invites img {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 15px;
-  opacity: 0.5;
-}
-
 .referral-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .referral-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.05);
-  transition: 0.2s;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s ease;
 }
 
 .referral-item:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.07);
 }
 
 .avatar {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00c3ff, #007bff);
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: white;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
 }
 
 .referral-info {
   display: flex;
   flex-direction: column;
+  gap: 1px;
+  flex: 1;
 }
 
 .username {
+  font-size: 0.82rem;
   font-weight: 600;
+  color: #f1f5f9;
 }
 
 .status {
-  font-size: 12px;
-  opacity: 0.6;
+  font-size: 0.68rem;
+  color: #4ade80;
+  font-weight: 500;
 }
 
+/* ============================
+   📭 ÉTAT VIDE
+============================ */
 .empty-state {
-  opacity: 0.7;
-  margin-top: 10px;
+  text-align: center;
+  padding: 16px 8px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255,255,255,0.08);
+}
+
+.empty-state p {
+  margin: 4px 0;
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.empty-state p:first-child {
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* ============================
+   ❌ ERREUR
+============================ */
+.error {
+  font-size: 0.72rem;
+  color: #f87171;
+  margin-top: 6px;
+  padding-left: 8px;
 }

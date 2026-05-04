@@ -8,12 +8,9 @@ import { useTranslation } from "react-i18next";
 import "./Tasks.css";
 
 const Tasks = () => {
-  // ✅ namespace correct
   const { t } = useTranslation("tasks");
-
   const { user } = useUser();
   const navigate = useNavigate();
-
   const { data, isLoading, isError, startTask } = useTasks();
   const [tasks, setTasks] = useState([]);
 
@@ -22,14 +19,12 @@ const Tasks = () => {
   // =========================
   useEffect(() => {
     if (!data?.tasks) return;
-
     const styledTasks = data.tasks.map((task) => ({
       ...task,
       icon: task.logo ? `/${task.logo}` : "/default.png",
       color: "#ccc",
       time_left: task.time_left || 0,
     }));
-
     setTasks(styledTasks);
   }, [data]);
 
@@ -46,7 +41,6 @@ const Tasks = () => {
         )
       );
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -56,7 +50,7 @@ const Tasks = () => {
   if (!user) {
     return (
       <div className="tasks-container">
-        {t("tasksPage.login_required")}
+        <p>{t("tasksPage.login_required")}</p>
       </div>
     );
   }
@@ -66,11 +60,13 @@ const Tasks = () => {
   // =========================
   if (isLoading) {
     return (
-      <div className="loading-spinner">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-        />
+      <div className="tasks-container" style={{ justifyContent: "center", alignItems: "center" }}>
+        <div className="loading-spinner">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          />
+        </div>
       </div>
     );
   }
@@ -81,7 +77,7 @@ const Tasks = () => {
   if (isError) {
     return (
       <div className="tasks-container">
-        {t("tasksPage.error")}
+        <p>{t("tasksPage.error")}</p>
       </div>
     );
   }
@@ -91,9 +87,7 @@ const Tasks = () => {
   // =========================
   const completedCount = data?.completedCount || 0;
   const totalTasks = (data?.tasks?.length || 0) + completedCount;
-
-  const progress =
-    totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
+  const progress = totalTasks > 0 ? (completedCount / totalTasks) * 100 : 0;
 
   // =========================
   // 🎯 ACTIONS
@@ -114,9 +108,7 @@ const Tasks = () => {
     if (!seconds || seconds <= 0) return "00:00";
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   // =========================
@@ -124,9 +116,10 @@ const Tasks = () => {
   // =========================
   return (
     <motion.div className="tasks-container">
+
+      {/* ── HEADER ── */}
       <div className="tasks-header">
         <h2>{t("tasksPage.title")}</h2>
-
         <div className="progress-container">
           <div className="progress-bar">
             <motion.div
@@ -138,49 +131,68 @@ const Tasks = () => {
         </div>
       </div>
 
+      {/* ── LISTE : chaque tâche = carte séparée ── */}
       <div className="tasks-list">
         <AnimatePresence>
           {tasks.map((task) => {
             const isValid = task.completed;
 
             return (
-              <motion.div key={task.id} className="task-item">
+              <motion.div
+                key={task.id}
+                className="task-item"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="task-content">
+
+                  {/* Info gauche */}
                   <div className="task-info">
                     <div className="task-platform">
                       <img src={task.icon} alt={task.title} />
                       <span>{task.title}</span>
                     </div>
-
                     <div className="task-points">
                       <FaTrophy />
-                      <span>
-                        {task.reward_points} {t("tasksPage.points")}
-                      </span>
+                      <span>{task.reward_points} {t("tasksPage.points")}</span>
                     </div>
                   </div>
 
-                  {isValid ? (
-                    <div className="completed-badge">
-                      {t("tasksPage.completed")}
-                    </div>
-                  ) : task.started_at && task.time_left > 0 ? (
-                    <div>
-                      <FaClock />
-                      <span>{formatTime(task.time_left)}</span>
-                      <button disabled>
+                  {/* Action droite */}
+                  <div className="task-actions">
+                    {isValid ? (
+                      <span className="completed-badge">
+                        {t("tasksPage.completed")}
+                      </span>
+                    ) : task.started_at && task.time_left > 0 ? (
+                      <div className="cooldown-container">
+                        <div className="cooldown-timer">
+                          <FaClock />
+                          <span>{formatTime(task.time_left)}</span>
+                        </div>
+                        <button className="validate-button disabled" disabled>
+                          <FaCheck /> {t("tasksPage.validate")}
+                        </button>
+                      </div>
+                    ) : task.started_at ? (
+                      <button
+                        className="validate-button"
+                        onClick={() => handleValidateClick(task)}
+                      >
                         <FaCheck /> {t("tasksPage.validate")}
                       </button>
-                    </div>
-                  ) : task.started_at ? (
-                    <button onClick={() => handleValidateClick(task)}>
-                      <FaCheck /> {t("tasksPage.validate")}
-                    </button>
-                  ) : (
-                    <button onClick={() => handleTaskClick(task)}>
-                      <FaExternalLinkAlt /> {t("tasksPage.start")}
-                    </button>
-                  )}
+                    ) : (
+                      <button
+                        className="task-button"
+                        onClick={() => handleTaskClick(task)}
+                      >
+                        <FaExternalLinkAlt /> {t("tasksPage.start")}
+                      </button>
+                    )}
+                  </div>
+
                 </div>
               </motion.div>
             );
@@ -188,11 +200,10 @@ const Tasks = () => {
         </AnimatePresence>
 
         {tasks.length === 0 && (
-          <div className="no-tasks">
-            {t("tasksPage.done")}
-          </div>
+          <div className="no-tasks">{t("tasksPage.done")}</div>
         )}
       </div>
+
     </motion.div>
   );
 };
