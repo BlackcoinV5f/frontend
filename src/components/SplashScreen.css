@@ -1,147 +1,211 @@
+/* =========================================
+   SPLASH CONTAINER
+========================================= */
 .splash-container {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100dvh;
-  background: linear-gradient(145deg, #1a1a2e, #16213e);
-  overflow: hidden;
-  border-radius: inherit;
-}
-
-/* Particles */
-.particles {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  bottom: 0;
-}
-
-/* 🔥 LOGO PARFAITEMENT CENTRÉ */
-.center-logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-}
-
-.splash-logo {
-  width: min(80%, 260px);
-  height: auto;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-}
-
-/* 🔽 CONTENU EN BAS */
-.bottom-content {
-  position: absolute;
-  bottom: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  max-width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 2;
-}
-
-.loading-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.loading-bar {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.loading-progress {
   height: 100%;
-  background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
-  border-radius: 3px;
+  overflow: hidden;
+  background: #050d1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 
-.progress-text {
-  margin-top: 8px;
-  color: white;
-  font-size: 14px;
-}
-
-.brand-text {
-  margin-top: 20px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.splash-logo {
-  width: min(80%, 260px);
-  height: auto;
-  animation: glowPulse 2.5s infinite ease-in-out;
-}
-
-/* 🔥 effet glow pro */
-@keyframes glowPulse {
-  0% {
-    filter: drop-shadow(0 0 5px rgba(0, 198, 255, 0.3));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.8));
-  }
-  100% {
-    filter: drop-shadow(0 0 5px rgba(0, 198, 255, 0.3));
-  }
-}
-
-/* 🔝 Barre en haut */
+/* =========================================
+   TOP LOADING BAR
+========================================= */
 .top-loading {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 3px;
+  background: transparent;
+  z-index: 20;
 }
-
 .top-progress {
   height: 100%;
-  background: linear-gradient(90deg, #00c6ff, #0072ff); /* 🔥 couleur modifiable */
+  background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+  border-radius: 0 4px 4px 0;
 }
 
-/* 🔥 Logo plus grand */
-.splash-logo {
-  width: 180px; /* augmente ici */
-  height: auto;
-  object-fit: contain;
+/* =========================================
+   PARTICLES
+========================================= */
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 198, 255, 0.4);
+  bottom: -20px;
 }
 
-/* Centrage */
-.center-logo {
+/* =========================================
+   CENTER CONTENT
+   Logo centré verticalement, texte en bas
+========================================= */
+.center-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;                  /* occupe toute la hauteur */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;       /* logo centré */
+  align-items: center;
+  text-align: center;
+  padding: 20px 20px 50px;       /* padding bas pour le texte */
+}
+
+/* =========================================
+   LOGO WRAPPER + HALO
+========================================= */
+.logo-wrapper {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
 }
 
-/* Texte % */
-.progress-text {
+.logo-wrapper::before {
+  content: '';
   position: absolute;
-  bottom: 40px;
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
-  color: white;
+  width: 260px;
+  height: 260px;
+  max-width: 80vw;
+  max-height: 80vw;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 160, 255, 0.35);
+  box-shadow:
+    0 0 30px rgba(0, 160, 255, 0.25),
+    inset 0 0 30px rgba(0, 80, 255, 0.1);
+  animation: ringPulse 3s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.04); }
+}
+
+/* =========================================
+   LOGO — Glow néon bleu
+========================================= */
+.splash-logo {
+  width: 220px;
+  max-width: 65vw;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 18px rgba(0, 160, 255, 0.9))
+    drop-shadow(0 0 40px rgba(0, 100, 255, 0.6))
+    drop-shadow(0 0 80px rgba(0, 80, 255, 0.3));
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 18px rgba(0, 160, 255, 0.9))
+      drop-shadow(0 0 40px rgba(0, 100, 255, 0.6))
+      drop-shadow(0 0 80px rgba(0, 80, 255, 0.3));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 28px rgba(0, 198, 255, 1))
+      drop-shadow(0 0 60px rgba(0, 130, 255, 0.8))
+      drop-shadow(0 0 100px rgba(0, 80, 255, 0.5));
+  }
+}
+
+/* =========================================
+   BRAND — fixé tout en bas
+========================================= */
+.brand-wrapper {
+  position: absolute;          /* sorti du flux normal */
+  bottom: 48px;                /* collé en bas */
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: clamp(16px, 4vw, 28px);   /* ← réduit */
+  font-weight: 700;
+  letter-spacing: 4px;
+  line-height: 1.1;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.brand-title span {
+  color: #ffffff;
+}
+
+.brand-sub {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.brand-sub p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;              /* ← réduit */
+  font-weight: 500;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.line {
+  width: 30px;                  /* ← réduit */
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* =========================================
+   PROGRESS TEXT — masqué
+========================================= */
+.progress-text {
+  display: none;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 480px) {
+  .splash-logo {
+    width: 170px;
+  }
+  .logo-wrapper::before {
+    width: 210px;
+    height: 210px;
+  }
+  .brand-wrapper {
+    bottom: 36px;
+  }
+  .brand-title {
+    font-size: 15px;
+    letter-spacing: 3px;
+  }
+  .brand-sub {
+    gap: 6px;
+  }
+  .line {
+    width: 24px;
+  }
 }
