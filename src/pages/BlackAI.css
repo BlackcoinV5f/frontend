@@ -145,14 +145,15 @@
 }
 
 .message-bubble {
-  max-width: 85%;
-  background: transparent; /* 🔥 plus de fond */
-  padding: 8px 4px; /* réduit car plus de "bulle" */
-  border-radius: 0; /* inutile sans fond */
-  font-size: 16px; /* 🔥 texte plus grand */
-  line-height: 1.6;
+  max-width: 82%;
+  padding: 12px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.7;
   word-break: break-word;
-  box-shadow: none; /* supprime l'effet carte */
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .message-wrapper.user .message-bubble {

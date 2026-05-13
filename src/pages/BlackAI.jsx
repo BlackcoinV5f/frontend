@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./BlackAI.css";
+
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
@@ -11,6 +13,7 @@ const BASE_URL = import.meta.env.VITE_DEPOSIT_API_URL;
 const API_URL = `${BASE_URL}/api/blackai`;
 
 const BlackAI = () => {
+
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -21,138 +24,256 @@ const BlackAI = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
+  // ─────────────────────────────
+  // AUTO SCROLL
+  // ─────────────────────────────
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView();
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  // ─────────────────────────────
+  // GREETING
+  // ─────────────────────────────
   const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Bonjour";
-    if (hour < 18) return "Bon après-midi";
+    const h = new Date().getHours();
+
+    if (h < 12) return "Bonjour";
+    if (h < 18) return "Bon après-midi";
+
     return "Bonsoir";
   };
 
+  // ─────────────────────────────
+  // MESSAGE INITIAL
+  // ─────────────────────────────
   useEffect(() => {
+
     if (!user) return;
 
-    const userName =
-      user?.username || user?.name || user?.firstName || "Utilisateur";
+    const name =
+      user?.username ||
+      user?.name ||
+      user?.firstName ||
+      "Utilisateur";
 
     setMessages([
       {
         id: Date.now(),
         sender: "ai",
-        text: `👋 ${getGreeting()} ${userName}, je suis BlackAI. Comment puis-je vous assister ?`,
-        timestamp: new Date().toLocaleTimeString(),
+        text:
+          `${getGreeting()} **${name}** 👋\n\n` +
+          `Je suis **Black AI**, votre assistant intelligent.\n\n` +
+          `Comment puis-je vous aider aujourd'hui ?`,
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       },
     ]);
+
   }, [user]);
 
+  // ─────────────────────────────
+  // STREAM TEXT EFFECT
+  // ─────────────────────────────
+  const streamAIResponse = async (fullText) => {
+
+    const aiMessageId = Date.now();
+
+    // créer message vide
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: aiMessageId,
+        sender: "ai",
+        text: "",
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      },
+    ]);
+
+    // écrire caractère par caractère
+    for (let i = 0; i <= fullText.length; i++) {
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, 8)
+      );
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === aiMessageId
+            ? {
+                ...msg,
+                text: fullText.slice(0, i),
+              }
+            : msg
+        )
+      );
+
+      scrollToBottom();
+    }
+  };
+
+  // ─────────────────────────────
+  // API CALL
+  // ─────────────────────────────
   const mutation = useMutation({
+
     mutationFn: async (question) => {
+
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question }),
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          question,
+        }),
       });
 
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(errorText || "Erreur serveur");
+        throw new Error(
+          (await res.text()) || "Erreur serveur"
+        );
       }
 
       const data = await res.json();
+
       return data?.answer || "❌ Réponse vide";
     },
 
-    onSuccess: (aiText) => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          sender: "ai",
-          text: aiText,
-          timestamp: new Date().toLocaleTimeString(),
-        },
-      ]);
+    onSuccess: async (aiText) => {
+
+      // supprimer les blocs HTML parasites
+      const cleanText = aiText
+        .replace(/```html[\s\S]*?```/gi, "")
+        .replace(/<div[\s\S]*?>/gi, "")
+        .replace(/<\/div>/gi, "");
+
+      await streamAIResponse(cleanText);
     },
 
-    onError: () => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          sender: "ai",
-          text: "❌ Erreur serveur",
-          timestamp: new Date().toLocaleTimeString(),
-        },
-      ]);
+    onError: async () => {
+
+      await streamAIResponse(
+        "❌ Une erreur est survenue. Veuillez réessayer."
+      );
     },
   });
 
+  // ─────────────────────────────
+  // SEND MESSAGE
+  // ─────────────────────────────
   const handleSend = () => {
-    if (!inputValue.trim() || mutation.isPending) return;
+
+    if (!inputValue.trim() || mutation.isPending) {
+      return;
+    }
 
     const userText = inputValue.trim();
 
+    // ajouter message user
     setMessages((prev) => [
       ...prev,
       {
         id: Date.now(),
         sender: "user",
         text: userText,
-        timestamp: new Date().toLocaleTimeString(),
+
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       },
     ]);
 
+    // reset input
     setInputValue("");
-    if (inputRef.current) inputRef.current.style.height = "auto";
+
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
+
+    // envoyer backend
     mutation.mutate(userText);
   };
 
+  // ─────────────────────────────
+  // ENTER KEY
+  // ─────────────────────────────
   const handleKeyDown = (e) => {
+
     if (e.key === "Enter" && !e.shiftKey) {
+
       e.preventDefault();
+
       handleSend();
     }
   };
 
+  // ─────────────────────────────
+  // AUTO HEIGHT INPUT
+  // ─────────────────────────────
   const handleInputChange = (e) => {
+
     setInputValue(e.target.value);
+
     e.target.style.height = "auto";
+
     e.target.style.height =
       Math.min(e.target.scrollHeight, 120) + "px";
   };
 
+  // ─────────────────────────────
+  // MARKDOWN COMPONENTS
+  // ─────────────────────────────
   const markdownComponents = {
+
     h1: ({ children }) => <h1>{children}</h1>,
     h2: ({ children }) => <h2>{children}</h2>,
     h3: ({ children }) => <h3>{children}</h3>,
     h4: ({ children }) => <h4>{children}</h4>,
+
     ul: ({ children }) => <ul>{children}</ul>,
     ol: ({ children }) => <ol>{children}</ol>,
     li: ({ children }) => <li>{children}</li>,
+
     p: ({ children }) => <p>{children}</p>,
-    strong: ({ children }) => <strong>{children}</strong>,
+
+    strong: ({ children }) => (
+      <strong>{children}</strong>
+    ),
   };
 
+  const userInitial =
+    (user?.username || user?.name || "U")[0].toUpperCase();
+
   return (
+
     <div className="blackai-container">
+
       {/* HEADER */}
       <div className="chat-header">
+
         <div className="header-left">
+
           <button
             className="back-button"
-            onClick={() => {
-              if (window.history.length > 1) navigate(-1);
-              else navigate("/home");
-            }}
+            onClick={() =>
+              window.history.length > 1
+                ? navigate(-1)
+                : navigate("/home")
+            }
           >
-            <svg width="24" height="24" viewBox="0 0 24 24">
+            <svg width="18" height="18" viewBox="0 0 24 24">
               <path
                 d="M15 18l-6-6 6-6"
                 stroke="white"
@@ -164,52 +285,82 @@ const BlackAI = () => {
             </svg>
           </button>
 
-          {/* ❌ robot supprimé */}
+          <div className="header-avatar">
+            ⚡
+          </div>
 
           <div className="header-info">
             <h2>Black AI</h2>
-            <span className="online-status">● En ligne</span>
+            <span className="online-status">
+              En ligne
+            </span>
           </div>
+
         </div>
 
         <button
           className="settings-button"
-          onClick={() => setShowSettings((prev) => !prev)}
+          onClick={() =>
+            setShowSettings((p) => !p)
+          }
         >
           ⚙️
         </button>
+
       </div>
 
       {/* SETTINGS */}
       {showSettings && (
+
         <div className="settings-menu">
+
           <div className="settings-item">
-            🌙 Mode sombre <input type="checkbox" />
+            🌙 Mode sombre
+            <input type="checkbox" />
           </div>
+
           <div className="settings-item">
-            🔔 Notifications <input type="checkbox" defaultChecked />
+            🔔 Notifications
+            <input
+              type="checkbox"
+              defaultChecked
+            />
           </div>
+
           <button
             className="settings-close"
-            onClick={() => setShowSettings(false)}
+            onClick={() =>
+              setShowSettings(false)
+            }
           >
             Fermer
           </button>
+
         </div>
       )}
 
       {/* MESSAGES */}
       <div className="messages-container">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`message-wrapper ${msg.sender}`}>
-            
-            {/* ✅ avatar UNIQUEMENT pour user */}
-            {msg.sender === "user" && (
-              <div className="message-avatar">👤</div>
-            )}
 
-            <div className="message-bubble fade-in">
+        {messages.map((msg) => (
+
+          <div
+            key={msg.id}
+            className={`message-wrapper ${msg.sender}`}
+          >
+
+            {/* AVATAR */}
+            <div className="message-avatar">
+              {msg.sender === "ai"
+                ? "⚡"
+                : userInitial}
+            </div>
+
+            {/* BUBBLE */}
+            <div className="message-bubble">
+
               <div className="message-text">
+
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
@@ -217,54 +368,61 @@ const BlackAI = () => {
                 >
                   {msg.text}
                 </ReactMarkdown>
+
               </div>
-              <div className="message-time">{msg.timestamp}</div>
+
+              <div className="message-time">
+                {msg.timestamp}
+              </div>
+
             </div>
+
           </div>
         ))}
 
-        {mutation.isPending && (
-          <div className="message-wrapper ai">
-            {/* ❌ plus d’avatar ici */}
-            <div className="message-bubble">
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </div>
-          </div>
-        )}
-
         <div ref={messagesEndRef} />
+
       </div>
 
       {/* INPUT */}
       <div className="input-wrapper">
+
         <div className="input-container">
+
           <textarea
             ref={inputRef}
-            placeholder="Écris ton message..."
+            placeholder="Écris ton message…"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             rows={1}
             className="message-input"
           />
+
           <button
             onClick={handleSend}
-            disabled={!inputValue.trim() || mutation.isPending}
+            disabled={
+              !inputValue.trim() ||
+              mutation.isPending
+            }
             className={`send-button ${
-              !inputValue.trim() || mutation.isPending ? "disabled" : ""
+              !inputValue.trim() ||
+              mutation.isPending
+                ? "disabled"
+                : ""
             }`}
           >
-            ✨
+            ✦
           </button>
+
         </div>
+
         <div className="input-hint">
-          Entrée = envoyer • Shift+Entrée = ligne
+          Entrée = envoyer · Shift+Entrée = ligne
         </div>
+
       </div>
+
     </div>
   );
 };
