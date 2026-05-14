@@ -350,11 +350,11 @@ const BlackAI = () => {
           >
 
             {/* AVATAR */}
-            <div className="message-avatar">
-              {msg.sender === "ai"
-                ? "⚡"
-                : userInitial}
-            </div>
+            {msg.sender !== "ai" && (
+                <div className="message-avatar">
+                      {userInitial}
+                        </div>
+            )}
 
             {/* BUBBLE */}
             <div className="message-bubble">
@@ -369,10 +369,6 @@ const BlackAI = () => {
                   {msg.text}
                 </ReactMarkdown>
 
-              </div>
-
-              <div className="message-time">
-                {msg.timestamp}
               </div>
 
             </div>

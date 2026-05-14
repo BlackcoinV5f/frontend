@@ -157,16 +157,16 @@
 }
 
 .message-wrapper.user .message-bubble {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: #0b0f19;
   color: white;
 }
 
-/* TIME */
-.message-time {
-  font-size: 10px;
-  opacity: 0.5;
-  margin-top: 8px;
-  text-align: right;
+/* Bulle AI alignée à gauche sans débordement */
+.message-wrapper.ai .message-bubble {
+  background: #0b0f19;
+  color: #e5e7eb;
+  border-radius: 4px 18px 18px 18px;
+  text-align: left;
 }
 
 /* ============================================ */
@@ -235,12 +235,16 @@
 .message-text ul,
 .message-text ol {
   margin: 0.25rem 0 0.25rem 0;
-  padding-left: 1.5rem;
+  padding-left: 1.2rem;
+  list-style-position: outside;
+  text-align: left;
 }
 
 .message-text li {
   margin: 0.15rem 0;
   line-height: 1.4;
+  text-align: left;
+  padding-left: 0.2rem;
 }
 
 /* Puces spécifiques */
