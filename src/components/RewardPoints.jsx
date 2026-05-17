@@ -84,7 +84,7 @@ const RewardPoints = () => {
             {rewardPoints.toLocaleString(
               i18n.language.split("-")[0] // ✅ corrigé
             )}{" "}
-            <span className="unit">BKC</span>
+            <span className="unit">LTN</span>
           </>
         )}
       </motion.div>

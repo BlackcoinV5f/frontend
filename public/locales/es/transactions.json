@@ -51,14 +51,14 @@
 
     "form": {
       "address": "Dirección / número de cuenta",
-      "amount": "Cantidad a retirar (mín {{min}} BKC)",
+      "amount": "Cantidad a retirar (mín {{min}} LTN)",
 
       "submit": "Confirmar retiro",
       "sending": "Procesando...",
 
       "errors": {
         "required": "Todos los campos son obligatorios",
-        "minAmount": "El monto mínimo de retiro es {{min}} BKC",
+        "minAmount": "El monto mínimo de retiro es {{min}} LTN",
         "noUser": "Usuario no identificado",
         "generic": "Ocurrió un error durante el retiro"
       },

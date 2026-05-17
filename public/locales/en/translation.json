@@ -184,7 +184,7 @@
   "bonus": {
     "authRequired": "Login required",
     "title": "Bonus Program",
-    "subtitle": "Claim 0.3 BKC every 24 hours",
+    "subtitle": "Claim 0.3 LTN every 24 hours",
     "loading": "Loading...",
     "available": "Available",
     "availableIn": "Available in:",
@@ -198,7 +198,7 @@
       "friendsCount": "Referrals ({{count}}/3)"
     },
     "claiming": "Claiming...",
-    "claim": "Claim 0.3 BKC",
+    "claim": "Claim 0.3 LTN",
     "success": {
       "claimed": "🎉 Bonus claimed successfully!"
     },
@@ -364,11 +364,11 @@
     "no_country": "Not specified",
     "form": {
       "address": "Address / account number",
-      "amount": "Amount to withdraw (min 1.2 BKC)",
+      "amount": "Amount to withdraw (min 1.2 LTN)",
       "submit": "Submit withdrawal",
       "sending": "Sending...",
       "required": "All fields are required",
-      "min_amount": "The minimum withdrawal amount is 1.2 BKC",
+      "min_amount": "The minimum withdrawal amount is 1.2 LTN",
       "no_user": "User not identified",
       "success": "Withdrawal request sent successfully",
       "error": "An error occurred during withdrawal"

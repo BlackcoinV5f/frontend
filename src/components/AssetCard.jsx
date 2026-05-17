@@ -79,7 +79,7 @@ const AssetCard = ({ asset }) => {
 
         <p>
           <span>{t("action.dailyEarnings")} :</span>{" "}
-          <strong>{asset.daily_earnings_bkc} BKC</strong>
+          <strong>{asset.daily_earnings_LTN} LTN</strong>
         </p>
       </div>
 

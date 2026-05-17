@@ -2,7 +2,7 @@
   "bonus": {
     "authRequired": "Login required",
     "title": "Bonus Program",
-    "subtitle": "Claim 0.3 BKC every 24 hours",
+    "subtitle": "Claim 0.3 LTN every 24 hours",
 
     "loading": "Loading...",
     "available": "Available",
@@ -20,7 +20,7 @@
     },
 
     "claiming": "Claiming...",
-    "claim": "Claim 0.3 BKC",
+    "claim": "Claim 0.3 LTN",
 
     "success": {
       "claimed": "Bonus successfully claimed!"

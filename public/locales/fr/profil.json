@@ -65,7 +65,7 @@
       "uid": "Identifiant / UID",
       "uidPlaceholder": "Votre UID / Email",
       "wallet": "Adresse du wallet",
-      "bkc": "Adresse BKC",
+      "LTN": "Adresse LTN",
       "memo": "Memo (optionnel)",
       "memoPlaceholder": "Memo si nécessaire"
     },

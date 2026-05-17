@@ -33,7 +33,7 @@ const AirdropClaim = () => {
 
   const [form, setForm] = useState({
     identifier: "",
-    bkcAddress: "",
+    LTNAddress: "",
     memo: "",
   });
 
@@ -98,15 +98,15 @@ const AirdropClaim = () => {
           </label>
         )}
 
-        {/* BKC */}
+        {/* LTN */}
         <label>
-          {t("airdropClaim.fields.bkc")}
+          {t("airdropClaim.fields.LTN")}
           <input
             type="text"
-            name="bkcAddress"
-            value={form.bkcAddress}
+            name="LTNAddress"
+            value={form.LTNAddress}
             onChange={handleChange}
-            placeholder={t("airdropClaim.fields.bkc")}
+            placeholder={t("airdropClaim.fields.LTN")}
             required
           />
         </label>

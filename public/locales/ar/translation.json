@@ -175,7 +175,7 @@
   "bonus": {
     "authRequired": "تسجيل الدخول مطلوب",
     "title": "برنامج المكافآت",
-    "subtitle": "استلم 0.3 BKC كل 24 ساعة",
+    "subtitle": "استلم 0.3 LTN كل 24 ساعة",
     "loading": "جاري التحميل...",
     "available": "متاح",
     "availableIn": "متاح خلال:",
@@ -189,7 +189,7 @@
       "friendsCount": "الإحالات ({{count}}/3)"
     },
     "claiming": "جاري الاستلام...",
-    "claim": "استلام 0.3 BKC",
+    "claim": "استلام 0.3 LTN",
     "success": {
       "claimed": "🎉 تم استلام المكافأة بنجاح!"
     },

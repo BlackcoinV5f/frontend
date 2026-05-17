@@ -51,14 +51,14 @@
 
     "form": {
       "address": "Address / account number",
-      "amount": "Amount to withdraw (min {{min}} BKC)",
+      "amount": "Amount to withdraw (min {{min}} LTN)",
 
       "submit": "Submit withdrawal",
       "sending": "Processing...",
 
       "errors": {
         "required": "All fields are required",
-        "minAmount": "Minimum withdrawal amount is {{min}} BKC",
+        "minAmount": "Minimum withdrawal amount is {{min}} LTN",
         "noUser": "User not identified",
         "generic": "An error occurred during withdrawal"
       },

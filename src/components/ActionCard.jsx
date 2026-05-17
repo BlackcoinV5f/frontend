@@ -22,7 +22,7 @@ const ActionCard = ({ action: rawAction }) => {
     totalParts: action?.total_parts || 0,
     status: action?.status || "available",
     dailyEarnings: Number(
-      action?.daily_earnings ?? action?.estimated_daily_bkc ?? 0
+      action?.daily_earnings ?? action?.estimated_daily_LTN ?? 0
     ),
   }), [action]);
 
@@ -83,7 +83,7 @@ const ActionCard = ({ action: rawAction }) => {
         </p>
         <p>
           <span>{t("action.dailyEarnings")} :</span>
-          <strong>{pack.dailyEarnings} BKC</strong>
+          <strong>{pack.dailyEarnings} LTN</strong>
         </p>
       </div>
 

@@ -127,7 +127,7 @@ export default function Historic() {
                   </td>
 
                   <td>
-                    {tItem.amount} <span className="currency">BKC</span>
+                    {tItem.amount} <span className="currency">LTN</span>
                   </td>
 
                   <td>{getStatusBadge(tItem.status)}</td>

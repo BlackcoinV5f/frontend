@@ -42,8 +42,8 @@
 
     "reward": {
       "title": "Récompense",
-      "claimed": "Vous avez reçu +{{amount}} BKC",
-      "wallet": "Solde du wallet : {{balance}} BKC",
+      "claimed": "Vous avez reçu +{{amount}} LTN",
+      "wallet": "Solde du wallet : {{balance}} LTN",
       "next": "Prochaine réclamation : {{date}}"
     },
 

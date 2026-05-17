@@ -31,10 +31,6 @@
   gap: 10px;
 }
 
-.ai-icon {
-  font-size: 24px;
-}
-
 .header-info h2 {
   font-size: 14px;
   margin: 0;
@@ -69,7 +65,7 @@
   border-radius: 10px;
   padding: 12px;
   z-index: 1000;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .settings-item {
@@ -77,6 +73,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 13px;
 }
 
 .settings-close {
@@ -88,6 +85,20 @@
   color: white;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.clear-button {
+  background: #ef4444;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.clear-button:hover {
+  background: #dc2626;
 }
 
 /* MESSAGES CONTAINER */
@@ -138,39 +149,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #111827;
+  background: #0b0f19;
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #60a5fa;
   flex-shrink: 0;
+  border: 1px solid #1f2937;
 }
 
+/* BULLE */
 .message-bubble {
-  max-width: 82%;
-  padding: 12px 14px;
-  border-radius: 18px;
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 14px;
   line-height: 1.7;
   word-break: break-word;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
+
+  /* Même fond que la page */
+  background: #0b0f19;
+  color: #e5e7eb;
 }
 
+/* Bulle utilisateur */
 .message-wrapper.user .message-bubble {
   background: #0b0f19;
-  color: white;
+  color: #e5e7eb;
+  border-radius: 12px;
+  text-align: left;
 }
 
-/* Bulle AI alignée à gauche sans débordement */
+/* Bulle AI */
 .message-wrapper.ai .message-bubble {
   background: #0b0f19;
   color: #e5e7eb;
-  border-radius: 4px 18px 18px 18px;
+  border-radius: 12px;
   text-align: left;
 }
 
 /* ============================================ */
-/* 🔥 CORRECTION TEXTE ALIGNÉ GAUCHE 🔥 */
+/* TEXTE MARKDOWN ALIGNÉ GAUCHE                 */
 /* ============================================ */
 
 .message-text {
@@ -222,7 +241,6 @@
   color: #60a5fa;
 }
 
-/* Empêcher les marges en trop sur le premier élément */
 .message-text h1:first-child,
 .message-text h2:first-child,
 .message-text h3:first-child,
@@ -234,7 +252,7 @@
 /* Listes */
 .message-text ul,
 .message-text ol {
-  margin: 0.25rem 0 0.25rem 0;
+  margin: 0.25rem 0;
   padding-left: 1.2rem;
   list-style-position: outside;
   text-align: left;
@@ -247,7 +265,6 @@
   padding-left: 0.2rem;
 }
 
-/* Puces spécifiques */
 .message-text ul li::marker {
   color: #60a5fa;
 }
@@ -265,18 +282,18 @@
 .message-text pre {
   margin: 0.5rem 0;
   padding: 0.75rem;
-  background: #0b0f19;
+  background: #111827;
   border-radius: 8px;
   overflow-x: auto;
   font-size: 0.85rem;
 }
 
 .message-text code {
-  background: #0b0f19;
+  background: #111827;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.85rem;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 /* Tableaux */
@@ -299,7 +316,7 @@
   font-weight: 600;
 }
 
-/* Texte en gras */
+/* Gras */
 .message-text strong {
   color: #60a5fa;
   font-weight: 600;
@@ -382,31 +399,11 @@
   text-align: center;
 }
 
-/* TYPING INDICATOR */
-.typing-indicator {
-  display: flex;
-  gap: 4px;
-  padding: 4px 0;
-}
-
-.typing-indicator span {
-  width: 8px;
-  height: 8px;
-  background: #9ca3af;
-  border-radius: 50%;
-  animation: typing 1.4s infinite ease-in-out;
-}
-
-.typing-indicator span:nth-child(1) { animation-delay: 0s; }
-.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-
 /* BACK BUTTON */
 .back-button {
   background: transparent;
   border: none;
   cursor: pointer;
-  margin-right: 10px;
   display: flex;
   align-items: center;
 }
@@ -417,10 +414,6 @@
 }
 
 /* ANIMATIONS */
-.fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

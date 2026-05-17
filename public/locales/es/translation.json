@@ -184,7 +184,7 @@
   "bonus": {
     "authRequired": "Inicio de sesión requerido",
     "title": "Programa de Bonos",
-    "subtitle": "Reclama 0.3 BKC cada 24 horas",
+    "subtitle": "Reclama 0.3 LTN cada 24 horas",
     "loading": "Cargando...",
     "available": "Disponible",
     "availableIn": "Disponible en:",
@@ -198,7 +198,7 @@
       "friendsCount": "Referidos ({{count}}/3)"
     },
     "claiming": "Reclamando...",
-    "claim": "Reclamar 0.3 BKC",
+    "claim": "Reclamar 0.3 LTN",
     "success": {
       "claimed": "🎉 ¡Bono reclamado con éxito!"
     },
@@ -364,11 +364,11 @@
     "no_country": "No especificado",
     "form": {
       "address": "Dirección / número de cuenta",
-      "amount": "Monto a retirar (mín 1.2 BKC)",
+      "amount": "Monto a retirar (mín 1.2 LTN)",
       "submit": "Enviar retiro",
       "sending": "Enviando...",
       "required": "Todos los campos son obligatorios",
-      "min_amount": "El monto mínimo de retiro es 1.2 BKC",
+      "min_amount": "El monto mínimo de retiro es 1.2 LTN",
       "no_user": "Usuario no identificado",
       "success": "Solicitud de retiro enviada con éxito",
       "error": "Ocurrió un error durante el retiro"

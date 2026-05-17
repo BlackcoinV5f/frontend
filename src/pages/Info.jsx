@@ -14,37 +14,37 @@ import "./Info.css";
 
 const socials = [
   {
-    href: "https://t.me/+2VYCu2Ygs0Q1YTk0",
+    href: "https://t.me/ltn_network",
     Icon: Send,
     label: "Telegram",
     color: "#29b6f6",
   },
   {
-    href: "https://x.com/BlackcoinON",
+    href: "https://x.com/Liton_network",
     Icon: Twitter,
     label: "X",
     color: "#e2e8f0",
   },
   {
-    href: "https://www.facebook.com/share/1CjsWSj1P3",
+    href: "https://www.facebook.com/share/1DMkFcwA2B/",
     Icon: Facebook,
     label: "Facebook",
     color: "#4267B2",
   },
   {
-    href: "https://www.youtube.com/@Blackcoinchaine",
+    href: "https://youtube.com/@liton_network?si=xWWgWzHPPWmQZtML",
     Icon: Youtube,
     label: "YouTube",
     color: "#ff0000",
   },
   {
-    href: "https://www.instagram.com/blackcoin_bkc",
+    href: "https://www.instagram.com/liton_network?igsh=cDc4OXF5eXM5Y2Nj",
     Icon: Instagram,
     label: "Instagram",
     color: "#e1306c",
   },
   {
-    href: "https://www.tiktok.com/@blackcoin_official",
+    href: "https://www.tiktok.com/@liton_network",
     Icon: Music2,
     label: "TikTok",
     color: "#facc15",
@@ -72,25 +72,31 @@ const Info = () => {
         transition={{ delay: 0.2 }}
       >
         <Trans ns="info" i18nKey="info.intro">
-          L'équipe <strong>BLACKCOIN</strong> développe activement le projet,
+          L'équipe <strong>LITON NETWORK</strong> développe activement le projet,
           avec de nombreuses fonctionnalités majeures en cours.
         </Trans>
       </motion.div>
 
       <div className="info-section">
         <h3 className="info-section-title">{t("info.about.title")}</h3>
-        <p className="info-section-text">{t("info.about.text1")}</p>
-        <p className="info-section-text">{t("info.about.text2")}</p>
+
+        <p className="info-section-text">
+          {t("info.about.text1")}
+        </p>
+
+        <p className="info-section-text">
+          {t("info.about.text2")}
+        </p>
 
         <motion.a
-          href="https://blackcoinweb.com"
+          href="https://litonnetwork.com"
           target="_blank"
           rel="noopener noreferrer"
           className="info-official-link"
           whileHover={{ scale: 1.02 }}
         >
           <Globe size={14} />
-          www.blackcoinweb.com
+          www.litonnetwork.com
         </motion.a>
       </div>
 
@@ -98,18 +104,24 @@ const Info = () => {
         <h3 className="info-section-title">
           {t("info.communication.title")}
         </h3>
+
         <p className="info-section-text">
           {t("info.communication.text1")}
         </p>
+
         <p className="info-section-text">
           {t("info.communication.text2")}
         </p>
       </div>
 
-      <p className="info-footer">{t("info.footer")}</p>
+      <p className="info-footer">
+        {t("info.footer")}
+      </p>
 
       <div className="info-socials">
-        <p className="info-socials-label">Retrouvez-nous sur</p>
+        <p className="info-socials-label">
+          Retrouvez-nous sur
+        </p>
 
         <div className="social-grid">
           {socials.map(({ href, Icon, label, color }) => (

@@ -150,7 +150,7 @@ const Settings = () => {
             </a>
 
             <a
-              href="https://www.instagram.com/blackcoin_bkc"
+              href="https://www.instagram.com/blackcoin_LTN"
               target="_blank"
               rel="noopener noreferrer"
               title="Instagram"

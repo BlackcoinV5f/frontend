@@ -65,7 +65,7 @@
       "uid": "UID / Identificador",
       "uidPlaceholder": "Tu UID / Correo",
       "wallet": "Dirección del wallet",
-      "bkc": "Dirección BKC",
+      "LTN": "Dirección LTN",
       "memo": "Memo (opcional)",
       "memoPlaceholder": "Memo si es necesario"
     },

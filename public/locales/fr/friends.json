@@ -2,7 +2,7 @@
   "bonus": {
     "authRequired": "Connexion requise",
     "title": "Programme de bonus",
-    "subtitle": "Réclamez 0.3 BKC toutes les 24h",
+    "subtitle": "Réclamez 0.3 LTN toutes les 24h",
 
     "loading": "Chargement...",
     "available": "Disponible",
@@ -20,7 +20,7 @@
     },
 
     "claiming": "Réclamation en cours...",
-    "claim": "Réclamer 0.3 BKC",
+    "claim": "Réclamer 0.3 LTN",
 
     "success": {
       "claimed": "Bonus réclamé avec succès !"

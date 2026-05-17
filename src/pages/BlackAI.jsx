@@ -36,22 +36,33 @@ const BlackAI = () => {
   }, [messages]);
 
   // ─────────────────────────────
+  // SAVE MESSAGES TO CACHE (24h)
+  // ─────────────────────────────
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    const cache = {
+      messages,
+      savedAt: Date.now(),
+    };
+
+    localStorage.setItem("blackai_messages", JSON.stringify(cache));
+  }, [messages]);
+
+  // ─────────────────────────────
   // GREETING
   // ─────────────────────────────
   const getGreeting = () => {
     const h = new Date().getHours();
-
     if (h < 12) return "Bonjour";
     if (h < 18) return "Bon après-midi";
-
     return "Bonsoir";
   };
 
   // ─────────────────────────────
-  // MESSAGE INITIAL
+  // MESSAGE INITIAL + CACHE
   // ─────────────────────────────
   useEffect(() => {
-
     if (!user) return;
 
     const name =
@@ -60,6 +71,28 @@ const BlackAI = () => {
       user?.firstName ||
       "Utilisateur";
 
+    // Vérifier le cache localStorage
+    const cached = localStorage.getItem("blackai_messages");
+
+    if (cached) {
+      try {
+        const { messages: savedMessages, savedAt } = JSON.parse(cached);
+        const heures24 = 24 * 60 * 60 * 1000;
+
+        // Si moins de 24h → restaurer
+        if (Date.now() - savedAt < heures24) {
+          setMessages(savedMessages);
+          return;
+        } else {
+          // Cache expiré → supprimer
+          localStorage.removeItem("blackai_messages");
+        }
+      } catch {
+        localStorage.removeItem("blackai_messages");
+      }
+    }
+
+    // Aucun cache valide → message d'accueil
     setMessages([
       {
         id: Date.now(),
@@ -68,50 +101,34 @@ const BlackAI = () => {
           `${getGreeting()} **${name}** 👋\n\n` +
           `Je suis **Black AI**, votre assistant intelligent.\n\n` +
           `Comment puis-je vous aider aujourd'hui ?`,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
       },
     ]);
-
   }, [user]);
 
   // ─────────────────────────────
   // STREAM TEXT EFFECT
   // ─────────────────────────────
   const streamAIResponse = async (fullText) => {
-
     const aiMessageId = Date.now();
 
-    // créer message vide
+    // Créer message vide
     setMessages((prev) => [
       ...prev,
       {
         id: aiMessageId,
         sender: "ai",
         text: "",
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
       },
     ]);
 
-    // écrire caractère par caractère
+    // Écrire caractère par caractère
     for (let i = 0; i <= fullText.length; i++) {
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, 8)
-      );
+      await new Promise((resolve) => setTimeout(resolve, 8));
 
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === aiMessageId
-            ? {
-                ...msg,
-                text: fullText.slice(0, i),
-              }
+            ? { ...msg, text: fullText.slice(0, i) }
             : msg
         )
       );
@@ -124,35 +141,23 @@ const BlackAI = () => {
   // API CALL
   // ─────────────────────────────
   const mutation = useMutation({
-
     mutationFn: async (question) => {
-
       const res = await fetch(API_URL, {
         method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          question,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question }),
       });
 
       if (!res.ok) {
-        throw new Error(
-          (await res.text()) || "Erreur serveur"
-        );
+        throw new Error((await res.text()) || "Erreur serveur");
       }
 
       const data = await res.json();
-
       return data?.answer || "❌ Réponse vide";
     },
 
     onSuccess: async (aiText) => {
-
-      // supprimer les blocs HTML parasites
+      // Supprimer les blocs HTML parasites
       const cleanText = aiText
         .replace(/```html[\s\S]*?```/gi, "")
         .replace(/<div[\s\S]*?>/gi, "")
@@ -162,10 +167,7 @@ const BlackAI = () => {
     },
 
     onError: async () => {
-
-      await streamAIResponse(
-        "❌ Une erreur est survenue. Veuillez réessayer."
-      );
+      await streamAIResponse("❌ Une erreur est survenue. Veuillez réessayer.");
     },
   });
 
@@ -173,36 +175,25 @@ const BlackAI = () => {
   // SEND MESSAGE
   // ─────────────────────────────
   const handleSend = () => {
-
-    if (!inputValue.trim() || mutation.isPending) {
-      return;
-    }
+    if (!inputValue.trim() || mutation.isPending) return;
 
     const userText = inputValue.trim();
 
-    // ajouter message user
     setMessages((prev) => [
       ...prev,
       {
         id: Date.now(),
         sender: "user",
         text: userText,
-
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
       },
     ]);
 
-    // reset input
     setInputValue("");
 
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
     }
 
-    // envoyer backend
     mutation.mutate(userText);
   };
 
@@ -210,11 +201,8 @@ const BlackAI = () => {
   // ENTER KEY
   // ─────────────────────────────
   const handleKeyDown = (e) => {
-
     if (e.key === "Enter" && !e.shiftKey) {
-
       e.preventDefault();
-
       handleSend();
     }
   };
@@ -223,46 +211,42 @@ const BlackAI = () => {
   // AUTO HEIGHT INPUT
   // ─────────────────────────────
   const handleInputChange = (e) => {
-
     setInputValue(e.target.value);
-
     e.target.style.height = "auto";
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+  };
 
-    e.target.style.height =
-      Math.min(e.target.scrollHeight, 120) + "px";
+  // ─────────────────────────────
+  // EFFACER LE CACHE
+  // ─────────────────────────────
+  const handleClearCache = () => {
+    localStorage.removeItem("blackai_messages");
+    window.location.reload();
   };
 
   // ─────────────────────────────
   // MARKDOWN COMPONENTS
   // ─────────────────────────────
   const markdownComponents = {
-
     h1: ({ children }) => <h1>{children}</h1>,
     h2: ({ children }) => <h2>{children}</h2>,
     h3: ({ children }) => <h3>{children}</h3>,
     h4: ({ children }) => <h4>{children}</h4>,
-
     ul: ({ children }) => <ul>{children}</ul>,
     ol: ({ children }) => <ol>{children}</ol>,
     li: ({ children }) => <li>{children}</li>,
-
     p: ({ children }) => <p>{children}</p>,
-
-    strong: ({ children }) => (
-      <strong>{children}</strong>
-    ),
+    strong: ({ children }) => <strong>{children}</strong>,
   };
 
   const userInitial =
     (user?.username || user?.name || "U")[0].toUpperCase();
 
   return (
-
     <div className="blackai-container">
 
       {/* HEADER */}
       <div className="chat-header">
-
         <div className="header-left">
 
           <button
@@ -285,33 +269,25 @@ const BlackAI = () => {
             </svg>
           </button>
 
-          <div className="header-avatar">
-            ⚡
-          </div>
+          <div className="header-avatar">⚡</div>
 
           <div className="header-info">
             <h2>Black AI</h2>
-            <span className="online-status">
-              En ligne
-            </span>
+            <span className="online-status">En ligne</span>
           </div>
 
         </div>
 
         <button
           className="settings-button"
-          onClick={() =>
-            setShowSettings((p) => !p)
-          }
+          onClick={() => setShowSettings((p) => !p)}
         >
           ⚙️
         </button>
-
       </div>
 
       {/* SETTINGS */}
       {showSettings && (
-
         <div className="settings-menu">
 
           <div className="settings-item">
@@ -321,17 +297,19 @@ const BlackAI = () => {
 
           <div className="settings-item">
             🔔 Notifications
-            <input
-              type="checkbox"
-              defaultChecked
-            />
+            <input type="checkbox" defaultChecked />
+          </div>
+
+          <div className="settings-item">
+            🗑️ Effacer la conversation
+            <button className="clear-button" onClick={handleClearCache}>
+              Effacer
+            </button>
           </div>
 
           <button
             className="settings-close"
-            onClick={() =>
-              setShowSettings(false)
-            }
+            onClick={() => setShowSettings(false)}
           >
             Fermer
           </button>
@@ -341,26 +319,19 @@ const BlackAI = () => {
 
       {/* MESSAGES */}
       <div className="messages-container">
-
         {messages.map((msg) => (
-
           <div
             key={msg.id}
             className={`message-wrapper ${msg.sender}`}
           >
-
-            {/* AVATAR */}
+            {/* Avatar uniquement pour l'utilisateur */}
             {msg.sender !== "ai" && (
-                <div className="message-avatar">
-                      {userInitial}
-                        </div>
+              <div className="message-avatar">{userInitial}</div>
             )}
 
-            {/* BUBBLE */}
+            {/* Bulle */}
             <div className="message-bubble">
-
               <div className="message-text">
-
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
@@ -368,21 +339,17 @@ const BlackAI = () => {
                 >
                   {msg.text}
                 </ReactMarkdown>
-
               </div>
-
             </div>
 
           </div>
         ))}
 
         <div ref={messagesEndRef} />
-
       </div>
 
       {/* INPUT */}
       <div className="input-wrapper">
-
         <div className="input-container">
 
           <textarea
@@ -397,15 +364,9 @@ const BlackAI = () => {
 
           <button
             onClick={handleSend}
-            disabled={
-              !inputValue.trim() ||
-              mutation.isPending
-            }
+            disabled={!inputValue.trim() || mutation.isPending}
             className={`send-button ${
-              !inputValue.trim() ||
-              mutation.isPending
-                ? "disabled"
-                : ""
+              !inputValue.trim() || mutation.isPending ? "disabled" : ""
             }`}
           >
             ✦
@@ -416,7 +377,6 @@ const BlackAI = () => {
         <div className="input-hint">
           Entrée = envoyer · Shift+Entrée = ligne
         </div>
-
       </div>
 
     </div>
