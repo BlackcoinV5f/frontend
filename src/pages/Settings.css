@@ -1,105 +1,278 @@
 /* ===========================
-   CONTAINER PRINCIPAL
+   SETTINGS — Blackcoin Pro
+   Dark crypto aesthetic
+=========================== */
+
+/* ===========================
+   CONTAINER
 =========================== */
 .settings-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-
-  min-height: 100vh;
-  width: 100vw;
-  overflow-x: hidden;
-
-  background: radial-gradient(circle at top, #0b0b18, #121222, #0a0a12);
-
+  height: 100vh;
+  width: 100%;
+  background: #06061a;
   color: #fff;
-  font-family: "Arial", sans-serif;
-  font-size: 0.75rem;
-
-  padding: 125px 1rem 75px; /* ↓ légèrement réduit */
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  padding-top: calc(100px + env(safe-area-inset-top));
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ===========================
-   CONTENU PRINCIPAL
+   CONTENU (zone de défilement)
 =========================== */
 .settings-content {
   width: 100%;
-  max-width: 700px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 0.85rem;  /* ↓ un peu réduit */
-  text-align: left;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* Titres principaux */
-.settings-content h1 {
-  font-size: 1.1rem;
-  margin-bottom: 0.8rem; /* ↓ réduit */
-  color: #00ffcc;
-  font-weight: 600;
+.settings-content::-webkit-scrollbar {
+  display: none;
 }
 
 /* ===========================
-   SECTIONS
+   SECTION CARD
 =========================== */
 .settings-section {
-  margin-bottom: 1.5rem;   /* ↓ réduit */
-  padding-bottom: 0.7rem;  /* ↓ réduit */
+  background: #0d0d28;
+  border: 0.5px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 16px 18px;
+  flex-shrink: 0;
 }
 
 .settings-section h2 {
-  font-size: 0.85rem;
-  margin-bottom: 0.3rem; /* ↓ réduit */
-  color: #00d4ff;
-  font-weight: 500;
-}
-
-/* Sélecteur de langue */
-.settings-section select {
-  padding: 0.22rem 0.45rem; /* ↓ léger */
-  border-radius: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: #222;
-  color: #fff;
-  font-size: 0.74rem; /* ↓ très léger */
-  cursor: pointer;
-  width: 140px;
-  margin-top: 0.25rem; /* ↓ léger */
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #00cfff;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* ===========================
-   ICONES SOCIAUX
+   LANGUAGE SELECT
+=========================== */
+.language-select {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  padding: 0 14px;
+  background: #13132e;
+  color: #fff;
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300cfff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: border-color 0.2s;
+}
+
+.language-select:focus {
+  border-color: rgba(0, 207, 255, 0.4);
+}
+
+.language-select option {
+  background: #13132e;
+  color: #fff;
+}
+
+/* ===========================
+   REFRESH BUTTON
+=========================== */
+.refresh-button {
+  width: 100%;
+  height: 48px;
+  border: 0.5px solid rgba(0, 207, 255, 0.2);
+  border-radius: 12px;
+  background: #111640;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.01em;
+}
+
+.refresh-button:hover {
+  background: #1a2060;
+}
+
+.refresh-button:active {
+  transform: scale(0.97);
+  background: #0e1240;
+}
+
+.refresh-icon {
+  font-size: 16px;
+  color: #00cfff;
+}
+
+/* ===========================
+   LIENS GROUPÉS
+=========================== */
+.settings-links-group {
+  background: #0d0d28;
+  border: 0.5px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.settings-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 18px;
+  color: #c8d2f0;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s, color 0.15s;
+}
+
+.settings-link:last-child {
+  border-bottom: none;
+}
+
+.settings-link::after {
+  content: "›";
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.2);
+  line-height: 1;
+}
+
+.settings-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+}
+
+.settings-link:active {
+  background: rgba(0, 207, 255, 0.05);
+}
+
+/* ===========================
+   ICÔNES SOCIALES
 =========================== */
 .social-icons {
   display: flex;
-  gap: 0.65rem;      /* ↓ réduit */
-  margin-top: 0.7rem; /* ↓ réduit */
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.social-icons a {
-  font-size: 1.1rem; /* ↓ un peu plus petit */
-  color: #00d4ff;
-  transition: color 0.3s ease;
+.social-icons a,
+.social-icons span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #13132e;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  font-size: 20px;
+  color: #00cfff;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+  cursor: pointer;
 }
 
 .social-icons a:hover {
-  color: #ffcc00;
+  background: #1a1a40;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.social-icons a:active {
+  transform: scale(0.94);
+}
+
+.social-icons.disabled span {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* ===========================
-   RESPONSIVE MOBILE
+   RESPONSIVE
 =========================== */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .settings-container {
-    padding: 110px 0.7rem 80px; /* ↓ légèrement réduit */
-  }
-
-  .settings-section:last-of-type {
-    margin-bottom: 7.5rem; /* ↓ réduit */
+    padding-top: calc(90px + env(safe-area-inset-top));
+    padding-bottom: calc(110px + env(safe-area-inset-bottom));
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   .settings-content {
-    padding: 0.7rem; /* ↓ réduit */
-    max-width: 100%;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .settings-section {
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+
+  .settings-section h2 {
+    font-size: 10px;
+    margin-bottom: 10px;
+  }
+
+  .language-select {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .refresh-button {
+    height: 44px;
+    font-size: 14px;
+  }
+
+  .settings-link {
+    padding: 13px 16px;
+    font-size: 13px;
+  }
+
+  .social-icons {
+    gap: 8px;
+  }
+
+  .social-icons a,
+  .social-icons span {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    border-radius: 10px;
   }
 }

@@ -1,5 +1,3 @@
-// src/pages/Settings.jsx
-
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -11,26 +9,19 @@ import {
   FaTwitter,
   FaInstagram,
   FaWhatsapp,
+  FaSyncAlt,
 } from "react-icons/fa";
 
 import { FaTiktok, FaHeadset } from "react-icons/fa6";
 
 import "./Settings.css";
 
-/* ============================
-   LANGUAGES
-============================ */
-
 const languages = [
   { code: "en", label: "English" },
   { code: "fr", label: "Français" },
   { code: "es", label: "Español" },
-  { code: "ar", label: "العربية" }, // ← langue arabe ajoutée
+  { code: "ar", label: "العربية" },
 ];
-
-/* ============================
-   COMPONENT
-============================ */
 
 const Settings = () => {
   const { i18n } = useTranslation();
@@ -41,11 +32,15 @@ const Settings = () => {
     localStorage.setItem("appLanguage", lang);
   };
 
+  const handleRefreshApp = () => {
+    window.location.href = window.location.origin;
+  };
+
   return (
     <div className="settings-container">
       <main className="settings-content">
 
-        {/* ================= Language ================= */}
+        {/* ── Language ── */}
         <section className="settings-section">
           <h2>Language</h2>
           <select
@@ -61,14 +56,20 @@ const Settings = () => {
           </select>
         </section>
 
-        {/* ================= Links ================= */}
-        <section className="settings-section clickable">
-          <Link to="/faq" className="settings-link">
-            FAQ Blackcoin
-          </Link>
+        {/* ── Actualiser ── */}
+        <section className="settings-section">
+          <button onClick={handleRefreshApp} className="refresh-button">
+            <FaSyncAlt className="refresh-icon" />
+            Actualiser
+          </button>
         </section>
 
-        <section className="settings-section clickable">
+        {/* ── Liens groupés dans un seul bloc ── */}
+        <div className="settings-links-group">
+          <Link to="/faq" className="settings-link">
+            FAQ Liton Network
+          </Link>
+
           <a
             href="https://blackcoinweb.com"
             target="_blank"
@@ -77,25 +78,20 @@ const Settings = () => {
           >
             Whitepaper
           </a>
-        </section>
 
-        {/* ✅ Support → ouvre Gmail / app mail */}
-        <section className="settings-section clickable">
           <a
             href="mailto:blackcoinservice@gmail.com?subject=Support%20Blackcoin&body=Bonjour%20l'équipe%20Blackcoin,%0D%0A%0D%0A"
             className="settings-link"
           >
             Support
           </a>
-        </section>
 
-        <section className="settings-section clickable">
           <Link to="/privacy" className="settings-link">
             Politique de confidentialité
           </Link>
-        </section>
+        </div>
 
-        {/* ================= WhatsApp (désactivé) ================= */}
+        {/* ── WhatsApp ── */}
         <section className="settings-section">
           <h2>WhatsApp</h2>
           <div className="social-icons disabled">
@@ -108,65 +104,28 @@ const Settings = () => {
           </div>
         </section>
 
-        {/* ================= Social Media ================= */}
+        {/* ── Réseaux sociaux ── */}
         <section className="settings-section">
           <h2>Suivez-nous</h2>
           <div className="social-icons">
-
-            <a
-              href="https://www.facebook.com/share/1CjsWSj1P3/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Facebook"
-            >
+            <a href="https://www.facebook.com/share/1CjsWSj1P3/" target="_blank" rel="noopener noreferrer" title="Facebook">
               <FaFacebook />
             </a>
-
-            <a
-              href="https://www.youtube.com/@Blackcoinchaine"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="YouTube"
-            >
+            <a href="https://www.youtube.com/@Blackcoinchaine" target="_blank" rel="noopener noreferrer" title="YouTube">
               <FaYoutube />
             </a>
-
-            <a
-              href="https://t.me/+2VYCu2Ygs0Q1YTk0"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Telegram"
-            >
+            <a href="https://t.me/+2VYCu2Ygs0Q1YTk0" target="_blank" rel="noopener noreferrer" title="Telegram">
               <FaTelegram />
             </a>
-
-            <a
-              href="https://x.com/BlackcoinON"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Twitter"
-            >
+            <a href="https://x.com/BlackcoinON" target="_blank" rel="noopener noreferrer" title="Twitter">
               <FaTwitter />
             </a>
-
-            <a
-              href="https://www.instagram.com/blackcoin_LTN"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Instagram"
-            >
+            <a href="https://www.instagram.com/blackcoin_LTN" target="_blank" rel="noopener noreferrer" title="Instagram">
               <FaInstagram />
             </a>
-
-            <a
-              href="https://www.tiktok.com/@blackcoin_official"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="TikTok"
-            >
+            <a href="https://www.tiktok.com/@blackcoin_official" target="_blank" rel="noopener noreferrer" title="TikTok">
               <FaTiktok />
             </a>
-
           </div>
         </section>
 
