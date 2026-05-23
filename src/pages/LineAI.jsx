@@ -263,7 +263,6 @@ const LineAI = ({ onBack }) => {
             }
           </button>
         </div>
-        <p className="lineai-hint">Entrée = envoyer · Shift+Entrée = ligne</p>
       </footer>
     </div>
   );
