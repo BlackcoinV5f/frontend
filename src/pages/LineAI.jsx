@@ -9,7 +9,8 @@ import {
 import ReactMarkdown from "react-markdown";
 import "./LineAI.css";
 
-const API_URL = "http://localhost:8000/blackai";
+const BASE_URL = import.meta.env.VITE_DEPOSIT_API_URL;
+const API_URL = `${BASE_URL}/api/blackai`;
 
 const LineAI = ({ onBack }) => {
   const [message, setMessage]     = useState("");
@@ -98,7 +99,7 @@ const LineAI = ({ onBack }) => {
       {/* ===================== TOPBAR ===================== */}
       <header className="lineai-topbar">
 
-        {/* Bouton retour — haut gauche */}
+        {/* Bouton retour */}
         <button
           className="lineai-topbar-btn lineai-back-btn"
           onClick={onBack || (() => window.history.back())}
@@ -114,7 +115,7 @@ const LineAI = ({ onBack }) => {
           <span>LineAI</span>
         </div>
 
-        {/* Paramètres — haut droite */}
+        {/* Paramètres */}
         <div className="lineai-settings-wrapper" ref={settingsRef}>
           <button
             className="lineai-topbar-btn lineai-settings-btn"
@@ -236,7 +237,7 @@ const LineAI = ({ onBack }) => {
         )}
       </main>
 
-      {/* ===================== INPUT ===================== */}
+      {/* ===================== FOOTER ===================== */}
       <footer className="lineai-footer">
         <div className="lineai-input-bar">
           <textarea
@@ -264,6 +265,7 @@ const LineAI = ({ onBack }) => {
           </button>
         </div>
       </footer>
+
     </div>
   );
 };
