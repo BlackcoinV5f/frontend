@@ -502,3 +502,28 @@ html, body, #root {
   padding: 0;
   overflow: hidden;
 }
+
+/* ===================================================
+   RESET BORDURES CONTENEUR PARENT
+=================================================== */
+.lineai-root,
+.lineai-root *,
+.lineai-root::before,
+.lineai-root::after {
+  box-sizing: border-box;
+}
+
+/* Supprime tout trait venant du parent */
+.lineai-root {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix conteneur app global si présent */
+.blackai-container,
+[class*="app-container"],
+[class*="page-wrapper"] {
+  border: none !important;
+  outline: none !important;
+}
