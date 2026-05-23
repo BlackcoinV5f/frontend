@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useState, lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -63,6 +64,7 @@ const Airdrop = lazy(() => import("./pages/Airdrop"));
 const AirdropClaim = lazy(() => import("./pages/AirdropClaim"));
 const Kyc = lazy(() => import("./pages/Kyc"));
 const BlackAI = lazy(() => import("./pages/BlackAI"));
+const LineAI = lazy(() => import("./pages/LineAI")); // ✅ NOUVEAU
 const Check = lazy(() => import("./pages/Check"));
 
 // Finance
@@ -106,8 +108,8 @@ function AppContent() {
     setShowSplash(false);
   };
 
-  // ✅ /my-assets retiré — Navbar et Footer restent visibles sur cette page
-  const hiddenRoutes = ["/black-ai"];
+  // ✅ /line-ai ajouté ici → cache Navbar et Footer
+  const hiddenRoutes = ["/black-ai", "/line-ai"];
   const hideBars = hiddenRoutes.some((path) =>
     location.pathname.startsWith(path)
   );
@@ -116,7 +118,6 @@ function AppContent() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // 🔥 BLOQUE TOUT SI SPLASH
   if (showSplash) {
     return (
       <div className="app-wrapper">
@@ -129,7 +130,6 @@ function AppContent() {
     );
   }
 
-  // 🔄 LOADING GLOBAL USER
   if (loading) {
     return (
       <div className="loading-container">
@@ -139,7 +139,6 @@ function AppContent() {
     );
   }
 
-  // ✅ APP NORMALE
   return (
     <div className="app-wrapper">
       <div className="app-container">
@@ -186,6 +185,9 @@ function AppContent() {
 
                 {/* BlackAI */}
                 <Route path="/black-ai" element={<ProtectedRoute><BlackAI /></ProtectedRoute>} />
+
+                {/* ✅ LineAI - NOUVEAU */}
+                <Route path="/line-ai" element={<ProtectedRoute><LineAI /></ProtectedRoute>} />
 
                 {/* Finance */}
                 <Route path="/depots" element={<ProtectedRoute><DepositMethods /></ProtectedRoute>} />
