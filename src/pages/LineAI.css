@@ -2,19 +2,7 @@
    LineAI.css — Interface IA Pro
 =================================================== */
 
-/* ===================================================
-   GLOBAL RESET
-=================================================== */
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-/* ===================================================
-   VARIABLES + ROOT LAYOUT
-=================================================== */
+/* ---------- Variables ---------- */
 .lineai-root {
   --bg:        #0b0d14;
   --bg2:       #13161f;
@@ -28,22 +16,8 @@ html, body, #root {
   --bubble-bot:  #1a1e2e;
   --radius:    14px;
   --shadow:    0 8px 32px rgba(0,0,0,0.45);
+  --footer-h:  68px;
   font-family: 'DM Sans', 'Segoe UI', sans-serif;
-
-  /* FIX DOUBLE FOND : remplit le conteneur parent sans sortir de ses limites */
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  color: var(--text);
-  overflow: hidden;
-
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
 }
 
 .lineai-root.light {
@@ -60,6 +34,18 @@ html, body, #root {
 .font-sm { font-size: 13px; }
 .font-md { font-size: 15px; }
 .font-lg { font-size: 17px; }
+
+/* ---------- Root layout ---------- */
+.lineai-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  position: relative;
+}
 
 /* ===================================================
    TOPBAR
@@ -218,20 +204,6 @@ html, body, #root {
   font-size: 11px;
   color: var(--text-muted);
 }
-
-/* ===================================================
-   BODY — flex 1, scrollable
-=================================================== */
-.lineai-body {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  scroll-behavior: smooth;
-  min-height: 0; /* important pour que flex+overflow fonctionne */
-}
-.lineai-body::-webkit-scrollbar { width: 4px; }
-.lineai-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 /* ===================================================
    WELCOME
@@ -396,7 +368,7 @@ html, body, #root {
 }
 .lineai-bubble--bot hr { border-color: var(--border); margin: 10px 0; }
 
-/* Typing indicator */
+/* Typing */
 .lineai-typing {
   display: flex;
   align-items: center;
@@ -419,16 +391,21 @@ html, body, #root {
 }
 
 /* ===================================================
-   FOOTER — dans le flux flex, collé en bas
+   FOOTER — position absolute, toujours collé en bas
 =================================================== */
+/* FOOTER — sticky en bas, dans le flux normal */
 .lineai-footer {
-  flex-shrink: 0;
+  position: sticky;        /* ← remplace absolute */
+  bottom: 0;
+  left: 0;
+  width: 100%;
   background: var(--bg2);
   border-top: 1px solid var(--border);
-  padding: 8px 10px;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   z-index: 20;
+  flex-shrink: 0;          /* ← empêche la compression */
+  margin-top: auto;        /* ← pousse vers le bas */
 }
 
 .lineai-input-bar {
@@ -505,10 +482,36 @@ html, body, #root {
 }
 
 /* ===================================================
-   BOX-SIZING UNIVERSEL
+   GLOBAL RESET
 =================================================== */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ===================================================
+   RESET BORDURES CONTENEUR PARENT
+=================================================== */
+.lineai-root,
 .lineai-root *,
-.lineai-root *::before,
-.lineai-root *::after {
+.lineai-root::before,
+.lineai-root::after {
   box-sizing: border-box;
+}
+
+/* Supprime tout trait venant du parent */
+.lineai-root {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix conteneur app global si présent */
+.blackai-container,
+[class*="app-container"],
+[class*="page-wrapper"] {
+  border: none !important;
+  outline: none !important;
 }

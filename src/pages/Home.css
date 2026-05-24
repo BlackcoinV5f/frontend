@@ -26,7 +26,7 @@
    BOUTONS LOGOS (BASE)
 ================================ */
 .logo-button {
-  position: relative; /* 🔴 IMPORTANT pour le badge */
+  position: relative; /* IMPORTANT pour le badge */
   background: none;
   border: none;
   padding: 0;
@@ -50,7 +50,7 @@
   z-index: 5;
 }
 
-/* 🔴 BADGE BONUS */
+/* BADGE BONUS */
 .bonus-badge {
   position: absolute;
   top: 4px;
@@ -70,19 +70,21 @@
     transform: scale(1);
     opacity: 1;
   }
+
   70% {
     transform: scale(1.6);
     opacity: 0;
   }
+
   100% {
     opacity: 0;
   }
 }
 
 /* ================================
-   BLACK AI (GAUCHE HAUT)
+   LINE AI (GAUCHE HAUT)
 ================================ */
-.blackai-logo {
+.lineai-logo {
   position: absolute;
   left: 4%;
   top: 30%;
@@ -91,11 +93,11 @@
   transition: transform 0.15s ease;
 }
 
-.blackai-logo:active {
+.lineai-logo:active {
   transform: translateY(-150%) scale(0.9);
 }
 
-.blackai-logo img {
+.lineai-logo img {
   width: 120px;
 }
 
@@ -121,7 +123,7 @@
     width: 70px;
   }
 
-  .blackai-logo img {
+  .lineai-logo img {
     width: 100px;
   }
 }

@@ -8,8 +8,8 @@ import LuckyGameLogoImg from "../assets/LuckyGameLogo.png";
 import TradeGameLogoImg from "../assets/TradeGameLogo.png";
 import BonusLogoImg from "../assets/BonusLogo.png";
 import AirdropLogoImg from "../assets/AirdropLogo.png";
-import BlackAiLogoImg from "../assets/BlackAiLogo.png";
-import LineAiLogoImg from "../assets/LineAILogo.png"; // ✅ NOUVEAU
+import LineAiLogoImg from "../assets/LineAILogo.png";
+
 import "./Home.css";
 
 const Home = ({ points, setPoints, level, setLevel }) => {
@@ -28,7 +28,9 @@ const Home = ({ points, setPoints, level, setLevel }) => {
     const handler = () => {
       setBonusAvailable(true);
     };
+
     window.addEventListener("bonus:available", handler);
+
     return () => {
       window.removeEventListener("bonus:available", handler);
     };
@@ -54,16 +56,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         {bonusAvailable && <span className="bonus-badge" />}
       </button>
 
-      {/* 🖤 BLACK AI */}
-      <button
-        type="button"
-        className="logo-button blackai-logo"
-        onClick={() => handleNavigate("/black-ai")}
-      >
-        <img src={BlackAiLogoImg} alt="BlackAI" />
-      </button>
-
-      {/* 🤖 LINE AI ✅ NOUVEAU */}
+      {/* 🤖 LINE AI */}
       <button
         type="button"
         className="logo-button lineai-logo"
@@ -91,6 +84,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         >
           <img src={AirdropLogoImg} alt="Airdrop" />
         </button>
+
         <button
           type="button"
           className="logo-button"
@@ -98,6 +92,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         >
           <img src={LuckyGameLogoImg} alt="Lucky Game" />
         </button>
+
         <button
           type="button"
           className="logo-button"
@@ -105,6 +100,7 @@ const Home = ({ points, setPoints, level, setLevel }) => {
         >
           <img src={TradeGameLogoImg} alt="Trade Game" />
         </button>
+
         <button
           type="button"
           className="logo-button"
