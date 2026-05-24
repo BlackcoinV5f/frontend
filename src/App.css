@@ -214,3 +214,10 @@ body, html {
 .auth-options button:hover {
   background-color: #e6c200;
 }
+
+/* LineAI prend tout l'espace de .content */
+.content:has(.lineai-root) {
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+}
