@@ -1,0 +1,42 @@
+/* ── layout.css ── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+button   { cursor: pointer; font-family: inherit; border: none; background: none; }
+textarea { font-family: inherit; resize: none; outline: none; border: none; background: none; }
+
+/* Fond plein écran derrière le contenu centré */
+.lineai-wrapper {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+.lineai {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lineai main {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}

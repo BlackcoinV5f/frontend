@@ -344,17 +344,11 @@
   font-size: 14px;
 }
 
-.lineai-bubble--user {
-  background: var(--bubble-user);
-  color: #fff;
-  border-radius: var(--radius) 4px var(--radius) var(--radius);
-  box-shadow: 0 4px 16px rgba(79,142,247,0.25);
-}
-
+.lineai-bubble--user,
 .lineai-bubble--bot {
-  background: var(--bubble-bot);
-  border: 1px solid var(--border);
-  border-radius: 4px var(--radius) var(--radius) var(--radius);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Markdown dans les bulles bot */

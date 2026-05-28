@@ -1,0 +1,84 @@
+/* ── messages.css ── */
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.messages::-webkit-scrollbar        { width: 4px; }
+.messages::-webkit-scrollbar-track  { background: transparent; }
+.messages::-webkit-scrollbar-thumb  { background: var(--border-md); border-radius: 4px; }
+
+/* Message row */
+.msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  animation: fadeUp 0.3s ease;
+}
+
+.msg--user {
+  flex-direction: row-reverse;
+}
+
+/* Bot avatar */
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+}
+
+/* Bubbles */
+.bubble {
+  max-width: 75%;
+  padding: 11px 15px;
+  border-radius: var(--radius-md);
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+.bubble--bot {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border-md);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
+}
+
+.bubble--user {
+  background: linear-gradient(135deg, rgba(82, 130, 255, 0.28), rgba(160, 108, 255, 0.22));
+  border: 0.5px solid rgba(120, 100, 255, 0.3);
+  color: var(--text-primary);
+  border-bottom-right-radius: 4px;
+}
+
+/* Typing indicator */
+.bubble.typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 18px;
+}
+
+.bubble.typing span {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
+.bubble.typing span:nth-child(3) { animation-delay: 0.4s; }

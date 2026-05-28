@@ -1,0 +1,39 @@
+/* ── responsive.css ── */
+
+@media (max-width: 480px) {
+  .lineai-root {
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .lineai-welcome-title {
+    font-size: 1.6rem;
+  }
+
+  .lineai-suggestions {
+    max-width: 100%;
+  }
+
+  .lineai-settings-panel {
+    width: 100%;
+  }
+
+  .lineai-bubble {
+    max-width: 90%;
+  }
+}
+
+@media (min-width: 481px) {
+  /* Fond sombre UNIQUEMENT dans la zone de contenu de l'app */
+  .content:has(.lineai-root) {
+    background: #0b0d14;
+  }
+
+  .lineai-root {
+    max-width: 480px;
+    margin: 0 auto;
+    border-radius: 24px;
+    height: 100dvh;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+  }
+}

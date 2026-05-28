@@ -220,4 +220,6 @@ body, html {
   align-items: stretch;
   justify-content: stretch;
   padding: 0;
+  height: 100%;        /* ✅ ajout */
+  overflow: hidden;    /* ✅ ajout */
 }
