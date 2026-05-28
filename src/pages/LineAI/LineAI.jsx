@@ -28,7 +28,7 @@ export default function LineAI() {
   useAutoScroll(bottomRef, [messages, loading]);
 
   return (
-    <div className={`lineai ${darkMode ? "dark" : "light"} font-${fontSize}`}>
+    <div className={`lineai-root lineai ${darkMode ? "dark" : "light"} font-${fontSize}`}>
 
       <Topbar
         onBack={() => navigate(-1)}
@@ -46,7 +46,6 @@ export default function LineAI() {
       />
 
       <main>
-
         {messages.length === 0 ? (
           <WelcomeScreen onSelect={sendMessage} />
         ) : (
@@ -56,7 +55,6 @@ export default function LineAI() {
             bottomRef={bottomRef}
           />
         )}
-
       </main>
 
       <ChatInput onSend={sendMessage} loading={loading} />
