@@ -4,7 +4,7 @@
   display: flex;
   align-items: flex-end;
   gap: 10px;
-  padding: 12px 14px 20px;
+  padding: 8px 12px 14px;
   border-top: 0.5px solid var(--border);
   flex-shrink: 0;
   position: relative;
@@ -16,12 +16,15 @@
   background: var(--bg-card);
   border: 0.5px solid var(--border-md);
   border-radius: var(--radius-lg);
-  padding: 11px 16px;
+  padding: 10px 14px;        /* ✅ vertical correct, horizontal raisonnable */
   color: var(--text-primary);
   font-size: 0.9em;
-  line-height: 1.5;
-  max-height: 160px;
-  min-height: 44px;
+  line-height: 1.5;          /* ✅ corrigé — 3 était beaucoup trop grand */
+  min-height: 40px;          /* ✅ hauteur de départ compacte */
+  max-height: 16px;         /* ✅ limite avant scroll */
+  height: 40px;              /* ✅ valeur initiale */
+  resize: none;              /* ✅ désactive le resize manuel */
+  overflow-y: hidden;        /* ✅ géré dynamiquement par le JS */
   transition: border-color var(--transition);
 }
 
@@ -31,6 +34,7 @@
 
 .chat-input textarea:focus {
   border-color: rgba(82, 130, 255, 0.45);
+  outline: none;
 }
 
 .chat-input textarea:disabled {
@@ -38,8 +42,8 @@
 }
 
 .chat-input button {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--purple));
   display: flex;

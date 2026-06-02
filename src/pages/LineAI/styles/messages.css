@@ -1,5 +1,4 @@
 /* ── messages.css ── */
-
 .messages {
   flex: 1;
   overflow-y: auto;
@@ -10,7 +9,6 @@
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
-
 .messages::-webkit-scrollbar        { width: 4px; }
 .messages::-webkit-scrollbar-track  { background: transparent; }
 .messages::-webkit-scrollbar-thumb  { background: var(--border-md); border-radius: 4px; }
@@ -22,7 +20,6 @@
   gap: 8px;
   animation: fadeUp 0.3s ease;
 }
-
 .msg--user {
   flex-direction: row-reverse;
 }
@@ -49,16 +46,18 @@
   line-height: 1.6;
 }
 
+/* ✅ Bot — fond transparent, juste un léger séparateur */
 .bubble--bot {
-  background: var(--bg-card);
-  border: 0.5px solid var(--border-md);
+  background: transparent;
+  border: none;
   color: var(--text-primary);
   border-bottom-left-radius: 4px;
 }
 
+/* ✅ User — fond transparent, texte aligné à droite */
 .bubble--user {
-  background: linear-gradient(135deg, rgba(82, 130, 255, 0.28), rgba(160, 108, 255, 0.22));
-  border: 0.5px solid rgba(120, 100, 255, 0.3);
+  background: transparent;
+  border: none;
   color: var(--text-primary);
   border-bottom-right-radius: 4px;
 }
@@ -70,7 +69,6 @@
   gap: 5px;
   padding: 14px 18px;
 }
-
 .bubble.typing span {
   display: block;
   width: 7px;
@@ -79,6 +77,20 @@
   background: var(--accent);
   animation: bounce 1.2s infinite ease-in-out;
 }
-
 .bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
 .bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  width: 100%;
+  min-height: 100%;
+}
+
+.message-loading {
+  opacity: 0.7;
+  font-size: 14px;
+  padding: 8px 12px;
+}

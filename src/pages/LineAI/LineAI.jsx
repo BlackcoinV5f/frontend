@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Topbar from "./components/Topbar";
 import SettingsPanel from "./components/SettingsPanel";
@@ -9,7 +10,6 @@ import ChatInput from "./components/ChatInput";
 import useChat from "./hooks/useChat";
 import useSettings from "./hooks/useSettings";
 import useAutoScroll from "./hooks/useAutoScroll";
-import { useNavigate } from "react-router-dom";
 
 import "./styles/variables.css";
 import "./styles/animations.css";
@@ -19,22 +19,36 @@ import "./styles/responsive.css";
 
 export default function LineAI() {
   const { messages, loading, sendMessage, clearMessages } = useChat();
-  const { darkMode, setDarkMode, fontSize, setFontSize } = useSettings();
+
+  const {
+    darkMode,
+    setDarkMode,
+    fontSize,
+    setFontSize,
+  } = useSettings();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const bottomRef = useRef(null);
+
+  // auto scroll vers le dernier message
   useAutoScroll(bottomRef, [messages, loading]);
 
   return (
-    <div className={`lineai-root lineai ${darkMode ? "dark" : "light"} font-${fontSize}`}>
-
+    <div
+      className={`lineai-root lineai ${
+        darkMode ? "dark" : "light"
+      } font-${fontSize}`}
+    >
+      {/* HEADER */}
       <Topbar
         onBack={() => navigate(-1)}
         onToggleSettings={() => setSettingsOpen(true)}
       />
 
+      {/* SETTINGS */}
       <SettingsPanel
         visible={settingsOpen}
         onClose={() => setSettingsOpen(false)}
@@ -45,7 +59,8 @@ export default function LineAI() {
         onClear={clearMessages}
       />
 
-      <main>
+      {/* ZONE SCROLLABLE */}
+      <main className="chat-main">
         {messages.length === 0 ? (
           <WelcomeScreen onSelect={sendMessage} />
         ) : (
@@ -57,8 +72,13 @@ export default function LineAI() {
         )}
       </main>
 
-      <ChatInput onSend={sendMessage} loading={loading} />
-
+      {/* INPUT FIXE EN BAS */}
+      <div className="chat-input-wrapper">
+        <ChatInput
+          onSend={sendMessage}
+          loading={loading}
+        />
+      </div>
     </div>
   );
 }

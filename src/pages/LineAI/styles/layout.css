@@ -1,34 +1,121 @@
-button   { cursor: pointer; font-family: inherit; border: none; background: none; }
-textarea { font-family: inherit; resize: none; outline: none; border: none; background: none; }
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
 
-/* Fond plein écran derrière le contenu centré */
+textarea {
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  border: none;
+  background: none;
+}
+
+/* ROOT */
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fond application */
+
 .lineai-wrapper {
   position: fixed;
   inset: 0;
+
   background: var(--bg);
+
   display: flex;
   justify-content: center;
+
+  overflow: hidden;
 }
+
+/* App */
 
 .lineai {
   display: flex;
   flex-direction: column;
+
   height: 100dvh;
   width: 100%;
   max-width: 480px;
+
   background: var(--bg);
   color: var(--text-primary);
+
   font-family: var(--font-body);
   font-size: 15px;
+
   position: relative;
+
   overflow: hidden;
 }
 
+/* MAIN */
+
 .lineai main {
   flex: 1;
-  overflow: hidden;
+
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  min-height: 0;
+
+  padding: 16px;
+
+  padding-bottom: 110px;
+
   position: relative;
+
   z-index: 1;
+
+  scroll-behavior: smooth;
+}
+
+/* LISTE MESSAGES */
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  width: 100%;
+}
+
+/* INPUT FIXE */
+
+.chat-input-wrapper {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: 12px;
+
+  background: var(--bg);
+
+  z-index: 20;
+}
+
+/* SCROLLBAR */
+
+.lineai main::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lineai main::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 999px;
 }

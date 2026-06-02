@@ -1,5 +1,20 @@
 /* ── settings.css ── */
 
+/* ─── Backdrop ─────────────────────────────────────────────── */
+.settings-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 99;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Panel ─────────────────────────────────────────────────── */
 .settings-panel {
   position: absolute;
   top: 0;
@@ -14,6 +29,12 @@
   animation: slideIn 0.25s ease;
 }
 
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ─── Header ────────────────────────────────────────────────── */
 .settings-header {
   display: flex;
   align-items: center;
@@ -37,6 +58,7 @@
   color: var(--text-primary);
 }
 
+/* ─── Items ─────────────────────────────────────────────────── */
 .settings-item {
   display: flex;
   align-items: center;
@@ -47,7 +69,22 @@
   color: var(--text-secondary);
 }
 
-.settings-item > button {
+/* item en colonne pour la zone de confirmation */
+.settings-item--column {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.settings-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.settings-item > button,
+.settings-item-row > button {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -60,12 +97,35 @@
   transition: all var(--transition);
 }
 
-.settings-item > button:hover {
+.settings-item > button:hover,
+.settings-item-row > button:hover {
   background: var(--accent-soft);
   border-color: rgba(82, 130, 255, 0.35);
   color: var(--text-primary);
 }
 
+/* ─── Toggle thème — label textuel ajouté ───────────────────── */
+.settings-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.settings-toggle-btn:hover {
+  background: var(--accent-soft);
+  border-color: rgba(82, 130, 255, 0.35);
+  color: var(--text-primary);
+}
+
+/* ─── Taille texte ──────────────────────────────────────────── */
 .font-buttons {
   display: flex;
   gap: 4px;
@@ -78,9 +138,9 @@
   border: 0.5px solid var(--border-md);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-secondary);
-  text-transform: uppercase;
   font-family: var(--font-mono);
   transition: all var(--transition);
+  cursor: pointer;
 }
 
 .font-buttons button:hover {
@@ -94,6 +154,77 @@
   color: white;
 }
 
+/* ─── Bouton Vider ──────────────────────────────────────────── */
+.settings-danger-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #e05252;
+  background: rgba(220, 60, 60, 0.06);
+  border: 0.5px solid rgba(220, 60, 60, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.settings-danger-btn:hover {
+  background: rgba(220, 60, 60, 0.14);
+  border-color: rgba(220, 60, 60, 0.55);
+}
+
+/* ─── Zone de confirmation ──────────────────────────────────── */
+.confirm-clear-box {
+  margin-top: 10px;
+  background: rgba(220, 60, 60, 0.06);
+  border: 0.5px solid rgba(220, 60, 60, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeIn 0.15s ease;
+}
+
+.confirm-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 5px 0;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  transition: opacity var(--transition);
+}
+
+.confirm-btn:hover {
+  opacity: 0.82;
+}
+
+.confirm-btn--danger {
+  background: #c0392b;
+  color: #fff;
+  font-weight: 500;
+}
+
+.confirm-btn--cancel {
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid var(--border-md);
+  color: var(--text-secondary);
+}
+
+/* ─── Footer ────────────────────────────────────────────────── */
 .settings-footer {
   margin-top: auto;
   padding: 14px 16px;
