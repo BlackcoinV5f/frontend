@@ -1,9 +1,9 @@
 {
   "info": {
     "title": "Informations officielles — LITON NETWORK",
-
-    "intro": "L’équipe <1>LITON NETWORK</1> développe activement le projet avec de nombreuses fonctionnalités majeures en préparation.",
-
+    "intro_before": "L'équipe",
+    "intro_after": "développe activement le projet avec de nombreuses fonctionnalités majeures en préparation.",
+    "socials_label": "Retrouvez-nous sur",
     "socials": {
       "telegram": "Telegram",
       "twitter": "X (Twitter)",
@@ -12,19 +12,24 @@
       "instagram": "Instagram",
       "tiktok": "TikTok"
     },
-
     "about": {
       "title": "À propos du projet",
       "text1": "LITON NETWORK est une initiative collaborative internationale lancée le 21 mars 2024, visant à construire un écosystème numérique solide, transparent et durable.",
-      "text2": "Pour consulter le Livre Blanc, la Feuille de route et la Politique de confidentialité, veuillez visiter notre site officiel."
+      "text2": "Pour consulter le Livre Blanc, la Feuille de route, les Conditions d'utilisation ainsi que la Politique de confidentialité, veuillez visiter notre site officiel."
     },
-
     "communication": {
       "title": "Communication officielle",
       "text1": "Toutes les informations officielles, mises à jour et annonces importantes concernant LITON NETWORK sont publiées exclusivement via notre site officiel et nos réseaux sociaux.",
-      "text2": "Nous vous invitons à toujours vérifier les informations via nos canaux officiels afin d’éviter toute confusion."
+      "text2": "Nous vous invitons à toujours vérifier les informations via nos canaux officiels afin d'éviter toute confusion."
     },
-
-    "footer": "Merci de faire partie de l’évolution de LITON NETWORK."
+    "responsibility": {
+      "title": "Responsabilité des utilisateurs",
+      "text1": "Chaque utilisateur est responsable des décisions et actions prises lors de l'utilisation de l'application LITON NETWORK.",
+      "text2": "LITON NETWORK ne peut être tenu responsable des pertes, décisions personnelles, usages inappropriés ou non conformes effectués par les utilisateurs dans le cadre de l'utilisation de la plateforme.",
+      "text3": "Nous invitons tous les utilisateurs à consulter attentivement nos Conditions d'utilisation ainsi que notre Politique de confidentialité, à respecter les règles de la plateforme et à se conformer aux lois et réglementations en vigueur dans leur pays respectif.",
+      "btn_privacy": "Politique de confidentialité",
+      "btn_terms": "Conditions d'utilisation"
+    },
+    "footer": "Merci de faire partie de l'évolution de LITON NETWORK."
   }
 }

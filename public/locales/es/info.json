@@ -1,9 +1,9 @@
 {
   "info": {
     "title": "Información oficial — LITON NETWORK",
-
-    "intro": "El equipo de <1>LITON NETWORK</1> está desarrollando activamente el proyecto, con numerosas funcionalidades importantes en preparación.",
-
+    "intro_before": "El equipo de",
+    "intro_after": "está desarrollando activamente el proyecto con numerosas funcionalidades importantes en preparación.",
+    "socials_label": "Encuéntranos en",
     "socials": {
       "telegram": "Telegram",
       "twitter": "X (Twitter)",
@@ -12,19 +12,24 @@
       "instagram": "Instagram",
       "tiktok": "TikTok"
     },
-
     "about": {
-      "title": "Sobre el proyecto",
-      "text1": "LITON NETWORK es una iniciativa colaborativa internacional lanzada el 21 de marzo de 2024, cuyo objetivo es construir un ecosistema digital sólido, transparente y sostenible.",
-      "text2": "Para consultar el Libro Blanco, la Hoja de Ruta y la Política de Privacidad, visite nuestro sitio web oficial."
+      "title": "Acerca del proyecto",
+      "text1": "LITON NETWORK es una iniciativa colaborativa internacional lanzada el 21 de marzo de 2024, con el objetivo de construir un ecosistema digital sólido, transparente y sostenible.",
+      "text2": "Para consultar el Libro Blanco, la Hoja de ruta, los Términos de uso y la Política de privacidad, visite nuestro sitio web oficial."
     },
-
     "communication": {
       "title": "Comunicación oficial",
       "text1": "Toda la información oficial, actualizaciones y anuncios importantes sobre LITON NETWORK se publican exclusivamente a través de nuestro sitio web oficial y nuestras redes sociales.",
-      "text2": "Le recomendamos verificar siempre la información a través de nuestros canales oficiales para evitar cualquier confusión."
+      "text2": "Le invitamos a verificar siempre la información a través de nuestros canales oficiales para evitar cualquier confusión."
     },
-
-    "footer": "Gracias por formar parte de la evolución de LITON NETWORK."
+    "responsibility": {
+      "title": "Responsabilidad de los usuarios",
+      "text1": "Cada usuario es responsable de las decisiones y acciones tomadas durante el uso de la aplicación LITON NETWORK.",
+      "text2": "LITON NETWORK no puede ser considerado responsable de pérdidas, decisiones personales, usos inapropiados o no conformes realizados por los usuarios en el contexto del uso de la plataforma.",
+      "text3": "Invitamos a todos los usuarios a leer atentamente nuestros Términos de uso y nuestra Política de privacidad, a respetar las reglas de la plataforma y a cumplir con las leyes y regulaciones vigentes en sus respectivos países.",
+      "btn_privacy": "Política de privacidad",
+      "btn_terms": "Términos de uso"
+    },
+    "footer": "Gracias por ser parte de la evolución de LITON NETWORK."
   }
 }

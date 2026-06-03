@@ -71,7 +71,7 @@ const Settings = () => {
           </Link>
 
           <a
-            href="https://blackcoinweb.com"
+            href="https://www.blackcoinweb.com/whitepaper"
             target="_blank"
             rel="noopener noreferrer"
             className="settings-link"
@@ -86,9 +86,25 @@ const Settings = () => {
             Support
           </a>
 
-          <Link to="/privacy" className="settings-link">
+          {/* Bouton Politique de confidentialité - lien externe */}
+          <a
+            href="https://www.blackcoinweb.com/privacy-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="settings-link"
+          >
             Politique de confidentialité
-          </Link>
+          </a>
+
+          {/* Nouveau bouton Conditions - lien externe */}
+          <a
+            href="https://www.blackcoinweb.com/terms-of-use"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="settings-link"
+          >
+            Conditions
+          </a>
         </div>
 
         {/* ── WhatsApp ── */}

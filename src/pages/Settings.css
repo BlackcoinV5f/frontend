@@ -1,193 +1,190 @@
-/* ===========================
-   SETTINGS — Blackcoin Pro
-   Dark crypto aesthetic
-=========================== */
+/* Settings.css - Design moderne et élégant */
 
-/* ===========================
-   CONTAINER
-=========================== */
 .settings-container {
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
   height: 100vh;
-  width: 100%;
-  background: #06061a;
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
-  padding-top: calc(100px + env(safe-area-inset-top));
-  padding-bottom: calc(120px + env(safe-area-inset-bottom));
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-/* ===========================
-   CONTENU (zone de défilement)
-=========================== */
-.settings-content {
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
   overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  padding-top: 60px;      /* ← augmenter l'espace en haut */
+  padding-bottom: 80px;
+  box-sizing: border-box;
 }
 
-.settings-content::-webkit-scrollbar {
-  display: none;
+.settings-content {
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeInUp 0.5s ease-out;
 }
 
-/* ===========================
-   SECTION CARD
-=========================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sections individuelles */
 .settings-section {
-  background: #0d0d28;
-  border: 0.5px solid rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  padding: 16px 18px;
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.settings-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
 .settings-section h2 {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: #00cfff;
-  margin: 0 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+  display: inline-block;
 }
 
-/* ===========================
-   LANGUAGE SELECT
-=========================== */
+/* Selecteur de langue */
 .language-select {
   width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  padding: 0 14px;
-  background: #13132e;
-  color: #fff;
-  border: 0.5px solid rgba(255, 255, 255, 0.12);
-  font-size: 14px;
-  font-family: inherit;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  color: #333;
   cursor: pointer;
+  transition: all 0.3s ease;
   outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300cfff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  transition: border-color 0.2s;
+}
+
+.language-select:hover {
+  border-color: #667eea;
 }
 
 .language-select:focus {
-  border-color: rgba(0, 207, 255, 0.4);
+  border-color: #764ba2;
+  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
 }
 
-.language-select option {
-  background: #13132e;
-  color: #fff;
-}
-
-/* ===========================
-   REFRESH BUTTON
-=========================== */
+/* Bouton Actualiser */
 .refresh-button {
   width: 100%;
-  height: 48px;
-  border: 0.5px solid rgba(0, 207, 255, 0.2);
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
   border-radius: 12px;
-  background: #111640;
-  color: #fff;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  font-family: inherit;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  letter-spacing: 0.01em;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .refresh-button:hover {
-  background: #1a2060;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .refresh-button:active {
-  transform: scale(0.97);
-  background: #0e1240;
+  transform: translateY(0);
 }
 
 .refresh-icon {
-  font-size: 16px;
-  color: #00cfff;
+  font-size: 18px;
+  animation: rotate 0s linear;
 }
 
-/* ===========================
-   LIENS GROUPÉS
-=========================== */
+.refresh-button:hover .refresh-icon {
+  animation: rotate 0.5s ease;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Groupe de liens */
 .settings-links-group {
-  background: #0d0d28;
-  border: 0.5px solid rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  overflow: hidden;
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .settings-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 18px;
-  color: #c8d2f0;
+  padding: 15px 20px;
+  margin: 5px 0;
+  background: white;
+  border-radius: 12px;
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 400;
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
-  transition: background 0.15s, color 0.15s;
-}
-
-.settings-link:last-child {
-  border-bottom: none;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+  position: relative;
 }
 
 .settings-link::after {
-  content: "›";
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.2);
-  line-height: 1;
+  content: "→";
+  font-size: 18px;
+  color: #667eea;
+  transition: transform 0.3s ease;
 }
 
 .settings-link:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: translateX(5px);
+  border-color: transparent;
 }
 
-.settings-link:active {
-  background: rgba(0, 207, 255, 0.05);
+.settings-link:hover::after {
+  color: white;
+  transform: translateX(5px);
 }
 
-/* ===========================
-   ICÔNES SOCIALES
-=========================== */
+/* Section WhatsApp disabled */
+.social-icons.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.social-icons.disabled span {
+  cursor: not-allowed;
+  filter: grayscale(0.3);
+}
+
+/* Icônes sociales */
 .social-icons {
   display: flex;
-  align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
 }
 
 .social-icons a,
@@ -195,84 +192,109 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #13132e;
-  border: 0.5px solid rgba(255, 255, 255, 0.1);
-  font-size: 20px;
-  color: #00cfff;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  color: #667eea;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-decoration: none;
-  transition: background 0.2s, color 0.2s, transform 0.1s;
   cursor: pointer;
 }
 
 .social-icons a:hover {
-  background: #1a1a40;
-  color: #fff;
-  transform: translateY(-2px);
+  transform: translateY(-5px);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
-.social-icons a:active {
-  transform: scale(0.94);
+/* Animation d'entrée pour chaque élément */
+.settings-section,
+.settings-links-group {
+  animation: slideIn 0.5s ease-out backwards;
 }
 
-.social-icons.disabled span {
-  opacity: 0.3;
-  cursor: not-allowed;
-  pointer-events: none;
+.settings-section:nth-child(1) { animation-delay: 0.1s; }
+.settings-section:nth-child(2) { animation-delay: 0.2s; }
+.settings-links-group { animation-delay: 0.3s; }
+.settings-section:nth-child(3) { animation-delay: 0.4s; }
+.settings-section:nth-child(4) { animation-delay: 0.5s; }
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* ===========================
-   RESPONSIVE
-=========================== */
-@media (max-width: 480px) {
+/* Responsive Design */
+@media (max-width: 768px) {
   .settings-container {
-    padding-top: calc(90px + env(safe-area-inset-top));
-    padding-bottom: calc(110px + env(safe-area-inset-bottom));
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+    padding: 15px;
+    padding-top: 60px;    /* ← ajouter */
+    padding-bottom: 80px;
   }
-
+  
   .settings-content {
-    padding: 10px 12px;
-    gap: 8px;
+    max-width: 100%;
   }
-
+  
   .settings-section {
-    border-radius: 12px;
-    padding: 12px 14px;
+    padding: 15px;
   }
-
-  .settings-section h2 {
-    font-size: 10px;
-    margin-bottom: 10px;
-  }
-
-  .language-select {
-    height: 40px;
-    font-size: 13px;
-  }
-
-  .refresh-button {
-    height: 44px;
+  
+  .settings-link {
+    padding: 12px 15px;
     font-size: 14px;
   }
-
-  .settings-link {
-    padding: 13px 16px;
-    font-size: 13px;
+  
+  .social-icons a,
+  .social-icons span {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
   }
+  
+  .settings-section h2 {
+    font-size: 16px;
+  }
+}
 
+@media (max-width: 480px) {
   .social-icons {
-    gap: 8px;
+    gap: 10px;
   }
-
+  
   .social-icons a,
   .social-icons span {
     width: 40px;
     height: 40px;
     font-size: 18px;
-    border-radius: 10px;
   }
+}
+
+/* Style pour le scrollbar */
+.settings-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.settings-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+}
+
+.settings-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.8);
 }
