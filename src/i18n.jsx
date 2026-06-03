@@ -28,6 +28,7 @@ i18n
       "login",
       "profil",
       "tasks",
+      "settings",
       "transation"
     ],
 
