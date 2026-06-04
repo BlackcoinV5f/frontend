@@ -9,23 +9,34 @@
   flex-shrink: 0;
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
 }
 
 .chat-input textarea {
   flex: 1;
+  box-sizing: border-box;
+
   background: var(--bg-card);
   border: 0.5px solid var(--border-md);
   border-radius: var(--radius-lg);
-  padding: 10px 14px;        /* ✅ vertical correct, horizontal raisonnable */
+
+  padding: 10px 14px;
+
   color: var(--text-primary);
   font-size: 0.9em;
-  line-height: 1.5;          /* ✅ corrigé — 3 était beaucoup trop grand */
-  min-height: 40px;          /* ✅ hauteur de départ compacte */
-  max-height: 16px;         /* ✅ limite avant scroll */
-  height: 40px;              /* ✅ valeur initiale */
-  resize: none;              /* ✅ désactive le resize manuel */
-  overflow-y: hidden;        /* ✅ géré dynamiquement par le JS */
-  transition: border-color var(--transition);
+  font-family: inherit;
+  line-height: 1.5;
+
+  min-height: 40px;
+  height: 40px;
+  max-height: 160px;
+
+  resize: none;
+  overflow-y: auto;
+
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
 }
 
 .chat-input textarea::placeholder {
@@ -33,31 +44,55 @@
 }
 
 .chat-input textarea:focus {
-  border-color: rgba(82, 130, 255, 0.45);
   outline: none;
+  border-color: rgba(82, 130, 255, 0.45);
+  box-shadow: 0 0 0 2px rgba(82, 130, 255, 0.08);
 }
 
 .chat-input textarea:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .chat-input button {
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+
+  border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--purple));
+
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+
   flex-shrink: 0;
-  transition: all var(--transition);
+
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--purple)
+  );
+
+  color: white;
+  cursor: pointer;
+
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    opacity var(--transition);
+
   animation: pulseGlow 3s ease-in-out infinite;
 }
 
 .chat-input button:hover:not(:disabled) {
   transform: scale(1.08);
   box-shadow: 0 6px 24px rgba(82, 130, 255, 0.4);
+}
+
+.chat-input button:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .chat-input button:disabled {
