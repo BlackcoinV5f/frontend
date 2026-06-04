@@ -1,11 +1,9 @@
 import MessageItem from "./MessageItem";
 
-export default function MessageList({
-  messages,
-  loading,
-  bottomRef,
-}) {
-  if (!Array.isArray(messages)) return null;
+export default function MessageList({ messages, loading, bottomRef }) {
+  if (!Array.isArray(messages)) {
+    return null;
+  }
 
   const validMessages = messages.filter(
     (msg) =>
@@ -24,14 +22,25 @@ export default function MessageList({
         />
       ))}
 
+      
       {loading && (
         <div className="message-loading">
-          Écriture...
+          <span className="typing-dot" />
+          <span className="typing-dot" />
+          <span className="typing-dot" />
         </div>
       )}
 
-      {/* auto scroll target */}
-      <div ref={bottomRef} />
+      
+      <div
+        ref={bottomRef}
+        style={{
+          width: "100%",
+          height: "1px",
+          flexShrink: 0,
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }

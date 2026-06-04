@@ -1,28 +1,43 @@
 /* ── LineAI.css ── */
 
+/* EFFETS DE FOND */
+
+.lineai {
+  position: relative;
+  overflow: hidden;
+}
+
 .lineai::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 300px;
   height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(82, 130, 255, 0.15) 0%, transparent 70%);
   top: -80px;
   left: -60px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(82, 130, 255, 0.15) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: 0;
   animation: drift 10s ease-in-out infinite alternate;
 }
 
 .lineai::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 250px;
   height: 250px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(160, 108, 255, 0.12) 0%, transparent 70%);
   top: 80px;
   right: -60px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(160, 108, 255, 0.12) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   z-index: 0;
   animation: drift 12s ease-in-out infinite alternate-reverse;
@@ -31,17 +46,25 @@
 /* ROOT */
 
 .lineai-root {
-  height: 100vh;
   width: 100%;
+  height: 100dvh; /* Corrige les problèmes Android */
+  min-height: 100dvh;
+
   display: flex;
   flex-direction: column;
+
   overflow: hidden;
+  position: relative;
+
+  box-sizing: border-box;
 }
 
 /* MAIN */
 
 .chat-main {
   flex: 1;
+  min-height: 0;
+
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -51,6 +74,11 @@
   flex-direction: column;
 
   scroll-behavior: smooth;
+
+  position: relative;
+  z-index: 1;
+
+  box-sizing: border-box;
 }
 
 /* SCROLLBAR */
@@ -70,19 +98,24 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: min-content;
 }
 
 /* INPUT */
 
 .chat-input-wrapper {
-  position: sticky;
-  bottom: 0;
   width: 100%;
 
-  padding: 2px 0px;
+  flex-shrink: 0;
+
+  padding: 0;
+  margin: 0;
 
   background: inherit;
   backdrop-filter: blur(10px);
 
+  position: relative;
   z-index: 20;
+
+  box-sizing: border-box;
 }
