@@ -1,3 +1,4 @@
+
 /* ===== Container ===== */
 .markdown-body {
   width: 100%;
@@ -5,7 +6,7 @@
   text-align: left;
   line-height: 1.8;
   font-size: 15px;
-  color: var(--text-primary);   /* ✅ variable au lieu de #ececec */
+  color: var(--text-primary);
   overflow-x: hidden;
 }
 
@@ -17,40 +18,91 @@
 }
 
 /* ===== Titres ===== */
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4 {
+.markdown-body h1 {
+  font-size: 20px;
   font-weight: 700;
-  line-height: 1.4;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  word-break: break-word;
+  background: linear-gradient(90deg, #f0b429, #5282ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.markdown-body h2 {
+  font-size: 17px;
+  font-weight: 700;
   margin-top: 16px;
   margin-bottom: 6px;
-  color: var(--text-primary);   /* ✅ */
   word-break: break-word;
+  color: #f0b429;
 }
 
-.markdown-body h1 { font-size: 22px; }
-.markdown-body h2 { font-size: 18px; border-bottom: 1px solid var(--border-md); padding-bottom: 5px; }
-.markdown-body h3 { font-size: 16px; }
-.markdown-body h4 { font-size: 14px; }
-
-/* ===== Listes ===== */
-.markdown-body ul,
-.markdown-body ol {
-  padding-left: 18px;
-  margin: 8px 0;
-}
-
-.markdown-body li {
+.markdown-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 14px;
   margin-bottom: 5px;
+  word-break: break-word;
+  color: var(--accent);
+}
+
+.markdown-body h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  color: var(--accent);
+}
+
+/* ===== Listes ul avec * ===== */
+.markdown-body ul {
+  padding-left: 6px;
+  margin: 8px 0;
+  list-style: none;
+}
+
+.markdown-body ul li {
+  margin-bottom: 6px;
   line-height: 1.7;
   word-break: break-word;
+  padding-left: 18px;
+  position: relative;
 }
 
-.markdown-body li::marker {
-  color: var(--text-secondary);  /* ✅ */
+.markdown-body ul li::before {
+  content: "*";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
 }
 
+/* ===== Listes ol avec - ===== */
+.markdown-body ol {
+  padding-left: 6px;
+  margin: 8px 0;
+  list-style: none;
+}
+
+.markdown-body ol li {
+  margin-bottom: 6px;
+  line-height: 1.7;
+  word-break: break-word;
+  padding-left: 18px;
+  position: relative;
+}
+
+.markdown-body ol li::before {
+  content: "-";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Listes imbriquees */
 .markdown-body li > ul,
 .markdown-body li > ol {
   margin: 4px 0;
@@ -60,27 +112,27 @@
 /* ===== Gras / Italique ===== */
 .markdown-body strong {
   font-weight: 700;
-  color: var(--text-primary);    /* ✅ */
+  color: #f0b429;
 }
 
 .markdown-body em {
-  color: var(--text-secondary);  /* ✅ */
+  color: var(--text-secondary);
   font-style: italic;
 }
 
 /* ===== Blockquote ===== */
 .markdown-body blockquote {
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid #f0b429;
   margin: 10px 0;
   padding: 8px 12px;
-  background: var(--accent-soft);
+  background: rgba(240, 180, 41, 0.06);
   border-radius: 0 8px 8px 0;
-  color: var(--text-secondary);  /* ✅ */
+  color: var(--text-secondary);
 }
 
 /* ===== Liens ===== */
 .markdown-body a {
-  color: var(--accent);          /* ✅ */
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
   word-break: break-all;
@@ -90,7 +142,7 @@
   opacity: 0.8;
 }
 
-/* ===== Séparateur ===== */
+/* ===== Separateur ===== */
 .markdown-body hr {
   border: none;
   border-top: 1px solid var(--border-md);
@@ -109,8 +161,8 @@
 }
 
 .markdown-body th {
-  background: var(--bg-surface);  /* ✅ */
-  color: var(--text-primary);     /* ✅ */
+  background: var(--bg-surface);
+  color: #f0b429;
   font-weight: 600;
   padding: 8px 12px;
   border: 1px solid var(--border-md);
@@ -121,21 +173,21 @@
 .markdown-body td {
   padding: 7px 12px;
   border: 1px solid var(--border);
-  color: var(--text-secondary);   /* ✅ */
+  color: var(--text-secondary);
 }
 
 .markdown-body tr:nth-child(even) td {
-  background: var(--bg-surface);  /* ✅ */
+  background: var(--bg-surface);
 }
 
 /* ===== Code inline ===== */
 .inline-code {
-  background: var(--bg-surface);  /* ✅ */
+  background: var(--bg-surface);
   padding: 2px 6px;
   border-radius: 5px;
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--accent);           /* ✅ */
+  color: #f0b429;
   word-break: break-all;
 }
 
@@ -152,20 +204,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--bg-card);     /* ✅ */
+  background: var(--bg-card);
   padding: 7px 12px;
 }
 
 .code-lang {
   font-size: 11px;
-  color: var(--text-secondary);   /* ✅ */
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   text-transform: lowercase;
 }
 
 .copy-btn {
   font-size: 11px;
-  color: var(--text-secondary);   /* ✅ */
+  color: var(--text-secondary);
   background: transparent;
   border: 1px solid var(--border-md);
   border-radius: 6px;
@@ -175,7 +227,7 @@
 }
 
 .copy-btn:hover {
-  color: var(--text-primary);     /* ✅ */
+  color: var(--text-primary);
   border-color: var(--accent);
 }
 
@@ -193,13 +245,13 @@
     line-height: 1.7;
   }
 
-  .markdown-body h1 { font-size: 20px; }
-  .markdown-body h2 { font-size: 17px; }
-  .markdown-body h3 { font-size: 15px; }
+  .markdown-body h1 { font-size: 18px; }
+  .markdown-body h2 { font-size: 16px; }
+  .markdown-body h3 { font-size: 14px; }
 
   .markdown-body ul,
   .markdown-body ol {
-    padding-left: 16px;
+    padding-left: 4px;
   }
 
   .code-block-wrapper {

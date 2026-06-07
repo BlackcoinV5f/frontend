@@ -1,103 +1,95 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { sendMessageToAI } from "../services/chatApi";
-
-const STORAGE_KEY = "lineai_chat";
+import {
+  loadConversations,
+  createConversation,
+  updateConversation,
+  getActiveId,
+  setActiveId,
+} from "./useConversations";
 
 export default function useChat() {
-
-  // IMPORTANT :
-  // charger directement depuis localStorage
-  // dans useState
-
-  const [messages, setMessages] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-
-      if (!saved) return [];
-
-      return JSON.parse(saved);
-    } catch {
-      return [];
-    }
-  });
-
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  /* =========================
-     SAVE AUTO
-  ========================= */
+  const [activeId, setActiveIdState] = useState(null);
+  const activeIdRef = useRef(null);
 
   useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(messages)
-    );
+    activeIdRef.current = activeId;
+  }, [activeId]);
+
+  // Sauvegarde auto — seulement les messages terminés (pas isTyping)
+  useEffect(() => {
+    const finished = messages.filter((m) => !m.isTyping);
+    if (activeIdRef.current && finished.length > 0) {
+      updateConversation(activeIdRef.current, finished);
+    }
   }, [messages]);
 
-  /* =========================
-     SEND MESSAGE
-  ========================= */
-
   const sendMessage = async (question) => {
-
     const text = question?.trim();
-
     if (!text || loading) return;
 
-    const userMessage = {
-      role: "user",
-      content: text,
-    };
+    let convId = activeIdRef.current;
+    if (!convId) {
+      const newConv = createConversation(text);
+      convId = newConv.id;
+      activeIdRef.current = convId;
+      setActiveIdState(convId);
+    }
 
-    setMessages((prev) => [
-      ...prev,
-      userMessage,
-    ]);
-
+    const userMessage = { role: "user", content: text };
+    setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
     try {
-
-      const data =
-        await sendMessageToAI(text);
-
+      const data = await sendMessageToAI(text);
       const botMessage = {
         role: "bot",
-        content:
-          data?.answer ||
-          "❌ Réponse vide.",
+        content: data?.answer || "❌ Réponse vide.",
+        isTyping: true,   // ✅ flag pour déclencher l'animation
       };
-
-      setMessages((prev) => [
-        ...prev,
-        botMessage,
-      ]);
-
+      setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
-
       setMessages((prev) => [
         ...prev,
-        {
-          role: "bot",
-          content:
-            `❌ ${err.message}`,
-        },
+        { role: "bot", content: `❌ ${err.message}`, isTyping: false },
       ]);
-
     } finally {
       setLoading(false);
     }
   };
 
-  /* =========================
-     CLEAR
-  ========================= */
+  // Appelé par MessageItem quand l'animation est terminée
+  const markTypingDone = (index) => {
+    setMessages((prev) =>
+      prev.map((m, i) => (i === index ? { ...m, isTyping: false } : m))
+    );
+  };
+
+  const loadConversation = (id) => {
+    const convs = loadConversations();
+    const conv = convs.find((c) => c.id === id);
+    if (conv) {
+      setMessages(conv.messages);
+      activeIdRef.current = id;
+      setActiveIdState(id);
+      setActiveId(id);
+    }
+  };
+
+  const newConversation = () => {
+    setMessages([]);
+    activeIdRef.current = null;
+    setActiveIdState(null);
+    setActiveId(null);
+  };
 
   const clearMessages = () => {
-
     setMessages([]);
-
-    localStorage.removeItem(STORAGE_KEY);
+    if (activeIdRef.current) {
+      updateConversation(activeIdRef.current, []);
+    }
   };
 
   return {
@@ -105,5 +97,9 @@ export default function useChat() {
     loading,
     sendMessage,
     clearMessages,
+    loadConversation,
+    newConversation,
+    activeId,
+    markTypingDone,
   };
 }

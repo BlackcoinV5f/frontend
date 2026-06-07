@@ -235,3 +235,122 @@
   color: var(--text-muted);
   border-top: 0.5px solid var(--border);
 }
+
+/* ── Historique conversations ── */
+.settings-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 18px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-top: 0.5px solid var(--border);
+}
+
+.new-conv-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  transition: all var(--transition);
+}
+
+.new-conv-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.conv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.conv-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 16px 0;
+}
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.conv-item:hover {
+  background: var(--bg-surface);
+}
+
+.conv-item--active {
+  background: var(--accent-soft);
+  border: 0.5px solid rgba(82, 130, 255, 0.2);
+}
+
+.conv-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.conv-title {
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-date {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.conv-delete-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: all var(--transition);
+}
+
+.conv-item:hover .conv-delete-btn {
+  opacity: 1;
+}
+
+.conv-delete-btn:hover {
+  background: rgba(224, 82, 82, 0.1);
+  color: #e05252;
+}
+
+.conv-confirm-delete {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}

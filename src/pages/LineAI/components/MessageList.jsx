@@ -1,16 +1,10 @@
 import MessageItem from "./MessageItem";
 
-export default function MessageList({ messages, loading, bottomRef }) {
-  if (!Array.isArray(messages)) {
-    return null;
-  }
+export default function MessageList({ messages, loading, bottomRef, markTypingDone }) {
+  if (!Array.isArray(messages)) return null;
 
   const validMessages = messages.filter(
-    (msg) =>
-      msg &&
-      msg.role &&
-      typeof msg.content === "string" &&
-      msg.content.trim() !== ""
+    (msg) => msg && msg.role && typeof msg.content === "string" && msg.content.trim() !== ""
   );
 
   return (
@@ -19,10 +13,11 @@ export default function MessageList({ messages, loading, bottomRef }) {
         <MessageItem
           key={`${msg.role}-${index}`}
           message={msg}
+          index={index}
+          onTypingDone={markTypingDone}
         />
       ))}
 
-      
       {loading && (
         <div className="message-loading">
           <span className="typing-dot" />
@@ -31,16 +26,7 @@ export default function MessageList({ messages, loading, bottomRef }) {
         </div>
       )}
 
-      
-      <div
-        ref={bottomRef}
-        style={{
-          width: "100%",
-          height: "1px",
-          flexShrink: 0,
-          pointerEvents: "none",
-        }}
-      />
+      <div ref={bottomRef} style={{ width: "100%", height: "1px", flexShrink: 0, pointerEvents: "none" }} />
     </div>
   );
 }
